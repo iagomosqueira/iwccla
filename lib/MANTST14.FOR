@@ -48,94 +48,20 @@ C     to set catch limits using the population estimates & past catches.
 C     Note: Define IYEAR=0 as first year of management.
 C     NTRIAL simulations are run for each case, each lasting NYEAR years.
 
-
-C PARAMETERS -----------------------------------------------------------
-
-C  Population parameters, common to all population models:
-C     PTRUE(IYR)  Mature population size of the true stock at start of year
-C                 IYR (prior to CATCHM(IYR) being set & removed)
-C     PSURV(IYR)  Size of surveyed population in IYR = 1+ population
-C     PSURV1      Stores PSURV from year -1 = 1+ population in year -1
-C     CATCH(IYR)  True Catch in year IYR
-C     CATCHM(IYR) Catch in IYR, as passed to MANSS. The premanagement
-C             catch is in error if OPTC>=1. Set by MANSS from year 0.
-C     SIGHT(IYR)  Absolute abundance estimate, in IYR  eg sightings.
-C             Set to -1 if no data available that year.  Passed to MANSS.
-C     CVX(IYR) Estimated CV of the sightings estimate
-C            Set to -1 if no data available.  Passed to MANSS.
-C     NTRIAL Number of trials. Read in. 1-1000 if ITUNE=0 or 1-100000 if ITUNE=1
-C     NYEAR  Number of years of management.  Read in. 1-100
-C     NPCAT  Number of years of the (constant) premanagement catch.
-C            Read in or if OPTRAN=1 a random value from U[15,45] used.
-C     NPPROT Number of years of premanagement protection. Read in.
-C     IPPROT First year of premanagement protection period = -NPPROT
-C     INITYR Year in which first premanagement catch taken (-65 to 0)
-C            A constant catch (=1 unit) is taken from INITYR to IPPROT-1
-C            followed by 0 catch from years IPPROT to -1, if any.
-C     K1     Pristine mature population size. Set in SETK(A)
-C            In cases when K varies during management, K1 = premanagement value
-C     K1P    Pristine 1+ population size. Set in SETK(A)
-C     KSURV  Pristine 1+ population in IYR. Set in SETK(A)
-C            Updated in DATGEN if K is time dependent ie if K99.ne.0
-C     MSYL   MSY Level.  Read in.
-C     MSYR1  Initial MSY rate used to set A. Read in  or  if OPTRAN=1 a
-C            random value from U[.001,.05] is generated for each trial.
-C            If OPTMOD=4 then the value read in = MSY/1+ population at
-C            MSYL, and the true MSYR is calculated in SMSYR.
-C     Z      Density dependent exponent, calculated from MSYL.
-C     A1     Initial resilience parameter, calculated from MSYR1.
-C     DEPL   Depletion level in year 0, =PTRUE(0)/K. Used to set K.
-C            Read in or if OPTRAN=1 a random value from U[.01,.99] used.
-C     PROBE(IYR) Set if an epidemic occurs in year IYR.  Set in RESET.
-C     ERATE  Rate at which epidemics occur.   AGE STRUCTURED MODEL ONLY
-C            If epidemics occur, SUR is reduced after year 0
-C     CATERR Reported historic catch / true catch  = 1 in base case trials
-C     ISEED1-5 Seeds for random number generators:
-C            1: Set SIGHT    2: Set epidemic years if ERATE>0
-C            3: Set CVX      4: Set random initial parameters if OPTRAN=1
-C            5: Set survey interval if IFREQ=-1
-
-C P-T model parameters: (OPTMOD<2)
-C     M      Mortality rate.  Read in.
-C     S      Annual survival rate
-C     TM     Age of maturity.  Read in
-C     TLAG   Time delay in depletion density dependent response.  Usually = TM
-C     K(IYR) Pristine mature population in IYR, set in SETK. = K1 if K99=0
-C     K99    If K99>0 then there is a linear change in K
-C                     from  K1 in year KYEAR  to  K1*K99 in year NYEAR-1
-C            If K99=-1: K cyclic, starting min;  K99=-2: K cyclic, starting max
-C     KYEAR  If K99>0 then K varies linearly from years KYEAR to NYEAR-1
-C     A(IYR) Resilience parameter in IYR. = A1 unless MSYR99>0 or ISTEP>0
-C     ISTEP  MSYR changes every ISTEP years, P-T model only. Usually=0.
-C     MSYR99 If MSYR99 > 0 then there is a linear change in MSYR
-C                      from  MSYR1 in year MSYRYR  to   MSYR1*MSYR99 in NYEAR-1
-C     MSYRYR If MSYR99>0 then MSYR varies linearly from year MSYRYR to NYEAR-1
-C     SREC(IYR) Stores number of recruits in year IYR+TM+1
-C            = #of births in IYR surviving to age of recruitment/maturity
-
-C Survey estimate parameters:
-C     BIAS   Bias in absolute abundance estimates
-C     BIAS0  Initial bias in absolute abundance estimates
-C     BINC   Increment added to BIAS every year if OPTB > 0
-C     IFREQ  Frequency with which absolute abundance estimates made.
-C            1st survey made in year -1. If IFREQ=5 the 2nd is in year 4
-C            If IFREQ=-1, time to next estimate generated from U[1,9]
-C            If OPTSUR=1 survey costs taken into account & IFREQ ignored
-C     ISIGHT Set to year in which next sightings estimate is to be made
-C     ENDSUR Year after which no surveys take place.  Read in.
-C     CV1EST value of CV(est) when P=0.6K. CV(est) = CV of CVX.  Read in.
-C     IYRCV  Year (if any) when CV(est) changes from CV1EST to CV2EST. Read in.
-C     DOFMIN Minimum number of degrees of freedom in chi-square distribution
-C     CV2EST 2nd value of CV(est): used if CV changes i.e. if IYRCV<NYEAR
-C     ETA    Process error parameter.  If ETA = 0 there is no process error.
-
-C     IYR    Current year
-C     N      Current trial number  (1,NTRIAL)
-C     IOUT   Output file
-C     IN     Input file
-C     REF    Reference number of run
-
 C OPTIONS --------------------------------------------------------------
+C     ITUNE  0: Standard run  1: Tuning run:
+C     OPTMOD Sets the population model
+C            0: Standard Pella Tomlinson
+C            1: P-T with maximum recruitment limitation
+C            2: Tent Model  (constant MSYR only)
+C            3: Age structured, maturity = recruitment [base case]
+C            4: Age structured, differing ages of maturity & recruitment
+C               with MSY / 1+ population at MSYL = base case ratio
+C            5: Age structured with MSYL, MSYR and density-dependent
+C               components entered
+C *** CARE: See different BIRTHS eqn used with different values of OPTMOD *****
+C     OPTSUR Survey control option       0: none
+C            1: Survey costs taken into account
 C     OPTRAN Option determining use of random parameters and seeds:
 C            0: No random parameters;  Use a new seed for each replicate
 C            1: MSYR1, NPCAT (& INITYR) & DEPL generated for each trial.
@@ -149,28 +75,100 @@ C            the management procedure).
 C            0: True catch (CATERR=1)
 C            1: Catch in error; true catch & depletion = base case values
 C            2: Catch in error; reported catch & PTRUE(0) = base case values
-C     OPTMOD Sets the population model
-C            0: Standard Pella Tomlinson
-C            1: P-T with maximum recruitment limitation
-C            2: Tent Model  (constant MSYR only)
-C            3: Age structured, maturity = recruitment [base case]
-C            4: Age structured, differing ages of maturity & recruitment
-C               with MSY / 1+ population at MSYL = base case ratio
-C            5: Age structured with MSYL, MSYR and density-dependent
-C               components entered
-C *** CARE: See different BIRTHS eqn used with different values of OPTMOD ********
-C     OPTDPL Specifies whether depletion changes among simulations (not randomly)
-C            0: Constant depletion
-C            1: Depletion read-in
 C     OPTDK  Set how births are calculated when P>K
 C            0: PT model        1: Exponential model
 C            2: Exponential model version 2
+C     OPTDET Set on deterministic run    0: stochastic   1:deterministic
+C     OPTDPL Specifies whether depletion changes among simulations (not randomly)
+C            0: Constant depletion
+C            1: Depletion read-in
 C     OPTDT  Set how density-dependence is modelled
 C            0: Fecundity       1: Natural mortality
-C     OPTDET Set on deterministic run    0: stochastic   1:deterministic
-C     OPTSUR Survey control option       0: none
-C            1: Survey costs taken into account
-C     ITUNE  0: Standard run  1: Tuning run:
+
+C PARAMETERS -----------------------------------------------------------
+C     IYR    Current year
+C     N      Current trial number  (1,NTRIAL)
+C     IOUT   Output file
+C     IN     Input file
+C     REF    Reference number of run
+
+C  Population parameters, common to all population models:
+C     CVX(IYR) Estimated CV of the sightings estimate
+C            Set to -1 if no data available.  Passed to MANSS.
+C     CATCH(IYR)  True Catch in year IYR
+C     CATCHM(IYR) Catch in IYR, as passed to MANSS. The premanagement
+C             catch is in error if OPTC>=1. Set by MANSS from year 0.
+C     PROBE(IYR) Set if an epidemic occurs in year IYR.  Set in RESET.
+C     PSURV(IYR)  Size of surveyed population in IYR = 1+ population
+C     PSURV1      Stores PSURV from year -1 = 1+ population in year -1
+C     PTRUE(IYR)  Mature population size of the true stock at start of year
+C                 IYR (prior to CATCHM(IYR) being set & removed)
+C     SIGHT(IYR)  Absolute abundance estimate, in IYR  eg sightings.
+C             Set to -1 if no data available that year.  Passed to MANSS.
+C     A1     Initial resilience parameter, calculated from MSYR1.
+C     CATERR Reported historic catch / true catch  = 1 in base case trials
+C     DEPL   Depletion level in year 0, =PTRUE(0)/K. Used to set K.
+C            Read in or if OPTRAN=1 a random value from U[.01,.99] used.
+C     ERATE  Rate at which epidemics occur.   AGE STRUCTURED MODEL ONLY
+C            If epidemics occur, SUR is reduced after year 0
+C     INITYR Year in which first premanagement catch taken (-65 to 0)
+C            A constant catch (=1 unit) is taken from INITYR to IPPROT-1
+C            followed by 0 catch from years IPPROT to -1, if any.
+C     IPPROT First year of premanagement protection period = -NPPROT
+C     ISEED1-5 Seeds for random number generators:
+C            1: Set SIGHT    2: Set epidemic years if ERATE>0
+C            3: Set CVX      4: Set random initial parameters if OPTRAN=1
+C            5: Set survey interval if IFREQ=-1
+C     K1     Pristine mature population size. Set in SETK(A)
+C            In cases when K varies during management, K1 = premanagement value
+C     K1P    Pristine 1+ population size. Set in SETK(A)
+C     KSURV  Pristine 1+ population in IYR. Set in SETK(A)
+C            Updated in DATGEN if K is time dependent ie if K99.ne.0
+C     MSYL   MSY Level.  Read in.
+C     MSYR1  Initial MSY rate used to set A. Read in  or  if OPTRAN=1 a
+C            random value from U[.001,.05] is generated for each trial.
+C            If OPTMOD=4 then the value read in = MSY/1+ population at
+C            MSYL, and the true MSYR is calculated in SMSYR.
+C     NPCAT  Number of years of the (constant) premanagement catch.
+C            Read in or if OPTRAN=1 a random value from U[15,45] used.
+C     NPPROT Number of years of premanagement protection. Read in.
+C     NTRIAL Number of trials. Read in. 1-1000 if ITUNE=0 or 1-100000 if ITUNE=1
+C     NYEAR  Number of years of management.  Read in. 1-100
+C     Z      Density dependent exponent, calculated from MSYL.
+
+C P-T model parameters: (OPTMOD<2)
+C     A(IYR) Resilience parameter in IYR. = A1 unless MSYR99>0 or ISTEP>0
+C     K(IYR) Pristine mature population in IYR, set in SETK. = K1 if K99=0
+C     K99    If K99>0 then there is a linear change in K
+C                     from  K1 in year KYEAR  to  K1*K99 in year NYEAR-1
+C            If K99=-1: K cyclic, starting min;  K99=-2: K cyclic, starting max
+C     KYEAR  If K99>0 then K varies linearly from years KYEAR to NYEAR-1
+C     ISTEP  MSYR changes every ISTEP years, P-T model only. Usually=0.
+C     M      Mortality rate.  Read in.
+C     MSYR99 If MSYR99 > 0 then there is a linear change in MSYR
+C                      from  MSYR1 in year MSYRYR  to   MSYR1*MSYR99 in NYEAR-1
+C     MSYRYR If MSYR99>0 then MSYR varies linearly from year MSYRYR to NYEAR-1
+C     S      Annual survival rate
+C     SREC(IYR) Stores number of recruits in year IYR+TM+1
+C            = #of births in IYR surviving to age of recruitment/maturity
+C     TLAG   Time delay in depletion density dependent response.  Usually = TM
+C     TM     Age of maturity.  Read in
+
+C Survey estimate parameters:
+C     BIAS   Bias in absolute abundance estimates
+C     BIAS0  Initial bias in absolute abundance estimates
+C     BINC   Increment added to BIAS every year if OPTB > 0
+C     CV1EST value of CV(est) when P=0.6K. CV(est) = CV of CVX.  Read in.
+C     CV2EST 2nd value of CV(est): used if CV changes i.e. if IYRCV<NYEAR
+C     DOFMIN Minimum number of degrees of freedom in chi-square distribution
+C     ENDSUR Year after which no surveys take place.  Read in.
+C     ETA    Process error parameter.  If ETA = 0 there is no process error.
+C     IFREQ  Frequency with which absolute abundance estimates made.
+C            1st survey made in year -1. If IFREQ=5 the 2nd is in year 4
+C            If IFREQ=-1, time to next estimate generated from U[1,9]
+C            If OPTSUR=1 survey costs taken into account & IFREQ ignored
+C     ISIGHT Set to year in which next sightings estimate is to be made
+C     IYRCV  Year (if any) when CV(est) changes from CV1EST to CV2EST. Read in.
 
 C DEFINITIONS ----------------------------------------------------------
 
