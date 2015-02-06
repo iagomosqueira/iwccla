@@ -5,7 +5,8 @@ C   MANTST Version 14 (June 2014)  SINGLE STOCK CONTROL PROGRAM
 C   Changes :
 
 C   V14   Added density-dependent natural mortality (AEP)
-C   V13a  Added an alternative way to component density-dependence for poipulations above K
+C   V13a  Added an alternative way to component density-dependence for
+C         populations above K
 C   V13   Added Bang Huseby's suggestions of April 2007
 C         The maximum number of trials is increased from 400 to 1000.
 C         Common blocks 'HITFIT' & 'TIMEVAR' reordered to avoid compiler warnings
@@ -44,7 +45,7 @@ C     noise, for input to the management procedure.
 C     The management procedure (MANSS) is a self-contained module called
 C     to set catch limits using the population estimates & past catches.
 
-C     Note: Define IYEAR=0 as first year of management.  
+C     Note: Define IYEAR=0 as first year of management.
 C     NTRIAL simulations are run for each case, each lasting NYEAR years.
 
 
@@ -55,10 +56,10 @@ C     PTRUE(IYR)  Mature population size of the true stock at start of year
 C                 IYR (prior to CATCHM(IYR) being set & removed)
 C     PSURV(IYR)  Size of surveyed population in IYR = 1+ population
 C     PSURV1      Stores PSURV from year -1 = 1+ population in year -1
-C     CATCH(IYR)  True Catch in year IYR 
-C     CATCHM(IYR) Catch in IYR, as passed to MANSS. The premanagement 
+C     CATCH(IYR)  True Catch in year IYR
+C     CATCHM(IYR) Catch in IYR, as passed to MANSS. The premanagement
 C             catch is in error if OPTC>=1. Set by MANSS from year 0.
-C     SIGHT(IYR)  Absolute abundance estimate, in IYR  eg sightings. 
+C     SIGHT(IYR)  Absolute abundance estimate, in IYR  eg sightings.
 C             Set to -1 if no data available that year.  Passed to MANSS.
 C     CVX(IYR) Estimated CV of the sightings estimate
 C            Set to -1 if no data available.  Passed to MANSS.
@@ -70,16 +71,16 @@ C     NPPROT Number of years of premanagement protection. Read in.
 C     IPPROT First year of premanagement protection period = -NPPROT
 C     INITYR Year in which first premanagement catch taken (-65 to 0)
 C            A constant catch (=1 unit) is taken from INITYR to IPPROT-1
-C            followed by 0 catch from years IPPROT to -1, if any. 
+C            followed by 0 catch from years IPPROT to -1, if any.
 C     K1     Pristine mature population size. Set in SETK(A)
 C            In cases when K varies during management, K1 = premanagement value
 C     K1P    Pristine 1+ population size. Set in SETK(A)
-C     KSURV  Pristine 1+ population in IYR. Set in SETK(A) 
+C     KSURV  Pristine 1+ population in IYR. Set in SETK(A)
 C            Updated in DATGEN if K is time dependent ie if K99.ne.0
 C     MSYL   MSY Level.  Read in.
 C     MSYR1  Initial MSY rate used to set A. Read in  or  if OPTRAN=1 a
 C            random value from U[.001,.05] is generated for each trial.
-C            If OPTMOD=4 then the value read in = MSY/1+ population at 
+C            If OPTMOD=4 then the value read in = MSY/1+ population at
 C            MSYL, and the true MSYR is calculated in SMSYR.
 C     Z      Density dependent exponent, calculated from MSYL.
 C     A1     Initial resilience parameter, calculated from MSYR1.
@@ -87,12 +88,12 @@ C     DEPL   Depletion level in year 0, =PTRUE(0)/K. Used to set K.
 C            Read in or if OPTRAN=1 a random value from U[.01,.99] used.
 C     PROBE(IYR) Set if an epidemic occurs in year IYR.  Set in RESET.
 C     ERATE  Rate at which epidemics occur.   AGE STRUCTURED MODEL ONLY
-C            If epidemics occur, SUR is reduced after year 0 
+C            If epidemics occur, SUR is reduced after year 0
 C     CATERR Reported historic catch / true catch  = 1 in base case trials
 C     ISEED1-5 Seeds for random number generators:
 C            1: Set SIGHT    2: Set epidemic years if ERATE>0
 C            3: Set CVX      4: Set random initial parameters if OPTRAN=1
-C            5: Set survey interval if IFREQ=-1    
+C            5: Set survey interval if IFREQ=-1
 
 C P-T model parameters: (OPTMOD<2)
 C     M      Mortality rate.  Read in.
@@ -101,20 +102,20 @@ C     TM     Age of maturity.  Read in
 C     TLAG   Time delay in depletion density dependent response.  Usually = TM
 C     K(IYR) Pristine mature population in IYR, set in SETK. = K1 if K99=0
 C     K99    If K99>0 then there is a linear change in K
-C                     from  K1 in year KYEAR  to  K1*K99 in year NYEAR-1  
+C                     from  K1 in year KYEAR  to  K1*K99 in year NYEAR-1
 C            If K99=-1: K cyclic, starting min;  K99=-2: K cyclic, starting max
-C     KYEAR  If K99>0 then K varies linearly from years KYEAR to NYEAR-1  
+C     KYEAR  If K99>0 then K varies linearly from years KYEAR to NYEAR-1
 C     A(IYR) Resilience parameter in IYR. = A1 unless MSYR99>0 or ISTEP>0
 C     ISTEP  MSYR changes every ISTEP years, P-T model only. Usually=0.
 C     MSYR99 If MSYR99 > 0 then there is a linear change in MSYR
-C                      from  MSYR1 in year MSYRYR  to   MSYR1*MSYR99 in NYEAR-1 
-C     MSYRYR If MSYR99>0 then MSYR varies linearly from year MSYRYR to NYEAR-1 
+C                      from  MSYR1 in year MSYRYR  to   MSYR1*MSYR99 in NYEAR-1
+C     MSYRYR If MSYR99>0 then MSYR varies linearly from year MSYRYR to NYEAR-1
 C     SREC(IYR) Stores number of recruits in year IYR+TM+1
-C            = #of births in IYR surviving to age of recruitment/maturity 
+C            = #of births in IYR surviving to age of recruitment/maturity
 
 C Survey estimate parameters:
-C     BIAS   Bias in absolute abundance estimates 
-C     BIAS0  Initial bias in absolute abundance estimates 
+C     BIAS   Bias in absolute abundance estimates
+C     BIAS0  Initial bias in absolute abundance estimates
 C     BINC   Increment added to BIAS every year if OPTB > 0
 C     IFREQ  Frequency with which absolute abundance estimates made.
 C            1st survey made in year -1. If IFREQ=5 the 2nd is in year 4
@@ -126,7 +127,7 @@ C     CV1EST value of CV(est) when P=0.6K. CV(est) = CV of CVX.  Read in.
 C     IYRCV  Year (if any) when CV(est) changes from CV1EST to CV2EST. Read in.
 C     DOFMIN Minimum number of degrees of freedom in chi-square distribution
 C     CV2EST 2nd value of CV(est): used if CV changes i.e. if IYRCV<NYEAR
-C     ETA    Process error parameter.  If ETA = 0 there is no process error. 
+C     ETA    Process error parameter.  If ETA = 0 there is no process error.
 
 C     IYR    Current year
 C     N      Current trial number  (1,NTRIAL)
@@ -137,21 +138,21 @@ C     REF    Reference number of run
 C OPTIONS --------------------------------------------------------------
 C     OPTRAN Option determining use of random parameters and seeds:
 C            0: No random parameters;  Use a new seed for each replicate
-C            1: MSYR1, NPCAT (& INITYR) & DEPL generated for each trial.  
+C            1: MSYR1, NPCAT (& INITYR) & DEPL generated for each trial.
 C            2: The random number generators are NOT reseeded; IRAN
 C               defines the inital seeds. (For tuning & factorial expt.)
 C            3: New seeds are generated
 C     OPTB   Option controlling bias   0: Constant
 C            1: Linear, doubles        2: Linear, decreases by 1/3 eg 1.5 -> 1.0
-C     OPTC   Defines reported premanagement catch (i.e. as reported to 
+C     OPTC   Defines reported premanagement catch (i.e. as reported to
 C            the management procedure).
-C            0: True catch (CATERR=1)     
+C            0: True catch (CATERR=1)
 C            1: Catch in error; true catch & depletion = base case values
 C            2: Catch in error; reported catch & PTRUE(0) = base case values
-C     OPTMOD Sets the population model 
+C     OPTMOD Sets the population model
 C            0: Standard Pella Tomlinson
-C            1: P-T with maximum recruitment limitation  
-C            2: Tent Model  (constant MSYR only)         
+C            1: P-T with maximum recruitment limitation
+C            2: Tent Model  (constant MSYR only)
 C            3: Age structured, maturity = recruitment [base case]
 C            4: Age structured, differing ages of maturity & recruitment
 C               with MSY / 1+ population at MSYL = base case ratio
@@ -162,10 +163,10 @@ C     OPTDPL Specifies whether depletion changes among simulations (not randomly
 C            0: Constant depletion
 C            1: Depletion read-in
 C     OPTDK  Set how births are calculated when P>K
-C            0: PT model        1: Exponential model 
+C            0: PT model        1: Exponential model
 C            2: Exponential model version 2
 C     OPTDT  Set how density-dependence is modelled
-C            0: Fecundity       1: Natural mortality  
+C            0: Fecundity       1: Natural mortality
 C     OPTDET Set on deterministic run    0: stochastic   1:deterministic
 C     OPTSUR Survey control option       0: none
 C            1: Survey costs taken into account
@@ -211,7 +212,7 @@ C DEFINITIONS ----------------------------------------------------------
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       DOUBLE PRECISION BIRSUM
       COMMON /AEPSPEC / BIRSUM(-65:2000)
 
@@ -228,9 +229,9 @@ C DEFINITIONS ----------------------------------------------------------
 
 
 C INITIALISATION -------------------------------------------------------
-C     Read in the true population parameters and option settings 
+C     Read in the true population parameters and option settings
 C     Check parameters are within allowed range
-      READ (IN,'(T37,A /A/)') REF,DESC      
+      READ (IN,'(T37,A /A/)') REF,DESC
       READ (IN,'(45X,I3,I4)') OPTRAN,IRAN
       READ (IN,'((45X,I3))') OPTB,OPTC,OPTMOD,OPTDK,OPTDT,OPTDET,OPTSUR
       READ (IN,'((43X,I5))') NTRIAL
@@ -283,8 +284,8 @@ C     Read in random number seeds for all trials : store in ISEEDS
       READ (IN2,'((5I8))') ((ISEEDS(N,I),I=1,5),N=1,MIN(NTRIAL,1000))
       CLOSE (IN2)
 
-C     Call EXTRA to reset any variables if necessary, and open output files. 
-C     In zero catch trials it sets NTRIAL=1 
+C     Call EXTRA to reset any variables if necessary, and open output files.
+C     In zero catch trials it sets NTRIAL=1
       CALL EXTRA (NTRIAL,OPTRAN,ERATE,ENDSUR,IOUT,PROG,ITUNE,OPTDEPL)
       WRITE(1,'(/2(2X,A)//A)')REF,DESC
       IF (ITUNE.gt.0) OPEN  (31,FILE='TUNEFULL',status='unknown')
@@ -300,11 +301,11 @@ C     Set Z, the density dependent exponent using MSYL.
         Z = SETZ(MSYL)
       ENDIF
 
-C     Set BINC, the annual bias increment. (1): Doubled  (2): Reduced by 1/3 
+C     Set BINC, the annual bias increment. (1): Doubled  (2): Reduced by 1/3
       IF (OPTB.EQ.1) THEN
-        BINC = BIAS0 / DBLE(NYEAR-1)        
+        BINC = BIAS0 / DBLE(NYEAR-1)
       ELSE IF (OPTB.EQ.2) THEN
-        BINC = -BIAS0 / DBLE(3*NYEAR-3)   
+        BINC = -BIAS0 / DBLE(3*NYEAR-3)
       ENDIF
 
 C     Call RDPARS to initialise management routine
@@ -315,7 +316,7 @@ C TRIALS BEGIN ---------------------------------------------------------
 
       DO 200 N = 1,NTRIAL
 
-C       Reseed the random number generators & print seeds, set BIAS & PROBE 
+C       Reseed the random number generators & print seeds, set BIAS & PROBE
         CALL RESET (ISEEDS,N,NYEAR,BIAS0,BIAS,OPTRAN,IRAN)
         IF (OPTDEPL.EQ.1) DEPL = DEPLVALS(N)
 
@@ -330,7 +331,7 @@ C         SETPAR generates MSYR1,NPCAT & DEPL in random parameter trials
           IF (OPTMOD.LT.3) THEN
 C           P-T or Tent model:
 C           SETA sets the resilience array A using MSYR1, for all years
-C           SETK finds the carrying capacity giving a depletion DEPL in 
+C           SETK finds the carrying capacity giving a depletion DEPL in
 C           year 0 & also sets PTRUE & CATCH prior to management.
             IF (OPTMOD.NE.2) CALL SETA (INITYR,NYEAR,ISTEP)
             CALL SETK (DEPL,CATCH,IPPROT,INITYR,NYEAR)
@@ -345,7 +346,7 @@ C           year 0 & also sets PTRUE & CATCH prior to management.
             AMSYL1 = MSYL
             AMSYL2 = MSYL
           ELSE
-C           Age structured model.  
+C           Age structured model.
 C           SETKA sets K,PTRUE & CATCH
             CALL SETKA (DEPL,CATCH,IPPROT,INITYR,0,MORT1,MORT2,
      +       MORTIP,NYEAR)
@@ -449,8 +450,8 @@ C ----------------------------------------------------------------------
 
       SUBROUTINE DATGEN (SIGHT,CVX,IYR,CATCHM,INITYR,NYEAR,N,NZERO)
 
-C     DATGEN sets absolute abundance estimate SIGHT(IYR) adding 
-C     random noise to the surveyed population PSURV (see equations 
+C     DATGEN sets absolute abundance estimate SIGHT(IYR) adding
+C     random noise to the surveyed population PSURV (see equations
 C     in Appendix 2 of IWC/45/4 Annex D).  Also set next survey year.
 
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
@@ -481,7 +482,7 @@ C     in Appendix 2 of IWC/45/4 Annex D).  Also set next survey year.
       PARAMETER (ASQ=0.02D0,BSQ=0.012D0,DCON=2.9D0)
 
 C     On 1st call to routine or if CV or K change, set the constants
-      IF (IYR.LT.0 .OR. IYR.EQ.IYRCV) THEN   
+      IF (IYR.LT.0 .OR. IYR.EQ.IYRCV) THEN
         CVESQ = CV1EST*CV1EST
         IF (IYR.GE.IYRCV) CVESQ = CV2EST*CV2EST
 
@@ -498,7 +499,7 @@ C       SIG = sd of lognormal component: used to set EPS
         SIG = SQRT(LOG(1.D0 + ALPHSQ))
 
 C       Set DOF = no. of degrees of freedom = 2.9 / CV(true)**2 - 1,
-C                 with minimum value DOFMIN.  CV(true) is value at P=K 
+C                 with minimum value DOFMIN.  CV(true) is value at P=K
         DOF = ANINT (DCON / (ALPHSQ+BETASQ)   - 1.D0)
         IF (DOF.LT.DOFMIN) DOF = DOFMIN
 
@@ -532,7 +533,7 @@ C       If CATCH2 > CATCH1 then take the survey
 
 
 C     Set EPS, W & SEEDS to update random generators even if no survey
-C     XNORM(SIG,MEAN,ISEEDi,...) produces a random number from a normal 
+C     XNORM(SIG,MEAN,ISEEDi,...) produces a random number from a normal
 C     distribution N [MEAN,SIG**2] using the ith random generator.
 C          (if MEAN = 0,  XNORM (SIG,0) = SIG * XNORM (1,0) )
 
@@ -550,7 +551,7 @@ C     Set abundance estimate SIGHT & CVX if a survey is done this year.
 
         IF (OPTDET.EQ.0) THEN
 C         Stochastic trial: Set SIGHT = Bias * K * BETASQ * EXP(EPS) * W
-C             where W is the Poisson component.  
+C             where W is the Poisson component.
 C             1st set W: W takes its expectation value if (P/K)/BETA**2 >70
           W = PSURV(IYR)/BKCON
           IF (W .LT. 70.D0) W = POISSN (W, RANNO)
@@ -616,7 +617,7 @@ C     PMCAT sets reported premanagement catch (CATCHM)
       IF (OPTC.EQ.0) THEN
 C       Reported historic catch = true catch = 1 unless CATCH was reset by
 C       STKUPD or STKUPA (this can happen if the required initial depletion
-C       is small and there is a period of protection prior to management). 
+C       is small and there is a period of protection prior to management).
         DO 10 IYR=INITYR,IPPROT-1
           CATCHM(IYR) = CATCH(IYR)
    10   CONTINUE
@@ -625,7 +626,7 @@ C       is small and there is a period of protection prior to management).
 C       Management procedure is passed erroneous catch history
 C       Reported catch = True catch * CATERR
         DO 60 IYR=INITYR,IPPROT-1
-          CATCHM(IYR) = CATCH(IYR) * CATERR      
+          CATCHM(IYR) = CATCH(IYR) * CATERR
    60   CONTINUE
         WRITE (1,999) 'Reported',CATCHM(INITYR),CATCHM(IPPROT-1)
       ENDIF
@@ -685,7 +686,7 @@ C     Print parameter list & check values are within range.
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
      +     CATCHOUT,MSYLOUT,PHASE
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1
@@ -729,7 +730,7 @@ C     Print out parameter list
         WRITE (IOUT,97) 'K cyclic, starting minimum',K99
       ELSE IF (K99.EQ.-2.) THEN
         WRITE (IOUT,97) 'K cyclic, starting maximum',K99
-      ELSE IF (K99.GT.0.) THEN 
+      ELSE IF (K99.GT.0.) THEN
         WRITE (IOUT,97) 'K varies linearly to K1*',K99,KYEAR
       ELSE
         WRITE (IOUT,97) 'K is constant',K99
@@ -777,7 +778,7 @@ C     Print out parameter list
         I = -1
       ENDIF
       WRITE (IOUT,95) 'Option defining population model',OPTMOD,OPT(I)
-      
+
       OPT(0) = 'Standard PT model'
       OPT(1) = 'Exponential model'
       OPT(2) = 'Exponential model2'
@@ -829,7 +830,7 @@ C     Print out parameter list
       ELSE
         WRITE (IOUT,'(A,'' parameters'',T41,2(F9.2,9X),I3/
      +                A,'' parameters'',T41,2(F9.2,9X)/,
-     +                A,'' parameters'',T41,F9.2,F6.2)') 
+     +                A,'' parameters'',T41,F9.2,F6.2)')
      +               ' Maturity',MAT1,MSIG,MINMAT,
      +               ' Recruitment',REC1,RSIG,
      +               ' Mortality',MORT1,MORT2
@@ -857,7 +858,7 @@ C       Output Components
           I = -1
         ENDIF
         WRITE (IOUT,95) 'Density-dependent component:',OPTDD,OPT(I)
-C      
+C
       ENDIF
       WRITE (IOUT,'(A,(T16,2(A8,F10.7),3(A9,F6.1)))')' CLA parameters',
      1   'PPROB:',PPROB, 'PKSTEP:',PKSTEP,'PNYSTP:',PNYSTP,
@@ -865,14 +866,14 @@ C
      3   'PDSTEP:',PDSTEP,'PNBSTP:',PNBSTP,'PCYCLE:',PCYCLE
       WRITE (1,'(A,(T20,4(A10,F10.7)))')
      + ' CLA parameters',
-     1 'PPROB',PPROB, 'PNYSTP',PNYSTP, 'PKSTEP',PKSTEP, 'PDSTEP',PDSTEP, 
+     1 'PPROB',PPROB, 'PNYSTP',PNYSTP, 'PKSTEP',PKSTEP, 'PDSTEP',PDSTEP,
      2 'PNBSTP',PNBSTP,'PCYCLE',PCYCLE, 'PLEVEL',PLEVEL, 'PASESS',
      3  REAL(PASESS)
       PRINT '(//3(A,F10.7,3X),2(A,F7.1,3X)//)', ' PROB',PPROB,
      +      'KSTP',PKSTEP,'DSTP',PDSTEP,'YSTP',PNYSTP,'BSTP',PNBSTP
       IF (ITUNE.GT.0) THEN
        write (31,'(3(F10.7,A,3X,I6))') PPROB,' =PPROB;',IRAN
-      ENDIF 
+      ENDIF
       WRITE (IOUT,96) 'MSYL', MSYL
       WRITE (IOUT,96) 'Initial MSY rate', MSYR1
       WRITE (IOUT,96) 'Density dependent exponent (Z)',Z
@@ -885,7 +886,7 @@ C
       WRITE (IOUT,96) 'Carrying capacity (1+)',K1P
       WRITE (IOUT,96) 'Initial depletion (P0/K)', DEPL
       IF (OPTC.GE.1) THEN
-        WRITE (IOUT,96) 'Error in reported catch (CATERR)',CATERR 
+        WRITE (IOUT,96) 'Error in reported catch (CATERR)',CATERR
       ELSE
         WRITE (IOUT,'()')
       ENDIF
@@ -901,10 +902,10 @@ C
       WRITE (IOUT,95) 'No surveys after year',ENDSUR
 
       IF (ERR) STOP
- 
+
    95 FORMAT (' ',A,T41,I6,4X,A)
    96 FORMAT (' ',A,T41,F12.5,F14.5)
-   97 FORMAT (' ',A,T41,F6.2, : 4X,'starting in year',I3) 
+   97 FORMAT (' ',A,T41,F6.2, : 4X,'starting in year',I3)
    98 FORMAT (' Survey parameters:',T20,4(A8,':',F6.3),A9,I5)
 
       RETURN
@@ -927,7 +928,7 @@ C     REPORT prints out PTRUE & CATCH arrays from year 0
 
       DOUBLE PRECISION BIRSUM
       COMMON /AEPSPEC / BIRSUM(-65:2000)
-      
+
       DOUBLE PRECISION CATCH(-65:2000)
       INTEGER IOUT,IYR,I
 
@@ -945,7 +946,7 @@ C ----------------------------------------------------------------------
 
       SUBROUTINE RESET (ISEEDS,N,NYEAR,BIAS0,BIAS,OPTRAN,IRAN)
 
-C     RESET reseeds the random number generators, resets BIAS to its 
+C     RESET reseeds the random number generators, resets BIAS to its
 C           initial value and sets PROBE
 
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
@@ -966,9 +967,9 @@ C           initial value and sets PROBE
 
 C     Set new negative values for the random number generator seeds -
 C     the generator is reset whenever a negative seed is used.
-C     If OPTRAN=2 the generators are NOT reseeded and IRAN defines the 
+C     If OPTRAN=2 the generators are NOT reseeded and IRAN defines the
 C       inital seeds.  It will not be reproducible on different machines but
-C       was added as a method of getting a different set of random numbers 
+C       was added as a method of getting a different set of random numbers
 C       for each run in the factorial expt.
 C     OPTRAN=3: a new seed is generated (1 & 3 only) instead of
 C       using values which were read in. IRAN defines the inital seeds.
@@ -1010,7 +1011,7 @@ C ----------------------------------------------------------------------
 
       SUBROUTINE SETA (INITYR,NYEAR,ISTEP)
 
-C     P-T model only.  SETA sets array A (the resilience) for each year 
+C     P-T model only.  SETA sets array A (the resilience) for each year
 
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
      +         PSURV(-65:2000),
@@ -1027,11 +1028,11 @@ C     P-T model only.  SETA sets array A (the resilience) for each year
       DOUBLE PRECISION MSYR2,A2,MSYINC
       INTEGER INITYR,NYEAR,ISTEP,IYR
 
-C     MSYR1 = initial MSY rate.  A1 = resilience 
+C     MSYR1 = initial MSY rate.  A1 = resilience
       A1 = MSYR1 * S * (1.D0 + 1.D0/Z) / (1.D0-S)
 
       IF (MSYR99.GT.0.D0) THEN
-C       MSYR varies linearly from MSYR1 to MSYR1*MSYR99 over the period 
+C       MSYR varies linearly from MSYR1 to MSYR1*MSYR99 over the period
 C                                 MSYRYR to NYEAR-1
         MSYINC = MSYR1 * (MSYR99 - 1.D0) / DBLE(NYEAR-1-MSYRYR)
         DO 5 IYR=INITYR,MSYRYR
@@ -1042,9 +1043,9 @@ C                                 MSYRYR to NYEAR-1
           MSYR2 = MSYR2 + MSYINC
           A(IYR) = MSYR2 * S * (1.D0 + 1.D0/Z) / (1.D0-S)
     6   CONTINUE
-  
+
       ELSE IF (ISTEP.EQ.0) THEN
-C       MSYR remains constant  
+C       MSYR remains constant
         DO 10 IYR=INITYR,NYEAR
           A(IYR) = A1
    10   CONTINUE
@@ -1079,14 +1080,14 @@ C ----------------------------------------------------------------------
 
 C     P-T model only.
 C     SETK sets K, CATCH(IYR) & PTRUE(IYR) for IYR=INITYR+1,0
-C     Subroutine finds the carrying capacity K giving the required 
+C     Subroutine finds the carrying capacity K giving the required
 C     depletion D in year 0.  A catch of 1 unit is taken for NPCAT years
 C     followed by a protection period of NPPROT years (if any).
-C     Note: In cases with a protection period the catch may be reduced 
-C           if PTRUE becomes too small to support it (STKUPD resets the 
+C     Note: In cases with a protection period the catch may be reduced
+C           if PTRUE becomes too small to support it (STKUPD resets the
 C           catch in this case). CATCH stores the actual catch taken.
 C     PTRUE is also set (by STKUPD) for years INITYR+1 to 0.
- 
+
 C     A catch of 1 unit is set so that management procedures under test
 C     can not derive information they are not entitled to from the size of
 C     the catch. (This was possible, in an early version of the program,
@@ -1156,11 +1157,11 @@ C --- ELSE: Routine has converged so continue
       ENDIF
 
 
-C     If OPTC=2 the reported catch, is erroneous.  The current (year 0) 
-C       population size, PTRUE(0) is fixed at the same size as when 
+C     If OPTC=2 the reported catch, is erroneous.  The current (year 0)
+C       population size, PTRUE(0) is fixed at the same size as when
 C       the reported = true catch (=1). This was set above.
       IF (OPTC.EQ.2) THEN
-C       Now find K (& hence also D) which gives a population PTRUE(0), 
+C       Now find K (& hence also D) which gives a population PTRUE(0),
 C       in year 0, when the true catch = reported catch / CATERR.
         P0 = PTRUE(0)
         KMIN = P0
@@ -1225,9 +1226,9 @@ C     Set K array = Mature carrying capacity in IYR. K is constant if K99=0
         DO 850 IYR=1,NYEAR
           K(IYR) = K1
   850   CONTINUE
- 
+
       ELSE IF (K99 .GT. 0.D0) THEN
-C      K is constant up to year KYEAR, and then varies linearly 
+C      K is constant up to year KYEAR, and then varies linearly
 C               from K1 in year KYEAR to K1*K99 in year NYEAR-1
         KINC = K1 * (K99 - 1.D0) / DBLE(NYEAR-1-KYEAR)
         DO 859 IYR=1,KYEAR
@@ -1243,19 +1244,19 @@ C                  K99=-2: maxima in years 0 & 100; min = K0/3
         PIFACT = 2.D0 * 3.141593D0 / DBLE(NYEAR)
         IF (K99.EQ.-1.D0) THEN
           DO 870 IYR = 1,NYEAR
-            K(IYR) = K1 * (2.D0 - COS(PIFACT * IYR)) 
+            K(IYR) = K1 * (2.D0 - COS(PIFACT * IYR))
   870     CONTINUE
         ELSE IF (K99.EQ.-2.D0) THEN
           DO 880 IYR = 1,NYEAR
             K(IYR) = K1/3.D0 * (2.D0 + COS(PIFACT * IYR))
   880     CONTINUE
-        ENDIF      
+        ENDIF
 
       ENDIF
 
       WRITE (1,'(A,6F8.2)') ' K in yrs 0,1,2,25,50,99:',K(0),K(1),K(2),
      +                  K(25),K(50),K(99)
-      
+
       RETURN
       END
 
@@ -1324,7 +1325,7 @@ C ----------------------------------------------------------------------
       SUBROUTINE STKUPD (IYR,INITYR,C)
 
 C     P-T model only.
-C     STKUPD updates the stock size at start of IYR+1 
+C     STKUPD updates the stock size at start of IYR+1
 C     ie sets PTRUE(IYR+1), removing C=catch in IYR.  PSURV is also set.
 
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
@@ -1346,14 +1347,14 @@ C     Set constants:
       S1 = 1.D0 - S
 
 C     Store this year's births which survive to recruitment (in SREC)
-C     They will enter the recruited population in IYR+TM. 
-C     NB: for standard PT model TM=TLAG.  
+C     They will enter the recruited population in IYR+TM.
+C     NB: for standard PT model TM=TLAG.
       IF (OPTMOD.LE.1) THEN
         ITLAG = IYR-TLAG+TM
         IF (ITLAG.LT.INITYR) ITLAG = INITYR
 
         REC =S1*PTRUE(IYR)*(1.D0+A(IYR)*(1.-(PTRUE(ITLAG)/K(ITLAG))**Z))
-        IF (OPTMOD.EQ.1) REC = MIN (REC, 
+        IF (OPTMOD.EQ.1) REC = MIN (REC,
      +                     S1*PTRUE(IYR) * (1.D0+A(IYR)*(1.D0-MSYL**Z)))
 
       ELSE
@@ -1415,7 +1416,7 @@ C *********************************************************************
 
 C  Age structured model only.
 C  Find the mature carrying capacity K giving the required depletion, D
-C  and set up the premanagement population.  
+C  and set up the premanagement population.
 C  K is already set if NK=1 (i.e. K was found on the 1st call to this routine)
 C  NB the mature & exploitable populations are both set in this routine,
 C   but are identical if their ogives are the same, as in the base case.
@@ -1433,7 +1434,7 @@ C   but are identical if their ogives are the same, as in the base case.
      +                REC(0:60),RECF(0:60),FMATUR(0:60),MAXAGE,MINMAT
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
       INTEGER MAXAGE,MINMAT
-      
+
       COMMON / TIMEVAR/ AT0(-65:2000),KT(-65:2000),ZT0(-65:2000),
      +                  AT1(-65:2000),ZT1(-65:2000),
      +                  K99AEP,MSYR99AEP,KYEARAEP,MSYRYRAEP,ISTEPAEP
@@ -1447,7 +1448,7 @@ C   but are identical if their ogives are the same, as in the base case.
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
      +     CATCHOUT,MSYLOUT,PHASE
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1
@@ -1456,7 +1457,7 @@ C   but are identical if their ogives are the same, as in the base case.
 
       DOUBLE PRECISION BIRSUM
       COMMON /AEPSPEC / BIRSUM(-65:2000)
-      
+
       DOUBLE PRECISION D, CATCH(-65:2000),KMAX,KMIN,C,CHIST,SURV,KREC,
      +       MORT1,MORT2,RINIT(0:60),UINIT(0:60),PA,RREC,RMAT,R1PLUS,P0,
      +       KINC,PIFACT,MSYR2,MSYINC,Kused,KMAT,
@@ -1464,7 +1465,7 @@ C   but are identical if their ogives are the same, as in the base case.
       INTEGER INITYR,NK,IPPROT,L,ICOUNT,IYR,MORTIP,IOK,NYEAR
       EXTERNAL SURV
       SAVE P0
-      
+
 C     MSYPAR sets A1 & Z (initial MSYR for time-varying A
 C      CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR1)
       CALL MSYPAR2 (IOK,MORT1,MORT2,MORTIP,MSYR1)
@@ -1476,17 +1477,17 @@ C     Set A and Z (defaults)
         ZT0(IYR) = ZZ0
         AT1(IYR) = 0
         ZT1(IYR) = 1
-       ENDIF 
+       ENDIF
        IF (OPTDT.EQ.1) THEN
         AT0(IYR) = 0
         ZT0(IYR) = 1
         AT1(IYR) = AA1
         ZT1(IYR) = ZZ1
        ENDIF
-401   CONTINUE        
+401   CONTINUE
 C
       IF (MSYR99AEP.EQ.1.0d0) THEN
-C      
+C
       ELSE IF  (MSYR99AEP.GT.0d0) THEN
 C      MSYR varies linearly from MSYR1 to MSYR1*MSYR99AEP over the period
 C                                       MSYRYR to NYEAR-1
@@ -1497,7 +1498,7 @@ C                                       MSYRYR to NYEAR-1
          ZT0(IYR) = ZZ0
          AT1(IYR) = 0
          ZT1(IYR) = 1
-        ENDIF 
+        ENDIF
         IF (OPTDT.EQ.1) THEN
          AT0(IYR) = 0
          ZT0(IYR) = 1
@@ -1515,14 +1516,14 @@ C        CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR2)
          ZT0(IYR) = ZZ0
          AT1(IYR) = 0
          ZT1(IYR) = 1
-        ENDIF 
+        ENDIF
         IF (OPTDT.EQ.1) THEN
          AT0(IYR) = 0
          ZT0(IYR) = 1
          AT1(IYR) = AA1
          ZT1(IYR) = ZZ1
         ENDIF
-416    CONTINUE        
+416    CONTINUE
 C
       ELSE IF (ISTEPAEP.EQ.0) THEN
 C      MSYR remains constant
@@ -1532,14 +1533,14 @@ C      MSYR remains constant
          ZT0(IYR) = ZZ0
          AT1(IYR) = 0
          ZT1(IYR) = 1
-        ENDIF 
+        ENDIF
         IF (OPTDT.EQ.1) THEN
          AT0(IYR) = 0
          ZT0(IYR) = 1
          AT1(IYR) = AA1
          ZT1(IYR) = ZZ1
         ENDIF
-425    CONTINUE        
+425    CONTINUE
 C
       ELSE
 C      MSYR changes every ISTEP years from MSYR1 to .05-MSYR1 & back
@@ -1557,7 +1558,7 @@ C       CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR2)
          ZT0(IYR) = ZZ0OLD
          AT1(IYR) = 0
          ZT1(IYR) = 1
-        ENDIF 
+        ENDIF
         IF (OPTDT.EQ.1) THEN
          AT0(IYR) = 0
          ZT0(IYR) = 1
@@ -1571,7 +1572,7 @@ C       CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR2)
          ZT0(IYR) = ZZ0
          AT1(IYR) = 0
          ZT1(IYR) = 1
-        ENDIF 
+        ENDIF
         IF (OPTDT.EQ.1) THEN
          AT0(IYR) = 0
          ZT0(IYR) = 1
@@ -1579,13 +1580,13 @@ C       CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR2)
          ZT1(IYR) = ZZ1
         ENDIF
 432    CONTINUE
-       DO 433 IYR = IYR, MIN(IYR+ISTEPAEP-1,NYEAR)        
+       DO 433 IYR = IYR, MIN(IYR+ISTEPAEP-1,NYEAR)
         IF (OPTDT.EQ.0) THEN
          AT0(IYR) = AA0OLD
          ZT0(IYR) = ZZ0OLD
          AT1(IYR) = 0
          ZT1(IYR) = 1
-        ENDIF 
+        ENDIF
         IF (OPTDT.EQ.1) THEN
          AT0(IYR) = 0
          ZT0(IYR) = 1
@@ -1594,14 +1595,14 @@ C       CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR2)
         ENDIF
 433    CONTINUE
        IF (IYR.LE.NYEAR) GOTO 499
-C               
+C
       ENDIF
 C      CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR1)
       CALL MSYPAR2 (IOK,MORT1,MORT2,MORTIP,MSYR1)
       DO 41 L = 0,MAXAGE
        SUR(L) = SURV(MORT1,MORT2,L,MORTIP,AT1(IYR),ZT1(IYR),1.0d0)
    41 CONTINUE
-      
+
 C     Set up the recruitment ogive
       CALL SETO (RECF,RSIG,REC1,MAXAGE)
 
@@ -1628,9 +1629,9 @@ C     Adjust for last age class being pooled (and always fully recruited)
       RREC = RREC + PA
       RMAT = RMAT + PA
 
-C     Scale the zero age class so the relative recruited population is unity. 
+C     Scale the zero age class so the relative recruited population is unity.
       PA  = 1.D0/RREC
-C     Set up recruited & unrecruited age vectors (relative to recruited 
+C     Set up recruited & unrecruited age vectors (relative to recruited
 C     population) and RMAT = relative mature population
 C     Also set relative 1+ population R1PLUS = 1 + # unrecruited -age 0 recruits
       UINIT(0) = PA*(1.D0-RECF(0))
@@ -1655,7 +1656,7 @@ C     Reset the recruitment ogive to transition form for use by STKUPA
       IF (NK.EQ.0) THEN
         KMIN = 0.D0
         KMAX = 200000.D0
-      ELSE 
+      ELSE
 C       Set up population using K found in last call to this subroutine
         KMIN = K1
         KMAX = K1
@@ -1671,7 +1672,7 @@ C --- Start of loop.  Repeat until projected population is at required level
   100 K1 = (KMIN + KMAX) / 2.D0
 C
 C     Set up the carrying capacity
-      KREC = RREC * K1 / RMAT 
+      KREC = RREC * K1 / RMAT
       KSURV  = KREC * R1PLUS
       KMAT = K1
       IF (OPTMOD.EQ.3) THEN
@@ -1683,7 +1684,7 @@ C     Set up the carrying capacity
        IF (OPTDD.EQ.0) Kused = KREC
        IF (OPTDD.EQ.1) Kused = KSURV
        IF (OPTDD.EQ.2) Kused = K1
-      ENDIF  
+      ENDIF
 C
 C     Set up the carrying capacity in each year (past)
       PTRUE(INITYR) = KMAT
@@ -1727,17 +1728,17 @@ C --- ELSE: Routine has converged so continue
       ENDIF
 
 
-C     If OPTC=2 the reported catch, is erroneous.  The current (year 0) 
-C       population size, PTRUE(0) is fixed at the same size as when 
+C     If OPTC=2 the reported catch, is erroneous.  The current (year 0)
+C       population size, PTRUE(0) is fixed at the same size as when
 C       the reported = true catch (=1). This was set above.
   500 IF (OPTC.EQ.2) THEN
-C       Now find K (& hence also D) which gives a population PTRUE(0), 
+C       Now find K (& hence also D) which gives a population PTRUE(0),
 C       in year 0, when the true catch = reported catch / CATERR.
         P0 = PTRUE(0)
         IF (NK.EQ.0) THEN
           KMIN = P0
           KMAX = 200000.D0
-        ELSE 
+        ELSE
           KMIN = K1
           KMAX = K1
         ENDIF
@@ -1751,7 +1752,7 @@ C --- Start of loop.  Repeat until projected population is at required level
   600   K1 = (KMIN + KMAX) / 2.D0
 C
 C       Set up the carrying capacity
-        KREC = RREC * K1 / RMAT 
+        KREC = RREC * K1 / RMAT
         KSURV  = KREC * R1PLUS
         KMAT = K1
         IF (OPTMOD.EQ.3) THEN
@@ -1763,8 +1764,8 @@ C       Set up the carrying capacity
          IF (OPTDD.EQ.0) Kused = KREC
          IF (OPTDD.EQ.1) Kused = KSURV
          IF (OPTDD.EQ.2) Kused = K1
-        ENDIF  
-  
+        ENDIF
+
 C       Set up the carrying capacity in each year (past)
         PTRUE(INITYR) = KMAT
         DO 306 IYR = INITYR,0
@@ -1813,11 +1814,11 @@ C     Store the pristine 1+ population in KSURV, & year -1 size in PSURV1
       KSURV  = KREC * R1PLUS
       K1P = KSURV
       PSURV1 = PSURV(-1)
- 
+
 C     Reset SUR if necessary i.e. in trials where epidemics occur after year 0
 C     The factor 0.017 is chosen such that if no catches are taken, the total
-C     population will, on average, maintain the premanagement productivity.  
-C     The value of this factor IS NOT GENERAL and is only correct for base 
+C     population will, on average, maintain the premanagement productivity.
+C     The value of this factor IS NOT GENERAL and is only correct for base
 C       case mortality rates and a 0.02 probability of epidemics.
       IF (ERATE.GT.0.D0) THEN
         DO 800 L = 0,MAXAGE
@@ -1826,7 +1827,7 @@ C       case mortality rates and a 0.02 probability of epidemics.
   800   CONTINUE
       ENDIF
 C
-C     Set up the carrying capacity in each year (future)  
+C     Set up the carrying capacity in each year (future)
       IF (K99AEP .EQ. 0.d0) THEN
        DO 310 IYR = 1,NYEAR
         KT(IYR) = Kused
@@ -1840,24 +1841,24 @@ C      K changes linearly from Kused in year KYEAR to Kused*K99AEP in year NYEAR
 321    CONTINUE
        DO 322 IYR = KYEARAEP+1,NYEAR
         KT(IYR) = KT(IYR-1) + KINC
-322    CONTINUE                 
-       
+322    CONTINUE
+
       ELSE
 C      K cyclic. K99AEP=-1; minima in years 0 & 100; max = 3K0
 C                K99AEP=-2; maxima is years 0 & 100; min - K0/3
        PIFACT = 2.D0 * 3.141593D0 / DBLE(NYEAR)
        IF (K99AEP .EQ. -1.D0) THEN
         DO 331 IYR = 1,NYEAR
-         KT(IYR) = Kused * (2.D0 - COS(PIFACT * IYR)) 
+         KT(IYR) = Kused * (2.D0 - COS(PIFACT * IYR))
   331   CONTINUE
        ELSE IF (K99AEP .EQ. -2.D0) THEN
         DO 332 IYR = 1,NYEAR
          KT(IYR) = Kused/3.D0 * (2.D0 + COS(PIFACT * IYR))
   332   CONTINUE
-       ENDIF      
+       ENDIF
 
       ENDIF
-      
+
       RETURN
       END
 
@@ -1882,7 +1883,7 @@ C     where PSURV is the 1+ population in year IYR (& not IYR+1).
      +                REC(0:60),RECF(0:60),FMATUR(0:60),MAXAGE,MINMAT
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
       INTEGER MAXAGE,MINMAT
-      
+
       COMMON / TIMEVAR/ AT0(-65:2000),KT(-65:2000),ZT0(-65:2000),
      +                  AT1(-65:2000),ZT1(-65:2000),
      +                  K99AEP,MSYR99AEP,KYEARAEP,MSYRYRAEP,ISTEPAEP
@@ -1898,14 +1899,14 @@ C     where PSURV is the 1+ population in year IYR (& not IYR+1).
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
       DOUBLE PRECISION SURV
       EXTERNAL SURV
-      
+
       COMMON /MORTPASS / MORT1A,MORT2A,MORTIPA
       DOUBLE PRECISION MORT1A,MORT2A
       INTEGER MORTIPA
 
       DOUBLE PRECISION BIRSUM
       COMMON /AEPSPEC / BIRSUM(-65:2000)
-      
+
       DOUBLE PRECISION C,BIRTHS,PMAT,PEXP,URM,DENST,P1P,PREC,DEPL
       INTEGER IYR,L
 
@@ -1917,8 +1918,8 @@ C     Sum the numbers of exploitable and 1+ whales
         PSURV(IYR) = PSURV(IYR) + REC(L) + UNREC(L)
    10 CONTINUE
 
-C     Remove the catches for this year by calculating average 
-C     survivorship after catching and multiplying over each age. 
+C     Remove the catches for this year by calculating average
+C     survivorship after catching and multiplying over each age.
       IF (C .LE. PEXP) THEN
         URM = 1.D0 - C/PEXP
       ELSE
@@ -1931,10 +1932,10 @@ C     First advance the pooled age class (gets different treatment)
      1                     REC(MAXAGE)*SUR(MAXAGE) )
 
 C     Loop advances the remaining age classes, working from oldest down.
-C     Accumulate PTRUE(IYR+1)= No. mature (defined as no. recruited if OPTMOD=3) 
+C     Accumulate PTRUE(IYR+1)= No. mature (defined as no. recruited if OPTMOD=3)
       PMAT  =  REC(MAXAGE)
       PREC  =  REC(MAXAGE)
-      P1P   =  REC(MAXAGE) 
+      P1P   =  REC(MAXAGE)
       IF (OPTMOD.EQ.3) THEN
         DO 40 L = MAXAGE-1,1,-1
           UNREC(L) = UNREC(L-1)*SUR(L-1)*(1.D0 - RECF(L))
@@ -1966,31 +1967,31 @@ C     (see correspondence for this decision)
       ELSE
         IF (OPTDD.EQ.0) THEN
          DEPL = PREC/KT(IYR+1)
-        ELSEIF (OPTDD.EQ.1) THEN 
+        ELSEIF (OPTDD.EQ.1) THEN
          DEPL = P1P/KT(IYR+1)
         ELSEIF (OPTDD.EQ.2) THEN
          DEPL = PMAT/KT(IYR+1)
         ELSE
          STOP
-        ENDIF 
+        ENDIF
         DENST = AT0(IYR+1)*(1.D0 - DEPL**ZT0(IYR+1))
         IF (OPTDK.EQ.0) THEN
          BIRTHS = PTRUE(IYR+1)*FEC*(1.D0 + DENST)
-        ENDIF 
+        ENDIF
         IF (OPTDK.EQ.1) THEN
          IF (DEPL.LE.1) THEN
           BIRTHS = PTRUE(IYR+1)*FEC*(1.D0 + DENST)
          ELSE
           BIRTHS = PTRUE(IYR+1)*FEC*EXP(DENST)
          END IF
-        END IF 
+        END IF
         IF (OPTDK.EQ.2) THEN
          IF (DEPL.LE.1) THEN
           BIRTHS = PTRUE(IYR+1)*FEC*(1.D0 + DENST)
          ELSE
           BIRTHS = PTRUE(IYR+1)*FEC*EXP(AT0(IYR+1)*ZT0(IYR+1)*(1-DEPL))
          END IF
-        END IF 
+        END IF
 C
 C       Density-dependent M
         IF (ERATE.GT.0.D0) THEN
@@ -2056,8 +2057,8 @@ C     Loop over all ages
           V(L) = 0.D0
          ELSE
           V(L) = 1.D0
-         ENDIF  
-        ENDIF 
+         ENDIF
+        ENDIF
    10 CONTINUE
       V(0) = 0.D0
       V(MAXAGE-1) = 1.D0
@@ -2090,7 +2091,7 @@ C     This function computes survival as function of age
         SURV = MEAN0
        ELSE
         SURV = MEAN1
-       ENDIF  
+       ENDIF
       ENDIF
 C
 C     Density-dependence
@@ -2106,7 +2107,7 @@ C     ------------------------------------------------------------------
       SUBROUTINE TRFORM (V,MAXAGE)
 
 C     Adjust an ogive to transition form, that is so that V(L) =
-C     the proportion of animals in a given class at age A-1 which make 
+C     the proportion of animals in a given class at age A-1 which make
 C     the transition to a different class age A
 
       DOUBLE PRECISION V(0:60),RM,D
@@ -2147,21 +2148,21 @@ C    method is used to solve for the density dependent exponent.
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
      +         PSURV(-65:2000),
      +         PSURV1,ERATE,CATERR,A1,K1,K1P,PROBE(0:2000),OPTMOD,OPTC
       DOUBLE PRECISION PTRUE,MSYL,MSYR1,Z,KSURV,PSURV,PSURV1,ERATE,
      +        CATERR,A1,K1,K1P
       INTEGER PROBE,OPTMOD,OPTC
-      
+
       COMMON /AGEPAR/ MAT1,MSIG,REC1,RSIG,FEC,SUR(0:60),UNREC(0:60),
      +                REC(0:60),RECF(0:60),FMATUR(0:60),MAXAGE,MINMAT
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
       INTEGER MAXAGE,MINMAT
-      
+
       EXTERNAL ZCALC,SURV,SMSYR
-      DOUBLE PRECISION UF(2), UT(2), UE(2), UNRC(0:2000), RC(0:2000), 
+      DOUBLE PRECISION UF(2), UT(2), UE(2), UNRC(0:2000), RC(0:2000),
      + PARS(4),DF,TOL,FM,URMSY,DRDF,UDMSY,DDDF,ZLO,ZHI,F1,F2,
      + MORT1,MORT2,R1PLUS,RMAT,RREC,PA,SURV,SMSYR,MSYR2
       INTEGER I,J,IERR,OK,L,MORTIP
@@ -2183,7 +2184,7 @@ C     Knife edge at age MAT50 in this version
       DO 7 L = 1,MINMAT
        FMATUR(L) = 0.D0
 7     CONTINUE
-C       
+C
 C     Set up recruitment ogive RECF: knife edge at age 1  {Eqn A4.1}
       CALL SETO (RECF,RSIG,REC1,MAXAGE)
 C
@@ -2191,7 +2192,7 @@ C     Set up the survival vector
       DO 8 L = 0,MAXAGE
         SUR(L) = SURV(MORT1,MORT2,L,MORTIP,1.0d0,1.0d0,1.0d0)
     8 CONTINUE
-C    
+C
 C *** Add the relative mature & recruited pristine population sizes starting
 C     with unity in the zero age class (L=0)  (PA=relative no.in Lth age class)
       RMAT = FMATUR(0)
@@ -2226,8 +2227,8 @@ C     set RECF =fraction of unrecruited animals of age A which recruit
 C     at age A+1, except RECF(0) = fraction recruited of age 0
       CALL SETO  (RECF,RSIG,REC1,MAXAGE)
       CALL TRFORM(RECF,MAXAGE)
-C      
-C     If OPTMOD=4 MSYR2 contains MSY/1+population at MSYL. 
+C
+C     If OPTMOD=4 MSYR2 contains MSY/1+population at MSYL.
 C     SMSYR sets the true MSYR (= MSY/Recruited population at MSYL)
       IF (OPTMOD.EQ.4) FMSY = SMSYR(FMSY,RECF,SUR,MAXAGE)
 C
@@ -2301,7 +2302,7 @@ C     Calculate the density dependent relative population and derivative
         DDDF  = (UF(2) - UF(1))/DF
       ENDIF
 C
-C  Calculate the equilibrium MSYL for the density dependent component 
+C  Calculate the equilibrium MSYL for the density dependent component
 C    which corresponds to the MSYL input for the specified component
 C    (The values of UT, UE and UF from the two levels of fishing
 C     mortality are implicitly averaged in the following expressions,
@@ -2314,7 +2315,7 @@ C     again for the actual FMSY)
           FMSYL = SMSYL*(UE(1)+UE(2))*RFTOT0/(RFEXP0*(UT(1)+UT(2)))
         ELSE IF (OPTDD.EQ.2) THEN
           FMSYL = SMSYL*(UF(1)+UF(2))*RFTOT0*FEC/(UT(1)+UT(2))
-        ENDIF   
+        ENDIF
         MSYLT1 = SMSYL
         MSYLT0 = SMSYL*(UE(1)+UE(2))*RFTOT0/(RFEXP0*(UT(1)+UT(2)))
         MSYLT2 = SMSYL*(UF(1)+UF(2))*RFTOT0*FEC/(UT(1)+UT(2))
@@ -2336,7 +2337,7 @@ C     again for the actual FMSY)
           FMSYL = SMSYL*(UE(1)+UE(2))/(FEC*RFEXP0*(UF(1)+UF(2)))
         ELSE IF (OPTDD.EQ.2) THEN
           FMSYL = SMSYL
-        ENDIF   
+        ENDIF
         MSYLT1 = SMSYL*(UT(1)+UT(2))/(FEC*RFTOT0*(UF(1)+UF(2)))
         MSYLT0 = SMSYL*(UE(1)+UE(2))/(FEC*RFEXP0*(UF(1)+UF(2)))
         MSYLT2 = SMSYL
@@ -2361,11 +2362,11 @@ C     Density dependent exponent and Resilience
       Z = PARS(4)
       A1 = (FECMSY/FEC - 1.D0)/(1.D0 - FMSYL**Z)
 C
-C     Convert among the various MSYL, MSYRs 
+C     Convert among the various MSYL, MSYRs
       CALL ALTMSY (1, IERR, AMSYR1, AMSYL1)
       CALL ALTMSY (2, IERR, AMSYR0, AMSYL0)
       CALL ALTMSY (3, IERR, AMSYR2, AMSYL2)
-C      
+C
       RETURN
       END
 C
@@ -2376,7 +2377,7 @@ C
 C  The root of this function is the density dependent exponent
 C
       IMPLICIT NONE
-      
+
       COMMON /HITFIT/ FMSY,SMSYL,RFTOT0,RFEXP0,
      +       FMSYL,FECMSY,MSYLT1,MSYLT0,MSYLT2,AMSYR1,AMSYL1,
      +       AMSYR0,AMSYL0,AMSYR2,AMSYL2,OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
@@ -2384,19 +2385,19 @@ C
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
      +         PSURV(-65:2000),
      +         PSURV1,ERATE,CATERR,A1,K1,K1P,PROBE(0:2000),OPTMOD,OPTC
       DOUBLE PRECISION PTRUE,MSYL,MSYR1,Z,KSURV,PSURV,PSURV1,ERATE,
      +        CATERR,A1,K1,K1P
       INTEGER PROBE,OPTMOD,OPTC
-      
+
       COMMON /AGEPAR/ MAT1,MSIG,REC1,RSIG,FEC,SUR(0:60),UNREC(0:60),
      +                REC(0:60),RECF(0:60),FMATUR(0:60),MAXAGE,MINMAT
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
       INTEGER MAXAGE,MINMAT
-      
+
       DOUBLE PRECISION PARS(4),ZCALC
       INTEGER IERR
 
@@ -2426,19 +2427,19 @@ C
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
      +         PSURV(-65:2000),
      +         PSURV1,ERATE,CATERR,A1,K1,K1P,PROBE(0:2000),OPTMOD,OPTC
       DOUBLE PRECISION PTRUE,MSYL,MSYR1,Z,KSURV,PSURV,PSURV1,ERATE,
      +        CATERR,A1,K1,K1P
       INTEGER PROBE,OPTMOD,OPTC
-      
+
       COMMON /AGEPAR/ MAT1,MSIG,REC1,RSIG,FEC,SUR(0:60),UNREC(0:60),
      +                REC(0:60),RECF(0:60),FMATUR(0:60),MAXAGE,MINMAT
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
       INTEGER MAXAGE,MINMAT
-      
+
       EXTERNAL OMSY
       DOUBLE PRECISION DF,TOL,PARS(4),FLO,FHI,AMSYR,AMSYL,F1,F2
       INTEGER ICOMP,IERR
@@ -2471,8 +2472,8 @@ C  ********************************************************************
 C
       FUNCTION OMSY (PARS, IERR)
 C
-C  Function calculates used in calculating MSY and MSYL for a designated 
-C    component of the population, given values for resilience A and 
+C  Function calculates used in calculating MSY and MSYL for a designated
+C    component of the population, given values for resilience A and
 C    exponent beta.
 C
       IMPLICIT NONE
@@ -2484,24 +2485,24 @@ C
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
      +         PSURV(-65:2000),
      +         PSURV1,ERATE,CATERR,A1,K1,K1P,PROBE(0:2000),OPTMOD,OPTC
       DOUBLE PRECISION PTRUE,MSYL,MSYR1,Z,KSURV,PSURV,PSURV1,ERATE,
      +        CATERR,A1,K1,K1P
       INTEGER PROBE,OPTMOD,OPTC
-      
+
       COMMON /AGEPAR/ MAT1,MSIG,REC1,RSIG,FEC,SUR(0:60),UNREC(0:60),
      +                REC(0:60),RECF(0:60),FMATUR(0:60),MAXAGE,MINMAT
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
       INTEGER MAXAGE,MINMAT
-      
-      DOUBLE PRECISION UF(2), UT(2), UE(2), UNRC(0:2000), RC(0:2000), 
+
+      DOUBLE PRECISION UF(2), UT(2), UE(2), UNRC(0:2000), RC(0:2000),
      +    PARS(4),C1,URMSY,DRDF,UDMSY,DDDF,C2,DF,TOL,F,A,OMSY,OMSYL,FM
       INTEGER IERR,TYPE,I,J
 C
-C     Tolerances 
+C     Tolerances
       DF = 0.1D-5
       TOL = 0.1D-5
 C
@@ -2513,7 +2514,7 @@ C
 C
 C  PARS(1) = F, is the trial value of MSY
 C  PARS(2) = A, is the given value of resilience
-C  PARS(3) = COMP, determines which MSY is calculated 
+C  PARS(3) = COMP, determines which MSY is calculated
 C            (1. = Total, 2. = recruited, 3. = mature)
 C  PARS(4) = MSYL for exploitation of the designated component
 C
@@ -2620,7 +2621,7 @@ C
           OMSYL = FMSYL
         ELSE IF (OPTDD.EQ.2) THEN
           OMSYL = FMSYL/((UF(1)+UF(2))*RFEXP0*FEC/(UE(1)+UE(2)))
-        ENDIF   
+        ENDIF
       ELSE IF (TYPE .EQ. 3.D0) THEN
         IF (OPTDD.EQ.1) THEN
           OMSYL = FMSYL/((UT(1)+UT(2))/(FEC*RFTOT0*(UF(1)+UF(2))))
@@ -2628,7 +2629,7 @@ C
           OMSYL = FMSYL/((UE(1)+UE(2))/(FEC*RFEXP0*(UF(1)+UF(2))))
         ELSE IF (OPTDD.EQ.2) THEN
           OMSYL = FMSYL
-        ENDIF   
+        ENDIF
       ENDIF
 C
       PARS(4) = OMSYL
