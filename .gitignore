@@ -1,5 +1,6 @@
 /lib/**.exe
 /references/**.pdf
 /test/lib
+/test/results
 **.docx
 **.exe

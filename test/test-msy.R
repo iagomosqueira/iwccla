@@ -31,6 +31,7 @@ deterministic <- FALSE
 dir.lib <- file.path(dir.main, "lib")
 # Directory where the tests will take place
 dir.test <- file.path(dir.main, "test")
+dir.create(file.path(dir.test, "results"))
 
 file.copy(dir.lib, dir.test, recursive = TRUE)
 done <- mapply(source, dir(file.path(dir.main, "R"), full.names = TRUE))
@@ -79,12 +80,13 @@ for (l in seq_along(my.l)) {
     message(paste(my.l[l], ":", my.r[r]))
     flush.console()
     data <- readLines(dat.results)
+    file.copy(dat.results,
+      file.path("..", "results", paste(dat.results, l, r, ".txt", sep = "_")),
+      overwrite = TRUE)
     temp[[r]] <- get_results(data)
   }
-  res[[l]] <- temp
-  names(res[[l]]) <- my.r
+  res[(length(res) + 1):(length(res) + length(temp))] <- temp
 }
-names(res) <- my.l
 
 ###############################################################################
 ###############################################################################
@@ -92,12 +94,8 @@ names(res) <- my.l
 #### Obtain values from result files
 ###############################################################################
 ###############################################################################
-msyl <- list()
-k1 <- sapply(res, function(x) sapply(x, "[", "k1"))
-ptrue <- sapply(res, function(x) {
-  sapply(sapply(x, "[", "ptrueterminal"), mean)})
-msy <- lapply(sapply(res, function(x) sapply(x, "[", "msy")),
-  lapply, function(x) apply(x, 2, mean))
+k1 <- sapply(res, "[", "k1")
+msy <- apply(sapply(res, "[", "msy"), 2, mean)
 
 plot(0, 0, xlim = range(my.r), ylim = c(0, 1), las = 1, ylab = "MSYL",
      xlab = "MSYR(true)")
