@@ -21,6 +21,7 @@ executable <- "a.exe"
 # Switches
 # Turn off process error
 deterministic <- FALSE
+mortality <- FALSE
 ###############################################################################
 ###############################################################################
 #### Step
@@ -48,7 +49,6 @@ if (length(dir(pattern = ".exe")) == 1) {
   }
 }
 
-dat.in <- "T1A-D1.dat" #"det.dat"
 dat.out <- "COPY.dat"
 dat.results <- ifelse(grepl("z", executable.in), "RES0", "RESTEST")
 
@@ -58,9 +58,12 @@ dat.results <- ifelse(grepl("z", executable.in), "RES0", "RESTEST")
 #### Loop through values of MSYR and MSYL
 ###############################################################################
 ###############################################################################
+dat.in <- ifelse(mortality, "T1A-D1.dat", "T1B-D1.dat")
+
 res <- list()
+counter <- 0
 my.l <- seq(0.4, 0.8, by = 0.1)
-my.r <- seq(0.01, 0.07, by = 0.01)
+my.r <- seq(0.005, 0.04, by = 0.005)
 for (l in seq_along(my.l)) {
   temp <- list()
   for (r in seq_along(my.r)) {
@@ -69,7 +72,8 @@ for (l in seq_along(my.l)) {
       paste0("TRUE MSYL(1)                         MSYL     ", my.l[l])
     msy.dat[grep("TRUE MSYL",  msy.dat)] <- msylvalue
     msyrvalue <-
-      paste0("TRUE MSY RATE(1)                     MSYR1    ", my.r[r], "0000")
+      paste0("TRUE MSY RATE(1)                     MSYR1    ",
+             format(my.r[r], nsmall = 6))
     msy.dat[grep("TRUE MSY RATE", msy.dat)] <- msyrvalue
     if (deterministic) {
       msy.dat[grep("ETA", msy.dat)] <-
@@ -83,9 +87,9 @@ for (l in seq_along(my.l)) {
     file.copy(dat.results,
       file.path("..", "results", paste(dat.results, l, r, ".txt", sep = "_")),
       overwrite = TRUE)
-    temp[[r]] <- get_results(data)
+    counter <- counter + 1
+    res[[counter]] <- get_results(data)
   }
-  res[(length(res) + 1):(length(res) + length(temp))] <- temp
 }
 
 ###############################################################################
@@ -95,12 +99,17 @@ for (l in seq_along(my.l)) {
 ###############################################################################
 ###############################################################################
 k1 <- sapply(res, "[", "k1")
-msy <- apply(sapply(res, "[", "msy"), 2, mean)
+msy <- t(sapply(sapply(res, "[", "msy"), apply, 2, mean))
 
-plot(0, 0, xlim = range(my.r), ylim = c(0, 1), las = 1, ylab = "MSYL",
-     xlab = "MSYR(true)")
-for (ind in seq_along(msy)) {
-  points(my.r, do.call("rbind", msy[[ind]])[, 1], xaxt = "n", las = 1,
-         pch = ind)
-}
-legend("topright", legend = names(msy), bty = "n", pch = seq_along(msy))
+sim <- cbind(rep(my.l, each = length(my.r)),rep(my.r, length(my.l)))
+
+par(mfrow = c(2, 1), mar = c(0, 4, 0, 1), oma = c(4, 1, 2, 2))
+plot(sim[, 2], msy[, 1], pch = sim[, 1] * 10,
+     xlim = range(my.r), ylim = c(0, 1), las = 1 ,
+     ylab = "MSYL", xaxt = "n")
+legend("topleft", bty = "n", legend = my.l, pch = my.l * 10,
+       title = "MSYL(True)", ncol = length(my.l))
+plot(sim[, 2], msy[, 2], pch = sim[, 1] * 10,
+     xlim = range(my.r), ylim = range(msy[, 2]),
+     ylab = "MSYR",  las = 1)
+mtext(side = 1, "MSYR(true)", outer = TRUE, line = 2)
