@@ -18,6 +18,9 @@ testname <- "test-msy"
 executable.in <- "Man-v14.for"
 executable <- "a.exe"
 
+# Switches
+# Turn off process error
+deterministic <- FALSE
 ###############################################################################
 ###############################################################################
 #### Step
@@ -55,8 +58,8 @@ dat.results <- ifelse(grepl("z", executable.in), "RES0", "RESTEST")
 ###############################################################################
 ###############################################################################
 res <- list()
-my.l <- seq(0.6, 0.9, by = 0.3)
-my.r <- seq(0.01, 0.07, by = 0.1) #by = 0.005)
+my.l <- seq(0.4, 0.8, by = 0.1)
+my.r <- seq(0.01, 0.07, by = 0.01)
 for (l in seq_along(my.l)) {
   temp <- list()
   for (r in seq_along(my.r)) {
@@ -67,6 +70,10 @@ for (l in seq_along(my.l)) {
     msyrvalue <-
       paste0("TRUE MSY RATE(1)                     MSYR1    ", my.r[r], "0000")
     msy.dat[grep("TRUE MSY RATE", msy.dat)] <- msyrvalue
+    if (deterministic) {
+      msy.dat[grep("ETA", msy.dat)] <-
+        "PROCESS ERROR PARAMETER              ETA      0.00"
+    }
     writeLines(msy.dat, dat.out)
     system(executable)
     message(paste(my.l[l], ":", my.r[r]))
@@ -75,18 +82,27 @@ for (l in seq_along(my.l)) {
     temp[[r]] <- get_results(data)
   }
   res[[l]] <- temp
+  names(res[[l]]) <- my.r
 }
+names(res) <- my.l
 
-
-
+###############################################################################
+###############################################################################
+#### Step
+#### Obtain values from result files
+###############################################################################
+###############################################################################
 msyl <- list()
-for(num in seq_along(res$biomass)) {
-  msyl[[num]] <- res$biomass[[num]][200, "ptrue"] / res$km
-}
-mean(sapply(msyl, mean))
+k1 <- sapply(res, function(x) sapply(x, "[", "k1"))
+ptrue <- sapply(res, function(x) {
+  sapply(sapply(x, "[", "ptrueterminal"), mean)})
+msy <- lapply(sapply(res, function(x) sapply(x, "[", "msy")),
+  lapply, function(x) apply(x, 2, mean))
 
-msyr <- list()
-for(num in seq_along(res$biomass)) {
-  msyr[[num]] <- res$biomass[[num]][200, "catch"] / res$biomass[[num]][200, "ptrue"]
+plot(0, 0, xlim = range(my.r), ylim = c(0, 1), las = 1, ylab = "MSYL",
+     xlab = "MSYR(true)")
+for (ind in seq_along(msy)) {
+  points(my.r, do.call("rbind", msy[[ind]])[, 1], xaxt = "n", las = 1,
+         pch = ind)
 }
-mean(sapply(msyr, mean))
+legend("topright", legend = names(msy), bty = "n", pch = seq_along(msy))
