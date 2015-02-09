@@ -28,6 +28,28 @@ get_results <- function(data) {
                       "AMSYR0", "AMSYL0", "AMSYR2", "AMSYL2")
   results$msyl <- outs
 
+  # k1: Carrying capacity of the 1+ population
+  out <- grep("Carrying capacity \\(mature\\)", data, value = TRUE)
+  out <- as.numeric(tail(unlist(strsplit(out, "[[:space:]]")), 1))
+  results$k1 <- out
+
+  # km: Carrying capacity of the mature population
+  out <- grep("Carrying capacity \\(1\\+\\)", data, value = TRUE)
+  out <- as.numeric(tail(unlist(strsplit(out, "[[:space:]]")), 1))
+  results$km <- out
+
+  # in
+  out <- strsplit(grep("MSYL      ", data, value = TRUE), "[[:space:]]+")[[1]]
+  ouT <- strsplit(grep("MSY rate", data, value = TRUE), "[[:space:]]+")[[1]]
+  oUT <- strsplit(grep("Density-Dependence Type", data, value = TRUE),
+                  "[[:space:]]+")[[1]]
+  OUT <- strsplit(grep("ETA", data, value = TRUE), "[[:space:]]+")[[1]]
+  OUT <- ifelse(grepl("1", tail(OUT, 1)), "Stochastic", "Deterministic")
+  results$input <- c("MSYL" = as.numeric(tail(out, 1)),
+                     "MSYR" = as.numeric(tail(ouT, 1)),
+                     "DD" = ifelse("1" %in% oUT, "mortality", "fecundity"),
+                     "Deterministic" = OUT)
+
   # biomass:
   # c("Year", "PTRUE", "PSURV", "Catch", "BIRSUM")
 
@@ -35,6 +57,7 @@ get_results <- function(data) {
   results$ptrueterminal <- vector(length = results$ntrials)
   results$psurvterminal <- vector(length = results$ntrials)
   results$catchterminal <- vector(length = results$ntrials)
+  results$msy <- matrix(nrow = results$ntrials, ncol = 2)
   out.line <- grep("CM 1", data) + 1
 
   for (yr in seq_along(out.line)) {
@@ -49,24 +72,13 @@ get_results <- function(data) {
     results$ptrueterminal[yr] <- tail(out$ptrue, 2)[1]
     results$psurvterminal[yr] <- tail(out$psurv, 2)[1]
     results$catchterminal[yr] <- tail(out$catch, 2)[1]
+    results$msy[yr, 1] <- results$ptrueterminal[yr] / results$km
+    results$msy[yr, 2] <- results$catchterminal[yr] / results$ptrueterminal[yr]
   }
-
-  # k1: Carrying capacity of the 1+ population
-  out <- grep("Carrying capacity \\(mature\\)", data, value = TRUE)
-  out <- as.numeric(tail(unlist(strsplit(out, "[[:space:]]")), 1))
-  results$k1 <- out
-
-  # km: Carrying capacity of the mature population
-  out <- grep("Carrying capacity \\(1\\+\\)", data, value = TRUE)
-  out <- as.numeric(tail(unlist(strsplit(out, "[[:space:]]")), 1))
-  results$km <- out
 
   # nzero: NZERO
   out <- unlist(strsplit(grep("NZERO", data, value = TRUE), ":"))[2]
   results$nzero <- as.numeric(gsub(" ", "", out))
-
-  # msy:
-
 
   invisible(return(results))
 }
