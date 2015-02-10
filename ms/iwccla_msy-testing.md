@@ -29,12 +29,29 @@ biased results.
 ### Tables
 
 ### Figures
-![Figure 01. Calculated MSYL (top panel) and MSYR (bottom panel) across combinations of true MSYR (0.005 - 0.04; x axis) and MSYL (0.4 - 0.8; see legend), when density dependence operates on fecundity.][fig01]
-![Figure 02. Calculated MSYL (top panel) and MSYR (bottom panel) across combinations of true MSYR (0.005 - 0.04; x axis) and MSYL (0.4 - 0.8; see legend), when density dependence operates on natural mortality. Higher values of MSYR had convergence issues.][fig02]
-![Figure 03. Yield curves across a range of true MSYL values (0.4 - 0.8; see legend). Points represent mean yield versus depletion level in the terminal year across 400 trials, when density dependence operates on fecundity.][fig11]
-![Figure 04. Yield curves across a range of true MSYL values (0.4 - 0.8; see legend). Points represent mean yield versus depletion level in the terminal year across 400 trials, when density dependence operates on natural mortality.][fig12]
+![Figure 01][fig01]
+Figure 01. Calculated MSYL (top panel) and MSYR (bottom panel) across
+combinations of true MSYR (0.005 - 0.04; x axis) and MSYL (0.4 - 0.8; see legend),
+when density dependence operates on fecundity.
+
+![Figure 02][fig02]
+Figure 02. Calculated MSYL (top panel) and MSYR (bottom panel) across combinations
+of true MSYR (0.005 - 0.04; x axis) and MSYL (0.4 - 0.8; see legend), when density
+dependence operates on natural mortality. Higher values of MSYR had convergence issues.
+
+![Figure 03][fig11]
+Figure 03. Yield curves across a range of true MSYL values (0.4 - 0.8; see legend).
+Points represent mean yield versus depletion level in the terminal year across
+400 trials, when density dependence operates on fecundity.
+
+![Figure 04][fig12]
+Figure 04. Yield curves across a range of true MSYL values (0.4 - 0.8; see legend).
+Points represent mean yield versus depletion level in the terminal year across
+400 trials, when density dependence operates on natural mortality.
 
 [fig01]: figures/figure01.png "Figure 01"
 [fig02]: figures/figure02.png "Figure 02"
 [fig11]: figures/figure11.png "Figure 03"
 [fig12]: figures/figure12.png "Figure 04"
+
+### References
