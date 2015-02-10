@@ -138,7 +138,7 @@ for (dat in 1:2) {
   l <- as.numeric(sapply(sapply(data, "[", "input"), "[", "MSYL"))
 
   png(file.path(dir.main, "ms", "figures", paste0("figure0", dat, ".png")),
-      width = 500, height = 1000)
+      width = 500, height = 700)
   par(mfrow = c(2, 1), mar = c(0, 4, 0, 1), oma = c(4, 1, 3, 2))
   plot(r, msy[, 1], pch = l * 10, cex = my.cex,
        xlim = range(my.r), ylim = range(my.l), las = 1 ,
