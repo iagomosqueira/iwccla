@@ -266,7 +266,7 @@ C     Check parameters are within allowed range
       KYEARAEP = KYEAR
       MSYRYRAEP = MSYRYR
       ISTEPAEP = ISTEP
-      READ (IN,'((45X,I3))') IFREQ, ENDSUR,IYRCV
+      READ (IN,'((44X,I4))') IFREQ, ENDSUR,IYRCV
       READ (IN,'((45X,F8.2))') BIAS0, CV1EST, ETA, DOFMIN
       IF (IYRCV.LT.NYEAR) READ (IN,'((45X,F8.2))') CV2EST
       IF (OPTC.GE.1) READ (IN,'((45X,F8.2))') CATERR
