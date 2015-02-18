@@ -6,75 +6,92 @@
 #' @author Kelli Faye Johnson
 
 get_results <- function(data) {
+
+  getval <- function(data, word) {
+    temp <- grep(word, data, value = TRUE)
+    temp <- tail(unlist(strsplit(temp, "[[:space:]]+")), 1)
+    names(temp) <- NULL
+    if (any(grepl("[a-z]", temp))) {
+      return(temp)
+    } else{
+        return(as.numeric(temp))
+      }
+  }
+
+  trim <- function(x) {
+    sub("^\\s+", "", x)
+  }
+
   results <- list()
+  data <- sapply(data, trim)
+
+  # ntruetrials: number of set trials
+  results$ntruetrials <- getval(data, "Number of trials")
 
   # ntrials: number of trials
-  results$ntrials <- max(as.numeric(sapply(
-    strsplit(data[grep("Trial", data)], "[[:space:]]+"), "[[", 2)))
+  results$ntrials <- sum(grepl("Trial", data))
 
   # nyears: number of years in simulation
-  results$nyears <- grep("Number of years in simulation", data, value = TRUE)
-  results$nyears <- as.numeric(tail(unlist(strsplit(
-    results$nyears, "[[:space:]]+")), 1))
+  results$nyears <- getval(data, "Number of years in simulation")
+
+  # dd: density dependence type
+  results$dd <- getval(data, "Density-Dependence Type")
 
   # msyl: MSYL Outputs
   # MSYLT1, MSYLT0, MSYLT2, AMSYR1, AMSYL1, AMSYR0, AMSYL0, AMSYR2, AMSYL2
-  outs <- sapply(strsplit(grep("MSYL Outputs", data, value = TRUE), ":"), "[[", 2)
-  outs <- lapply(strsplit(outs, "[[:space:]]+"), function(x) {
-    as.numeric(x[x != ""])
-    })
-  outs <- as.data.frame(do.call("rbind", outs))
-  colnames(outs) <- c("MSYLT1", "MSYLT0", "MSYLT2", "AMSYR1", "AMSYL1",
+  out <- sapply(strsplit(grep("MSYL Outputs", data, value = TRUE), ":"), "[[", 2)
+  out <- do.call("rbind", strsplit(trim(out), "[[:space:]]+"))
+  rownames(out) <- 1:dim(out)[1]
+  colnames(out) <- c("MSYLT1", "MSYLT0", "MSYLT2", "AMSYR1", "AMSYL1",
                       "AMSYR0", "AMSYL0", "AMSYR2", "AMSYL2")
-  results$msyl <- outs
+  out <- apply(out, 2, as.numeric)
+  results$msyl <- out
 
   # k1: Carrying capacity of the 1+ population
-  out <- grep("Carrying capacity \\(mature\\)", data, value = TRUE)
-  out <- as.numeric(tail(unlist(strsplit(out, "[[:space:]]")), 1))
-  results$k1 <- out
+  results$k1 <- getval(data, "Carrying capacity \\(mature\\)")
 
   # km: Carrying capacity of the mature population
-  out <- grep("Carrying capacity \\(1\\+\\)", data, value = TRUE)
-  out <- as.numeric(tail(unlist(strsplit(out, "[[:space:]]")), 1))
-  results$km <- out
+  results$km <- getval(data, "Carrying capacity \\(1\\+\\)")
 
   # in
-  out <- strsplit(grep("MSYL      ", data, value = TRUE), "[[:space:]]+")[[1]]
-  ouT <- strsplit(grep("MSY rate", data, value = TRUE), "[[:space:]]+")[[1]]
-  oUT <- strsplit(grep("Density-Dependence Type", data, value = TRUE),
-                  "[[:space:]]+")[[1]]
-  OUT <- strsplit(grep("ETA", data, value = TRUE), "[[:space:]]+")[[1]]
-  OUT <- ifelse(grepl("1", tail(OUT, 1)), "Stochastic", "Deterministic")
-  results$input <- c("MSYL" = as.numeric(tail(out, 1)),
-                     "MSYR" = as.numeric(tail(ouT, 1)),
-                     "DD" = ifelse("1" %in% oUT, "mortality", "fecundity"),
-                     "Deterministic" = OUT)
+  results$input <- c(
+    "MSYL" = getval(data, "MSYL      "),
+    "MSYR" = getval(data, "MSY rate"),
+    "DD" = results$dd,
+    "Deterministic" = ifelse(getval(data, "ETA") == 1, "Stochastic", "Deterministic"))
+
 
   # biomass:
   # c("Year", "PTRUE", "PSURV", "Catch", "BIRSUM")
 
   results$biomass <- list()
-  results$ptrueterminal <- vector(length = results$ntrials)
-  results$psurvterminal <- vector(length = results$ntrials)
-  results$catchterminal <- vector(length = results$ntrials)
-  results$msy <- matrix(nrow = results$ntrials, ncol = 2)
-  out.line <- grep("CM 1", data) + 1
-
-  for (yr in seq_along(out.line)) {
-    out <- data[out.line[yr]:(out.line[yr] + results$nyears)]
-    out <- lapply(out, function(x) {
-      temp <- unlist(strsplit(x, "[[:space:]]+")[[1]])
-      temp[!temp %in% ""]
-      })
-    out <- as.data.frame(apply(do.call("rbind", out), 2, as.numeric))
+  counter <- 1
+  results$ptrueterm <- vector(length = results$ntrials)
+  results$psurvterm <- vector(length = results$ntrials)
+  results$catchterm <- vector(length = results$ntrials)
+  results$depletion <- vector(length = results$ntrials)
+  results$msyr <- vector(length = results$ntrials)
+  for (yr in (grep("CM 1", data) + 1)) {
+    out <- do.call("rbind",
+      strsplit(trim(data[yr:(yr + results$nyears)]), "[[:space:]]+"))
+    out <- data.frame(apply(out, 2, as.numeric), stringsAsFactors = FALSE)
     colnames(out) <- c("year", "ptrue", "psurv", "catch", "birsum")
-    results$biomass[[yr]] <- out
-    results$ptrueterminal[yr] <- tail(out$ptrue, 2)[1]
-    results$psurvterminal[yr] <- tail(out$psurv, 2)[1]
-    results$catchterminal[yr] <- tail(out$catch, 2)[1]
-    results$msy[yr, 1] <- results$ptrueterminal[yr] / results$km
-    results$msy[yr, 2] <- results$catchterminal[yr] / results$ptrueterminal[yr]
+    if (tail(out, 1)[4] < 0) {
+      out <- out[-dim(out)[1], ]
+    }
+    out$trial <- rep(counter, dim(out)[1])
+    results$biomass[[counter]] <- out
+    results$ptrueterm[counter] <- tail(out$ptrue, 1)
+    results$psurvterm[counter] <- tail(out$psurv, 1)
+    results$catchterm[counter] <- tail(out$catch, 1)
+    results$depletion[counter] <- results$ptrueterm[counter] / results$km
+    results$msyr[counter] <-
+      results$catchterm[counter] / results$ptrueterm[counter]
+
+    counter <- counter + 1
   }
+  results$biomass <- do.call("rbind", results$biomass)
+
 
   # nzero: NZERO
   out <- unlist(strsplit(grep("NZERO", data, value = TRUE), ":"))[2]
