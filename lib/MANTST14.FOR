@@ -932,9 +932,9 @@ C     REPORT prints out PTRUE & CATCH arrays from year 0
 
       WRITE (IOUT,'(A,6A14)') 'Year','Stock 1','CM 1'
       DO 10 I = 0,IYR-1
-       WRITE (IOUT,'(I3,6F14.5)') I,PTRUE(I),PSURV(I),CATCH(I),BIRSUM(I)
+       WRITE (IOUT,'(I4,6F15.5)') I,PTRUE(I),PSURV(I),CATCH(I),BIRSUM(I)
    10 CONTINUE
-      WRITE (IOUT,'(I3,6F14.5)') IYR,PTRUE(IYR),PSURV(IYR),-1.,BIRSUM(I)
+      WRITE (IOUT,'(I4,6F15.5)') IYR,PTRUE(IYR),PSURV(IYR),-1.,BIRSUM(I)
       RETURN
       END
 
