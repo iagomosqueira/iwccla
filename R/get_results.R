@@ -57,8 +57,9 @@ get_results <- function(data) {
   results$input <- c(
     "MSYL" = getval(data, "MSYL      "),
     "MSYR" = getval(data, "MSY rate"),
-    "DD" = results$dd,
-    "Deterministic" = ifelse(getval(data, "ETA") == 1, "Stochastic", "Deterministic"))
+    "DD" = tolower(results$dd),
+    "Deterministic" = ifelse(getval(data, "ETA") == 1, "Stochastic", "Deterministic"),
+    "Component" = gsub(" ", "", strsplit(grep("MSYR component", data, value = TRUE), "[0-9]")[[1]][2]))
 
 
   # biomass:
