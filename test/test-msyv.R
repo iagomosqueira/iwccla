@@ -184,8 +184,10 @@ for (dat in 1:2) {
     }
   }
   mtext(side = 1, "MSYR(true)", outer = TRUE, line = 2)
-  mtext(side = 3, ifelse(dat == 1, "fecundity", "mortality"), outer = TRUE,
-        line = 1)
+  mtext(side = 3,
+    paste0(ifelse(mat == 1, "mature: ", "1+: "),
+           ifelse(dat == 1, "fecundity", "mortalilty")),
+    outer = TRUE, line = 1)
   dev.off()
 
   png(file.path(dir.main, "ms", "figures", paste0("figure1", mat, dat, ".png")),
@@ -216,8 +218,10 @@ for (dat in 1:2) {
   }
   axis(1)
   mtext(side = 1, "Depletion", outer = TRUE)
-  mtext(side = 3, ifelse(dat == 1, "fecundity", "mortalilty"), outer = TRUE,
-        line = 1)
+  mtext(side = 3,
+    paste0(ifelse(mat == 1, "mature: ", "1+: "),
+           ifelse(dat == 1, "fecundity", "mortalilty")),
+    outer = TRUE, line = 1)
   dev.off()
 }
 }
