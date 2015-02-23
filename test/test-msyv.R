@@ -41,6 +41,7 @@ dir.lib <- file.path(dir.main, "lib")
 # Directory where the tests will take place
 dir.test <- file.path(dir.main, "test")
 dir.create(file.path(dir.test, "results"), showWarnings = FALSE)
+dir.create(file.path(dir.test, "input"), showWarnings = FALSE)
 
 file.copy(dir.lib, dir.test, recursive = TRUE)
 done <- mapply(source, dir(file.path(dir.main, "R"), full.names = TRUE))
@@ -122,6 +123,10 @@ if (!loadold) {
                 file.copy(dat.results, file.path("..", "results",
                   paste(dat.results, l, r, component, mortality, ".txt", sep = "_")),
                   overwrite = TRUE)
+                com <- ifelse(component == 1, "mat", "all")
+                mor <- ifelse(mortality == FALSE, "fec", "mor")
+                file.copy(dat.out, file.path("..", "input",
+                  paste0(com, mor, "_L", my.l[l], "_R", my.r[r], ".dat")))
                 counter <- counter + 1
                 res[[counter]] <- get_results(data)
               }
