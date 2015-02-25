@@ -43,7 +43,7 @@ C    method is used to solve for the density dependent exponent.
       
       EXTERNAL ZCALC,SURV,SMSYR,FUNK
       DOUBLE PRECISION MORT1,MORT2,SURV,SMSYR,MSYR2
-      DOUBLE PRECISION X(100),SS,FF,FUNK
+      DOUBLE PRECISION X(100),SS,FF,FUNK,Y(100),SS2
       INTEGER OK,L,MORTIP,STOREOPTF,IFF
       DOUBLE PRECISION MSYLSAVE,MSYRSAVE
       SAVE MSYLSAVE,MSYRSAVE
@@ -72,12 +72,31 @@ C     First find A and Z (DTYPE = 1)
       MSYLPASS = MSYL
       X(1) = log(1.1)
       X(2) = log(2.39)
+      X(1) = 1.1
+      X(2) = 2.39
       PHASE = 1
       CALL FIT22(X,SS,2)
       PHASE = 2
       CALL FIT22(X,SS,2)
+      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
+      Y(1) = -0.3
+      Y(2) = -0.3
+      PHASE = 1
+      CALL FIT22(Y,SS2,2)
+      PHASE = 2
+      CALL FIT22(Y,SS2,2)
+      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
+      IF (SS2.LT.SS) THEN
+       X = Y
+       SS = SS2
+      ELSE
+       SS = FUNK(X) 
+      ENDIF
+      
+      
       CALL MODELPROJ(MSYR2)
-      WRITE(*,*) AA0,ZZ0,AA1,ZZ1
+      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
+      IF (ABS(SS).GT.1.0E-5) WRITE(*,*) "WARNING"
 
       DO 1000 IFF = 1,100
 C       FF = FLOAT(IFF)/30.0*MSYR2
@@ -108,11 +127,12 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
       AMSYL2 = MSYLOUT(2)
       OPTF = STOREOPTF
       WRITE(*,*) "C"
-      WRITE(*,*) AMSYR0,AMSYR1,AMSYR2
-      WRITE(*,*) AMSYL0,AMSYL1,AMSYL2
+      WRITE(*,600) AMSYR0,AMSYR1,AMSYR2
+      WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
 C      
       RETURN
 609   FORMAT(1x,F9.5,1x,F9.5,1x,3(F9.5,1x))      
+600   FORMAT(1x,3(F6.3,1x))
       END
 C
 C ===================================================================================================================================
@@ -276,7 +296,12 @@ C      Find density-dependent component
         DEPL = NMAT(IYR)/NMAT(0)
        ENDIF
        IF (OPTDT.EQ.0) THEN
-        DENST = AA0*(1.0d0-DEPL**ZZ0)
+C        WRITE(*,*) AA0,ZZ0,DEPL
+        IF (DEPL.LT.0) THEN
+         DENST = 0
+        ELSE 
+         DENST = AA0*(1.0d0-DEPL**ZZ0)
+        ENDIF 
        ELSE 
         DENST = 0.0d0
        ENDIF
@@ -335,10 +360,14 @@ C     Objective is to match MSYL and derivative equals 0 give FF
        IF (OPTDT.EQ.0) THEN
         AA0 = EXP(X(1))
         ZZ0 = EXP(X(2))
+        AA0 = X(1)
+        ZZ0 = X(2)
        ENDIF 
        IF (OPTDT.EQ.1) THEN
         AA1 = EXP(X(1))
         ZZ1 = EXP(X(2))
+        AA1 = X(1)
+        ZZ1 = X(2)
        ENDIF 
 C
 C      Derivative
