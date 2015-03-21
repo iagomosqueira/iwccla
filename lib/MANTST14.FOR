@@ -1466,7 +1466,7 @@ C   but are identical if their ogives are the same, as in the base case.
       SAVE P0
 
 C     MSYPAR sets A1 & Z (initial MSYR for time-varying A
-      CALL MSYPARZZ (IOK,MORT1,MORT2,MORTIP,MSYR1)
+C     CALL MSYPARZZ (IOK,MORT1,MORT2,MORTIP,MSYR1)
       CALL MSYPAR2 (IOK,MORT1,MORT2,MORTIP,MSYR1)
 C
 C     Set A and Z (defaults)
