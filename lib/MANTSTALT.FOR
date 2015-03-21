@@ -18,14 +18,14 @@ C    method is used to solve for the density dependent exponent.
       DOUBLE PRECISION AMSYR0,AMSYL0,AMSYR1,AMSYL1,AMSYR2,AMSYL2
       DOUBLE PRECISION MSYLT0,MSYLT1,MSYLT2
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
-      
+
       COMMON /STKVRS/ PTRUE(-65:2000),MSYL,MSYR1,Z,KSURV,
      +         PSURV(-65:2000),
      +         PSURV1,ERATE,CATERR,A1,K1,K1P,PROBE(0:2000),OPTMOD,OPTC
       DOUBLE PRECISION PTRUE,MSYL,MSYR1,Z,KSURV,PSURV,PSURV1,ERATE,
      +        CATERR,A1,K1,K1P
       INTEGER PROBE,OPTMOD,OPTC
-      
+
       COMMON /AGEPAR/ MAT1,MSIG,REC1,RSIG,FEC,SUR(0:60),UNREC(0:60),
      +                REC(0:60),RECF(0:60),FMATUR(0:60),MAXAGE,MINMAT
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
@@ -40,7 +40,7 @@ C    method is used to solve for the density dependent exponent.
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
       INTEGER DTYPE,PHASE
-      
+
       EXTERNAL ZCALC,SURV,SMSYR,FUNK
       DOUBLE PRECISION MORT1,MORT2,SURV,SMSYR,MSYR2
       DOUBLE PRECISION X(100),SS,FF,FUNK,Y(100),SS2
@@ -90,10 +90,10 @@ C     First find A and Z (DTYPE = 1)
        X = Y
        SS = SS2
       ELSE
-       SS = FUNK(X) 
+       SS = FUNK(X)
       ENDIF
-      
-      
+
+
       CALL MODELPROJ(MSYR2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
       IF (ABS(SS).GT.1.0E-5) WRITE(*,*) "WARNING"
@@ -102,7 +102,7 @@ C     First find A and Z (DTYPE = 1)
 C       FF = FLOAT(IFF)/30.0*MSYR2
 C       CALL MODELPROJ(FF)
 C       WRITE(*,609) FF,CATCHOUT,MSYLOUT
-1000  CONTINUE       
+1000  CONTINUE
 C
 C     Find MSYL and MSYR for alternative definitions of selectivity
       DTYPE = 2
@@ -129,9 +129,9 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
       WRITE(*,*) "C"
       WRITE(*,600) AMSYR0,AMSYR1,AMSYR2
       WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
-C      
+C
       RETURN
-609   FORMAT(1x,F9.5,1x,F9.5,1x,3(F9.5,1x))      
+609   FORMAT(1x,F9.5,1x,F9.5,1x,3(F9.5,1x))
 600   FORMAT(1x,3(F6.3,1x))
       END
 C
@@ -178,7 +178,7 @@ C     LOCAL VARIABLES
       INTEGER L,IYR
       REAL*8 SURV
       EXTERNAL SURV
-C       
+C
 C     Set up recruitment ogive RECF: knife edge at age 1  {Eqn A4.1}
       CALL SETO (RECF,RSIG,REC1,MAXAGE)
 C
@@ -186,7 +186,7 @@ C     Set up the survival vector (unfished(
       DO 8 L = 0,MAXAGE
         SUR(L) = SURV(MORT1A,MORT2A,L,MORTIPA,1.0d0,1.0d0,1.0d0)
     8 CONTINUE
-C    
+C
 C *** Add the relative mature & recruited pristine population sizes starting
 C     with unity in the zero age class (L=0)  (PA=relative no.in Lth age class)
       PA = 1
@@ -231,7 +231,7 @@ C     at age A+1, except RECF(0) = fraction recruited of age 0
 C
 C     Survival from fishing
       SURVF = 1.0 - FF
-C      
+C
 C  Set up equilibrium population age structure under F
       DO 10000 IYR = 1,1000
 C
@@ -244,7 +244,7 @@ C      Set survival
        IF (OPTF.EQ.0) THEN
         DO 11100 L = 1,MAXAGE-1
           UNRC(IYR,L) = SUR(L-1)*UNRC(IYR-1,L-1)*(1.D0 - RECF(L))
-          RC(IYR,L)   = SUR(L-1)*(RC(IYR-1,L-1)*SURVF + 
+          RC(IYR,L)   = SUR(L-1)*(RC(IYR-1,L-1)*SURVF +
      +                            UNRC(IYR-1,L-1)*RECF(L))
           CATCH = CATCH + RC(IYR-1,L-1)*FF
 11100   CONTINUE
@@ -265,7 +265,7 @@ C      Set survival
      +                 UNRC(IYR-1,L-1)*(1.D0 - RECF(L))
          RC(IYR,L)   = SUR(L-1)*SURVF*
      +                 (RC(IYR-1,L-1) + UNRC(IYR-1,L-1)*RECF(L))
-         CATCH = CATCH + (UNRC(IYR-1,L-1)+RC(IYR-1,L-1))* 
+         CATCH = CATCH + (UNRC(IYR-1,L-1)+RC(IYR-1,L-1))*
      +              FF*FMATUR(L-1)
 11300   CONTINUE
        ENDIF
@@ -299,10 +299,10 @@ C      Find density-dependent component
 C        WRITE(*,*) AA0,ZZ0,DEPL
         IF (DEPL.LT.0) THEN
          DENST = 0
-        ELSE 
+        ELSE
          DENST = AA0*(1.0d0-DEPL**ZZ0)
-        ENDIF 
-       ELSE 
+        ENDIF
+       ELSE
         DENST = 0.0d0
        ENDIF
 C
@@ -319,7 +319,7 @@ C
       MSYLOUT(2) = NMAT(999)/NMAT(0)
 C
       RETURN
-600   FORMAT(1x,I3,F8.4,1x,F8.4,1x,F8.4)      
+600   FORMAT(1x,I3,F8.4,1x,F8.4,1x,F8.4)
       END
 C
 C ========================================================================================
@@ -341,7 +341,7 @@ C
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
       INTEGER DTYPE,PHASE
-C 
+C
 C     GLOBAL VARIABLES
       DOUBLE PRECISION X(100)
 C
@@ -362,13 +362,13 @@ C     Objective is to match MSYL and derivative equals 0 give FF
         ZZ0 = EXP(X(2))
         AA0 = X(1)
         ZZ0 = X(2)
-       ENDIF 
+       ENDIF
        IF (OPTDT.EQ.1) THEN
         AA1 = EXP(X(1))
         ZZ1 = EXP(X(2))
         AA1 = X(1)
         ZZ1 = X(2)
-       ENDIF 
+       ENDIF
 C
 C      Derivative
        CALL MODELPROJ(FMSYPASS+DF)
@@ -391,13 +391,13 @@ C      Objective function
 C
       ENDIF
 C
-C     Objective function is to maximize catch 
+C     Objective function is to maximize catch
       IF (DTYPE.EQ.2) THEN
        FF = EXP(X(1))
        CALL MODELPROJ(FF)
        FUNK = -CATCHOUT
       ENDIF
-C      
+C
       RETURN
 600   FORMAT(1x,5(F8.4,1x,F8.4,1x))
       END
@@ -511,7 +511,7 @@ C     HIGHEST, AND LOWEST (BEST).
 C     COMPUTE THE FRACTIONAL RANGE FROM THE HIGHEST TO THE LOWEST AND
 C     RETURN IF SATISFACTORY
 
-      IF(2.0*ABS(Y(IHI)-Y(ILO)).LT.FTOL*(ABS(Y(IHI))+ABS(Y(ILO))+EPS)) 
+      IF(2.0*ABS(Y(IHI)-Y(ILO)).LT.FTOL*(ABS(Y(IHI))+ABS(Y(ILO))+EPS))
      +   RETURN
       IF(ITER.EQ.ITMAX) THEN
 c        WRITE(6,200)
