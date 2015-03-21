@@ -123,7 +123,7 @@ if (!loadold) {
                 file.copy(dat.results, file.path("..", "results",
                   paste(dat.results, l, r, component, mortality, ".txt", sep = "_")),
                   overwrite = TRUE)
-                com <- ifelse(component == 1, "mat", "all")
+                com <- ifelse(component == 1, "all", "mat")
                 mor <- ifelse(mortality == FALSE, "fec", "mor")
                 file.copy(dat.out, file.path("..", "input",
                   paste0(com, mor, "_L", my.l[l], "_R", my.r[r], ".dat")))
