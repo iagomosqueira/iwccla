@@ -127,6 +127,8 @@ if (!loadold) {
                 mor <- ifelse(mortality == FALSE, "fec", "mor")
                 file.copy(dat.out, file.path("..", "input",
                   paste0(com, mor, "_L", my.l[l], "_R", my.r[r], ".dat")))
+                file.copy("XY", file.path("..", "input",
+                  paste0("XY", com, mor, "_L", my.l[l], "_R", my.r[r], ".txt")))
                 counter <- counter + 1
                 res[[counter]] <- get_results(data)
               }
