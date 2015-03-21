@@ -47,11 +47,12 @@ get_results <- function(data) {
   out <- apply(out, 2, as.numeric)
   results$msyl <- out
 
-  # k1: Carrying capacity of the 1+ population
-  results$k1 <- getval(data, "Carrying capacity \\(mature\\)")
-
   # km: Carrying capacity of the mature population
-  results$km <- getval(data, "Carrying capacity \\(1\\+\\)")
+
+  results$km <- getval(data, "Carrying capacity \\(mature\\)")
+
+  # k1: Carrying capacity of the 1+ population
+  results$k1 <- getval(data, "Carrying capacity \\(1\\+\\)")
 
   # in
   results$input <- c(
