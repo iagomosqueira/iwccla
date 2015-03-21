@@ -185,7 +185,7 @@ for (dat in 1:2) {
       p.x <- as.numeric(sapply(sapply(data, "[", "input"), "[", "MSYR"))[keep]
       p.y <- unlist(sapply(data, "[", val))[keep]
       p.pch <- as.numeric(sapply(sapply(data, "[", "input"), "[", "MSYL"))[keep]
-      lines(p.x + .0005*ind, p.y, col = ind)
+      lines(p.x + .0005*ind, p.y, col = ind, type = "o")
     }
   }
   mtext(side = 1, "MSYR(true)", outer = TRUE, line = 2)
