@@ -23,6 +23,7 @@ a population at equilibrium.
 ## TODO:
  * [x] Compile code
  * [x] Create a list of scenarios to run
+ * [x] Match results from Ragnar
  * [] Create checks that verify the code
  * [] Run scenarios
  * [] Create LaTeX code that compiles the results
