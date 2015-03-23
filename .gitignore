@@ -1,4 +1,5 @@
 /lib/**.exe
+/logistics
 /norway/*
 /references/**.pdf
 /test/input
