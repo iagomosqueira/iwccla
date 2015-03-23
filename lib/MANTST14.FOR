@@ -1466,7 +1466,7 @@ C   but are identical if their ogives are the same, as in the base case.
       SAVE P0
 
 C     MSYPAR sets A1 & Z (initial MSYR for time-varying A
-      CALL MSYPARZZ (IOK,MORT1,MORT2,MORTIP,MSYR1)
+      CALL MSYPARZZ (IOK,MORT1,MORT2,MORTIP,MSYR1,AA0,ZZ0,AA1,ZZ1)
       CALL MSYPAR2 (IOK,MORT1,MORT2,MORTIP,MSYR1)
 C
 C     Set A and Z (defaults)
@@ -1596,10 +1596,10 @@ C       CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR2)
        IF (IYR.LE.NYEAR) GOTO 499
 C
       ENDIF
-C      CALL MSYPAR (IOK,MORT1,MORT2,MORTIP,MSYR1)
+      CALL MSYPARZZ (IOK,MORT1,MORT2,MORTIP,MSYR1,AA0,ZZ0,AA1,ZZ1)
       CALL MSYPAR2 (IOK,MORT1,MORT2,MORTIP,MSYR1)
       DO 41 L = 0,MAXAGE
-       SUR(L) = SURV(MORT1,MORT2,L,MORTIP,AT1(IYR),ZT1(IYR),1.0d0)
+       SUR(L) = SURV(MORT1,MORT2,L,MORTIP,AT1(INITYR),ZT1(INITYR),1.0d0)
    41 CONTINUE
 
 C     Set up the recruitment ogive
@@ -2131,7 +2131,7 @@ C     the transition to a different class age A
 C --------------------------------------------------------------------------
 C --------------------------------------------------------------------------
 C
-      SUBROUTINE MSYPARZZ (OK,MORT1,MORT2,MORTIP,MSYR2)
+      SUBROUTINE MSYPARZZ (OK,MORT1,MORT2,MORTIP,MSYR2,AA0,ZZ0,AA1,ZZ1)
 C
 C    Subroutine finds the resilience A1 & density dependent exponent Z
 C    which give the required MSY at the specified MSYL.  It equates the
@@ -2161,12 +2161,21 @@ C    method is used to solve for the density dependent exponent.
       DOUBLE PRECISION MAT1,MSIG,REC1,RSIG,FEC,SUR,UNREC,REC,RECF,FMATUR
       INTEGER MAXAGE,MINMAT
 
+      COMMON /MORTPASS / MORT1A,MORT2A,MORTIPA
+      DOUBLE PRECISION MORT1A,MORT2A
+      INTEGER MORTIPA
+
       EXTERNAL ZCALC,SURV,SMSYR
       DOUBLE PRECISION UF(2), UT(2), UE(2), UNRC(0:2000), RC(0:2000),
      + PARS(4),DF,TOL,FM,URMSY,DRDF,UDMSY,DDDF,ZLO,ZHI,F1,F2,
-     + MORT1,MORT2,R1PLUS,RMAT,RREC,PA,SURV,SMSYR,MSYR2
+     + MORT1,MORT2,R1PLUS,RMAT,RREC,PA,SURV,SMSYR,MSYR2,AA0,AA1,ZZ0,ZZ1
       INTEGER I,J,IERR,OK,L,MORTIP
       LOGICAL GOOD
+C
+C     Set the mortality parameters
+      MORT1A = MORT1
+      MORT2A = MORT2
+      MORTIPA = MORTIP
 C
 C     Set tolerances
       DF = 0.0001D0
@@ -2362,6 +2371,10 @@ C     Density dependent exponent and Resilience
       Z = PARS(4)
       A1 = (FECMSY/FEC - 1.D0)/(1.D0 - FMSYL**Z)
       WRITE(*,*) A1,Z
+      AA0 = A1
+      ZZ0 = Z
+      AA1 = 0
+      ZZ1 = 1
 C
 C     Convert among the various MSYL, MSYRs
       CALL ALTMSY (1, IERR, AMSYR1, AMSYL1)
