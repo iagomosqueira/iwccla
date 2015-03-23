@@ -1,4 +1,5 @@
 /lib/**.exe
+/norway/*
 /references/**.pdf
 /test/input
 /test/lib

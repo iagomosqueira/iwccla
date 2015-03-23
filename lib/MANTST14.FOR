@@ -1916,7 +1916,7 @@ C     Sum the numbers of exploitable and 1+ whales
         PEXP = PEXP + REC(L)
         PSURV(IYR) = PSURV(IYR) + REC(L) + UNREC(L)
    10 CONTINUE
-      IF (IYR.GE.0) C = MSYR1*PTRUE(IYR)
+C      IF (IYR.GE.0) C = MSYR1*PTRUE(IYR)
 
 C     Remove the catches for this year by calculating average
 C     survivorship after catching and multiplying over each age.
