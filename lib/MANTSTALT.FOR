@@ -47,7 +47,11 @@ C    method is used to solve for the density dependent exponent.
       INTEGER OK,L,MORTIP,STOREOPTF,IFF
       DOUBLE PRECISION MSYLSAVE,MSYRSAVE
       SAVE MSYLSAVE,MSYRSAVE
-C
+
+C     LOCAL VARIABLES
+      INTEGER MYLOOP,MYLOOP2
+      DOUBLE PRECISION try(4),keep(4),oldss(2)
+
 C     Need to do this?
       IF (MSYLSAVE.EQ.MSYL.AND.MSYRSAVE.EQ.MSYR2) RETURN
       MSYLSAVE = MSYL
@@ -67,26 +71,60 @@ C     Set the mortality parameters
       MORTIPA = MORTIP
 C
 C     First find A and Z (DTYPE = 1)
+
       DTYPE = 1
       FMSYPASS = MSYR2
       MSYLPASS = MSYL
-      X(1) = log(1.1)
-      X(2) = log(2.39)
-      X(1) = 1.1
-      X(2) = 2.39
+      try = 0.0
+
+      keep = 0.0
+      oldss = 10000
+      OPEN (31,FILE='XY')
+      DO 1001 MYLOOP=1,10,1
+        try(1) = try(1) + 0.2
+        try(3) = try(3) - 0.2
+        X(1) = try(1)
+        Y(1) = try(3)
+        try(2) = 0.1
+        try(4) = -0.1
+        DO 1002 MYLOOP2=1,10,1
+        try(2) = try(2) + 0.1
+        try(4) = try(4) - 0.1
+        X(2) = try(2)
+        Y(2) = try(4)
+        PHASE = 1
+        CALL FIT22(X,SS,2)
+        CALL FIT22(Y,SS2,2)
+        WRITE (31,*) "X",try(1),try(2),X(1),X(2),SS
+        WRITE (31,*) "Y",try(3),try(4),Y(3),Y(4),SS2
+        IF (SS.LT.oldss(1)) THEN
+          keep(1) = X(1)
+          keep(2) = X(2)
+          oldss(1) = SS
+        ENDIF
+        IF (SS2.LT.oldss(2)) THEN
+          keep(3) = Y(1)
+          keep(4) = Y(2)
+          oldss(2) = SS2
+        ENDIF
+1002  CONTINUE
+1001  CONTINUE
+      CLOSE (31)
+      X(1) = keep(1)
+      X(2) = keep(2)
       PHASE = 1
       CALL FIT22(X,SS,2)
       PHASE = 2
       CALL FIT22(X,SS,2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
-      Y(1) = -0.3
-      Y(2) = -0.3
+      Y(1) = keep(3)
+      Y(2) = keep(4)
       PHASE = 1
       CALL FIT22(Y,SS2,2)
       PHASE = 2
       CALL FIT22(Y,SS2,2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
-      IF (SS2.LT.SS) THEN
+      IF (SS2.LE.SS) THEN
        X = Y
        SS = SS2
       ELSE
