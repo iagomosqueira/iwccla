@@ -36,8 +36,8 @@ C    method is used to solve for the density dependent exponent.
       INTEGER MORTIPA
 
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
-     +     CATCHOUT,MSYLOUT,PHASE
-      DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1
+     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED
+      DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1,DERIV,MSYLPRED
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
       INTEGER DTYPE,PHASE
 
@@ -80,36 +80,23 @@ C     First find A and Z (DTYPE = 1)
       keep = 0.0
       oldss = 10000
       OPEN (31,FILE='XY')
-      DO 1001 MYLOOP=1,10,1
-        try(1) = try(1) + 0.2
-        try(3) = try(3) - 0.2
+      DO 1001 MYLOOP=1,20,1
+        try(1) = try(1) + 0.1
         X(1) = try(1)
-        Y(1) = try(3)
         try(2) = 0.1
-        try(4) = -0.1
-        DO 1002 MYLOOP2=1,10,1
-        try(2) = try(2) + 0.1
-        try(4) = try(4) - 0.1
+        DO 1002 MYLOOP2=1,20,1
+        try(2) = try(2) + 0.05
         X(2) = try(2)
-        Y(2) = try(4)
-        PHASE = 1
-        CALL FIT22(X,SS,2)
-        CALL FIT22(Y,SS2,2)
-        WRITE (31,*) "X",try(1),try(2),X(1),X(2),SS
-        WRITE (31,*) "Y",try(3),try(4),Y(3),Y(4),SS2
+        PHASE = 3
+        SS = FUNK(X)
         IF (SS.LT.oldss(1)) THEN
           keep(1) = X(1)
           keep(2) = X(2)
           oldss(1) = SS
-        ENDIF
-        IF (SS2.LT.oldss(2)) THEN
-          keep(3) = Y(1)
-          keep(4) = Y(2)
-          oldss(2) = SS2
+          WRITE (31,*) "X",try(1),try(2),X(1),X(2),SS
         ENDIF
 1002  CONTINUE
 1001  CONTINUE
-      CLOSE (31)
       X(1) = keep(1)
       X(2) = keep(2)
       PHASE = 1
@@ -117,6 +104,26 @@ C     First find A and Z (DTYPE = 1)
       PHASE = 2
       CALL FIT22(X,SS,2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
+      WRITE(*,*) DERIV,MSYLPRED
+      IF (SS.LT.1.0e-7) GOTO 1999
+
+      DO 2001 MYLOOP=1,20,1
+        try(3) = try(3) - 0.1
+        Y(1) = try(3)
+        try(4) = -0.1
+        DO 2002 MYLOOP2=1,20,1
+        try(4) = try(4) - 0.05
+        Y(2) = try(4)
+        PHASE = 3
+        SS2 = FUNK(Y)
+        IF (SS2.LT.oldss(2)) THEN
+          keep(3) = Y(1)
+          keep(4) = Y(2)
+          oldss(2) = SS2
+          WRITE (31,*) "Y",try(3),try(4),Y(3),Y(4),SS2
+        ENDIF
+2002  CONTINUE2
+2001  CONTINUE
       Y(1) = keep(3)
       Y(2) = keep(4)
       PHASE = 1
@@ -124,6 +131,24 @@ C     First find A and Z (DTYPE = 1)
       PHASE = 2
       CALL FIT22(Y,SS2,2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
+      WRITE(*,*) DERIV,MSYLPRED
+
+      IF (SS2.LE.SS) THEN
+       X = Y
+       SS = SS2
+      ELSE
+       SS = FUNK(X)
+      ENDIF
+1999  CONTINUE
+      
+      Y(1) = keep(3)
+      Y(2) = keep(4)
+      PHASE = 1
+      CALL FIT22(Y,SS2,2)
+      PHASE = 2
+      CALL FIT22(Y,SS2,2)
+      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
+      WRITE(*,*) DERIV,MSYLPRED
       IF (SS2.LE.SS) THEN
        X = Y
        SS = SS2
@@ -132,6 +157,7 @@ C     First find A and Z (DTYPE = 1)
       ENDIF
 
 
+      CLOSE (31)
       CALL MODELPROJ(MSYR2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
       IF (ABS(SS).GT.1.0E-5) WRITE(*,*) "WARNING"
@@ -199,8 +225,8 @@ C
       INTEGER MORTIPA
 
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
-     +     CATCHOUT,MSYLOUT,PHASE
-      DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1
+     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED
+      DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1,DERIV,MSYLPRED
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
       INTEGER DTYPE,PHASE
 C
@@ -375,8 +401,8 @@ C
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
 
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
-     +     CATCHOUT,MSYLOUT,PHASE
-      DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1
+     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED
+      DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1,DERIV,MSYLPRED
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
       INTEGER DTYPE,PHASE
 C
@@ -384,7 +410,7 @@ C     GLOBAL VARIABLES
       DOUBLE PRECISION X(100)
 C
 C     LOCAL VARIABLES
-      DOUBLE PRECISION DF,CATCH1,CATCH2,DERIV,MSYLPRED,FF
+      DOUBLE PRECISION DF,CATCH1,CATCH2,FF
 C
 C     Set tolerances
       DF = 0.0001D0
@@ -425,6 +451,9 @@ C      Objective function
        ENDIF
        IF (PHASE.EQ.2) THEN
         FUNK = ABS(DERIV)*100+(MSYLPRED-MSYLPASS)**2.0
+       ENDIF
+       IF (PHASE.EQ.3) THEN
+        FUNK = ABS(DERIV)+(MSYLPRED-MSYLPASS)**2.0
        ENDIF
 C
       ENDIF
