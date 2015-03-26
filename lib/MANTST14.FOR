@@ -215,6 +215,9 @@ C DEFINITIONS ----------------------------------------------------------
       DOUBLE PRECISION BIRSUM
       COMMON /AEPSPEC / BIRSUM(-65:2000)
 
+      COMMON /INITS/ INITA,INITZ
+      DOUBLE PRECISION INITA,INITZ
+
       DOUBLE PRECISION CATCHM(-65:2000),SIGHT(-1:2000),C,CVX(-1:2000),
      +    CATCH(-65:2000),M,DEPL,BINC,SETZ,MORT1,MORT2,BIAS0,PFIN,
      +    DEPLVALS(1000)
@@ -271,6 +274,7 @@ C     Check parameters are within allowed range
       READ (IN,'((45X,F8.2))') BIAS0, CV1EST, ETA, DOFMIN
       IF (IYRCV.LT.NYEAR) READ (IN,'((45X,F8.2))') CV2EST
       IF (OPTC.GE.1) READ (IN,'((45X,F8.2))') CATERR
+      READ (IN,'(45X,F8.0)') INITA,INITZ
       READ (IN,'(45X,I3)') OPTDEPL
       IF (OPTDEPL.EQ.1) THEN
        READ (IN,'(45x,A)') DEPLNFILE

@@ -41,6 +41,9 @@ C    method is used to solve for the density dependent exponent.
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
       INTEGER DTYPE,PHASE
 
+      COMMON /INITS/ INITA,INITZ
+      DOUBLE PRECISION INITA,INITZ
+
       EXTERNAL ZCALC,SURV,SMSYR,FUNK
       DOUBLE PRECISION MORT1,MORT2,SURV,SMSYR,MSYR2
       DOUBLE PRECISION X(100),SS,FF,FUNK,Y(100),SS2
@@ -76,6 +79,8 @@ C     First find A and Z (DTYPE = 1)
       FMSYPASS = MSYR2
       MSYLPASS = MSYL
       try = 0.0
+      try(1) = INITA
+      try(2) = INITZ
 
       keep = 0.0
       oldss = 10000

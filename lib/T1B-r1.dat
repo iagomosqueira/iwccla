@@ -1,5 +1,5 @@
 MANAGEMENT PARAMETERS         CASE  T1B-R1
-R1  Base case                                                   
+R1  Base case
 
 RANDOM PARAMETERS OPTION             OPTRAN    0
 VARIABLE BIAS OPTION                 OPTB      0
@@ -41,6 +41,8 @@ BIAS IN ABUNDANCE ESTIMATES          BIAS0    1.00
 CV OF CV ESTIMATES (1st)             CV1EST   0.20
 PROCESS ERROR PARAMETER              ETA      1.00
 MINIMUM No. OF DEGREES OF FREEDOM    DOFMIN   5.00
+STARTING VALUE FOR A                 INITA    0.20
+STARTING VALUE FOR Z                 INITZ    0.20
 DEPLETION (0:SINGLE VALUE;1:READ IN) OPTDPL    0
 DEPLETION FILE (IF OPTDPL=1)                 DEPL99.CSV
 
