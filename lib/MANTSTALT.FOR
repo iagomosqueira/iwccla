@@ -122,7 +122,7 @@ C     First find A and Z (DTYPE = 1)
           oldss(2) = SS2
           WRITE (31,*) "Y",try(3),try(4),Y(3),Y(4),SS2
         ENDIF
-2002  CONTINUE2
+2002  CONTINUE
 2001  CONTINUE
       Y(1) = keep(3)
       Y(2) = keep(4)
@@ -140,7 +140,7 @@ C     First find A and Z (DTYPE = 1)
        SS = FUNK(X)
       ENDIF
 1999  CONTINUE
-      
+
       Y(1) = keep(3)
       Y(2) = keep(4)
       PHASE = 1
