@@ -186,7 +186,13 @@ for (dat in 1:2) {
     for (ind in seq_along(my.l)) {
       keep <- which(sapply(data, function(x) x$"input"["MSYL"]) == my.l[ind])
       p.x <- as.numeric(sapply(sapply(data, "[", "input"), "[", "MSYR"))[keep]
-      p.y <- unlist(sapply(data, "[", val))[keep]
+      if (val == "later") {
+        temp <- do.call("rbind", sapply(data, "[", "msyl")[keep])
+        mycol <- ifelse(mat == 1, grep("R2", colnames(temp)), grep("R1", colnames(temp)))
+        p.y <- temp[, mycol]
+      } else {
+        p.y <- unlist(sapply(data, "[", val))[keep]
+      }
       p.pch <- as.numeric(sapply(sapply(data, "[", "input"), "[", "MSYL"))[keep]
       lines(p.x + .0005*ind, p.y, col = ind, type = "o")
     }
