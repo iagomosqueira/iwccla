@@ -72,8 +72,8 @@ dat.results <- ifelse(grepl("z", executable.in), "RES0", "RESTEST")
 if (!loadold) {
   res <- list()
   counter <- 0
-  my.l <- seq(0.3, 0.8, by = 0.1)
-  my.r <- seq(0.01, 0.06, by = 0.005)
+  my.l <- seq(0.3, 0.8, by = 0.2)
+  my.r <- seq(0.01, 0.06, by = 0.01)
   for(mortality in c(FALSE, TRUE)) {
     for (component in 1:2) {
         for (l in seq_along(my.l)) {
