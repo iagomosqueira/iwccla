@@ -109,8 +109,8 @@ C     First find A and Z (DTYPE = 1)
       PHASE = 2
       CALL FIT22(X,SS,2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
-      WRITE(*,*) DERIV,MSYLPRED
       IF (SS.LT.1.0e-7) GOTO 1999
+      WRITE(*,701) DERIV,MSYLPRED
 
       DO 2001 MYLOOP=1,20,1
         try(3) = try(3) - 0.1
@@ -136,7 +136,7 @@ C     First find A and Z (DTYPE = 1)
       PHASE = 2
       CALL FIT22(Y,SS2,2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
-      WRITE(*,*) DERIV,MSYLPRED
+      WRITE(*,701) DERIV,MSYLPRED
 
       IF (SS2.LE.SS) THEN
        X = Y
@@ -153,7 +153,7 @@ C     First find A and Z (DTYPE = 1)
       PHASE = 2
       CALL FIT22(Y,SS2,2)
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
-      WRITE(*,*) DERIV,MSYLPRED
+      WRITE(*,701) DERIV,MSYLPRED
       IF (SS2.LE.SS) THEN
        X = Y
        SS = SS2
@@ -202,6 +202,7 @@ C
       RETURN
 609   FORMAT(1x,F9.5,1x,F9.5,1x,3(F9.5,1x))
 600   FORMAT(1x,3(F6.3,1x))
+701   FORMAT(1x,F7.3,1x,F7.3)
       END
 C
 C ===================================================================================================================================
