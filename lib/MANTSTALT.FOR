@@ -39,6 +39,7 @@ C    method is used to solve for the density dependent exponent.
      +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1,DERIV,MSYLPRED
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
+      DOUBLE PRECISION SSBEST
       INTEGER DTYPE,PHASE
 
       COMMON /INITS/ INITA,INITZ
@@ -108,9 +109,16 @@ C     First find A and Z (DTYPE = 1)
       CALL FIT22(X,SS,2)
       PHASE = 2
       CALL FIT22(X,SS,2)
-      IF (SS.LT.1.0e-7) GOTO 1999
+      SSBEST = SS
       WRITE(*,*) "FINA",AA0,ZZ0,AA1,ZZ1,SS
       WRITE(*,701) DERIV,MSYLPRED
+1003  CONTINUE
+      CALL FIT22(X,SS,2)
+      WRITE(*,*) "FINA",AA0,ZZ0,AA1,ZZ1,SS
+      WRITE(*,701) DERIV,MSYLPRED
+      IF (SSBEST-SS.GT.1.0E-05) GOTO 1003
+C
+      IF (OPTDT.EQ.1.OR.SS.LT.1.0e-7) GOTO 1999
 
       DO 2001 MYLOOP=1,20,1
         try(3) = try(3) - 0.1
@@ -135,8 +143,14 @@ C     First find A and Z (DTYPE = 1)
       CALL FIT22(Y,SS2,2)
       PHASE = 2
       CALL FIT22(Y,SS2,2)
+      SSBEST = SS
       WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
       WRITE(*,701) DERIV,MSYLPRED
+2003  CONTINUE
+      CALL FIT22(Y,SS2,2)
+      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
+      WRITE(*,701) DERIV,MSYLPRED
+      IF (SSBEST-SS.GT.1.0E-05) GOTO 2003
 
       IF (SS2.LE.SS) THEN
        X = Y
@@ -144,7 +158,6 @@ C     First find A and Z (DTYPE = 1)
       ELSE
        SS = FUNK(X)
       ENDIF
-1999  CONTINUE
 
       Y(1) = keep(3)
       Y(2) = keep(4)
@@ -160,6 +173,7 @@ C     First find A and Z (DTYPE = 1)
       ELSE
        SS = FUNK(X)
       ENDIF
+1999  CONTINUE
 
 
       CLOSE (31)
