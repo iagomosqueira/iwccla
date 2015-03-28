@@ -108,8 +108,8 @@ C     First find A and Z (DTYPE = 1)
       CALL FIT22(X,SS,2)
       PHASE = 2
       CALL FIT22(X,SS,2)
-      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
       IF (SS.LT.1.0e-7) GOTO 1999
+      WRITE(*,*) "FINA",AA0,ZZ0,AA1,ZZ1,SS
       WRITE(*,701) DERIV,MSYLPRED
 
       DO 2001 MYLOOP=1,20,1
