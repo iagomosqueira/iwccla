@@ -442,14 +442,14 @@ C     Objective is to match MSYL and derivative equals 0 give FF
        AA1 = 0
        ZZ1 = 1
        IF (OPTDT.EQ.0) THEN
-        AA0 = EXP(X(1))
-        ZZ0 = EXP(X(2))
+C        AA0 = EXP(X(1))
+C        ZZ0 = EXP(X(2))
         AA0 = X(1)
         ZZ0 = X(2)
        ENDIF
        IF (OPTDT.EQ.1) THEN
-        AA1 = EXP(X(1))
-        ZZ1 = EXP(X(2))
+C        AA1 = EXP(X(1))
+C        ZZ1 = EXP(X(2))
         AA1 = X(1)
         ZZ1 = X(2)
        ENDIF
