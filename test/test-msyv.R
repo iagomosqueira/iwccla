@@ -40,7 +40,8 @@ loadold <- FALSE
 dir.lib <- file.path(dir.main, "lib")
 # Directory where the tests will take place
 dir.test <- file.path(dir.main, "test")
-dir.create(file.path(dir.test, "results"), showWarnings = FALSE)
+dir.create(file.path(dir.test, "results"),
+  recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(dir.test, "input"), showWarnings = FALSE)
 
 file.copy(dir.lib, dir.test, recursive = TRUE)
