@@ -373,7 +373,7 @@ C       Print out new parameters
         IF (ITUNE.EQ.0) THEN
           WRITE (IOUT,'(/A6,I4,A10,6I8)') 'Trial:',N,
      +            'Seeds:',ISEED1,ISEED2,ISEED3,ISEED4,ISEED5
-          WRITE(IOUT,'(A15,20F8.5)') 'MSYL Outputs:',MSYLT1,MSYLT0,
+          WRITE(IOUT,'(A15,20F10.5)') 'MSYL Outputs:',MSYLT1,MSYLT0,
      +        MSYLT2,AMSYR1,AMSYL1,AMSYR0,AMSYL0,AMSYR2,AMSYL2
         ENDIF
         IF (OPTRAN.EQ.1.OR.OPTDEPL.EQ.1) THEN
