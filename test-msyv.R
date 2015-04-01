@@ -191,7 +191,12 @@ for (dat in 1:2) {
         mycol <- ifelse(mat == 1, grep("R2", colnames(temp)), grep("R1", colnames(temp)))
         p.y <- temp[, mycol]
       } else {
-        p.y <- unlist(sapply(data, "[", val))[keep]
+        if (val == "depletion") {
+          if (mat == 1) p.y <- unlist(sapply(data, "[", val))[keep]
+          if (mat == 2) p.y <- unlist(sapply(data, "[", "depletionall"))[keep]
+        } else {
+          p.y <- unlist(sapply(data, "[", val))[keep]
+        }
       }
       p.pch <- as.numeric(sapply(sapply(data, "[", "input"), "[", "MSYL"))[keep]
       lines(p.x + .0005*ind, p.y, col = ind, type = "o")
