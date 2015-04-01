@@ -70,10 +70,11 @@ get_results <- function(data) {
 
   results$biomass <- list()
   counter <- 1
-  results$ptrueterm <- vector(length = results$ntrials)
-  results$psurvterm <- vector(length = results$ntrials)
-  results$catchterm <- vector(length = results$ntrials)
-  results$depletion <- vector(length = results$ntrials)
+  results$ptrueterm    <- vector(length = results$ntrials)
+  results$psurvterm    <- vector(length = results$ntrials)
+  results$catchterm    <- vector(length = results$ntrials)
+  results$depletion    <- vector(length = results$ntrials)
+  results$depletionall <- vector(length = results$ntrials)
   results$msyr <- vector(length = results$ntrials)
 
   for (yr in (grep("CM 1", data) + 1)) {
