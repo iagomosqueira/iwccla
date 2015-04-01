@@ -51,7 +51,7 @@ done <- mapply(source, dir(file.path(dir.main, "R"), full.names = TRUE))
 setwd(file.path(dir.test, tail(unlist(strsplit(dir.lib, "/")), 1)))
 system(paste("gfortran", executable.in))
 if (length(dir(pattern = ".exe")) == 1) {
-  timesince <- as.numeric(Sys.time() - file.info(executable)$mtime, units = "days")
+  timesince <- as.numeric(Sys.time() - file.info(executable)$mtime, units = "mins")
   message("Created executable")
   if (timesince > 1) {
     message(paste(executable.in, "was compiled", timesince, "days ago.",
