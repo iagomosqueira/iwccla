@@ -90,7 +90,8 @@ get_results <- function(data) {
     results$ptrueterm[counter] <- tail(out$ptrue, 1)
     results$psurvterm[counter] <- tail(out$psurv, 1)
     results$catchterm[counter] <- tail(out$catch, 1)
-    results$depletion[counter] <- results$ptrueterm[counter] / results$km
+    results$depletion[counter] <- results$ptrueterm[counter] / results$km[counter]
+    results$depletionall[counter] <- results$ptrueterm[counter] / results$k1[counter]
     results$msyr[counter] <-
       results$catchterm[counter] / results$ptrueterm[counter]
 
