@@ -9,9 +9,9 @@ get_results <- function(data) {
 
   getval <- function(data, word) {
     temp <- grep(word, data, value = TRUE)
-    temp <- tail(unlist(strsplit(temp, "[[:space:]]+")), 1)
+    temp <- sapply(strsplit(temp, "[[:space:]]+"), tail, 1)
     names(temp) <- NULL
-    if (any(grepl("[a-z]", temp))) {
+    if (any(grepl("[a-z|A-Z]", temp))) {
       return(temp)
     } else{
         return(as.numeric(temp))
@@ -62,6 +62,8 @@ get_results <- function(data) {
     "Deterministic" = ifelse(getval(data, "ETA") == 1, "Stochastic", "Deterministic"),
     "Component" = gsub(" ", "", strsplit(grep("MSYR component", data, value = TRUE), "[0-9]")[[1]][2]))
 
+  results$zz <- getval(data, "Density dependent exponent")
+  results$aa <- getval(data, "Resilience parameter")
 
   # biomass:
   # c("Year", "PTRUE", "PSURV", "Catch", "BIRSUM")
@@ -73,6 +75,7 @@ get_results <- function(data) {
   results$catchterm <- vector(length = results$ntrials)
   results$depletion <- vector(length = results$ntrials)
   results$msyr <- vector(length = results$ntrials)
+
   for (yr in (grep("CM 1", data) + 1)) {
     out <- do.call("rbind",
       strsplit(trim(data[yr:(yr + results$nyears)]), "[[:space:]]+"))
