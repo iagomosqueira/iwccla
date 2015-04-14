@@ -91,9 +91,14 @@ get_results <- function(data) {
     results$psurvterm[counter] <- tail(out$psurv, 1)
     results$catchterm[counter] <- tail(out$catch, 1)
     results$depletion[counter] <- results$ptrueterm[counter] / results$km[counter]
-    results$depletionall[counter] <- results$ptrueterm[counter] / results$k1[counter]
-    results$msyr[counter] <-
-      results$catchterm[counter] / results$ptrueterm[counter]
+    results$depletionall[counter] <- results$psurvterm[counter] / results$k1[counter]
+    if (results$input["Component"] == "TOTAL") {
+      results$msyr[counter] <-
+        results$catchterm[counter] / results$psurvterm[counter]
+    } else {
+      results$msyr[counter] <-
+        results$catchterm[counter] / results$ptrueterm[counter]
+    }
 
     counter <- counter + 1
   }

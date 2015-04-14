@@ -72,8 +72,8 @@ dat.results <- ifelse(grepl("z", executable.in), "RES0", "RESTEST")
 if (!loadold) {
   res <- list()
   counter <- 0
-  my.l <- seq(0.3, 0.8, by = 0.2)
-  my.r <- seq(0.01, 0.06, by = 0.01)
+  my.l <- seq(0.3, 0.8, by = 0.1)
+  my.r <- seq(0.01, 0.08, by = 0.01)
   for(mortality in c(FALSE, TRUE)) {
     for (component in 1:2) {
         for (l in seq_along(my.l)) {
@@ -109,9 +109,16 @@ if (!loadold) {
               msy.dat[grep("ETA", msy.dat)] <-
                 "PROCESS ERROR PARAMETER              ETA      0.00"
             }
+            if (component == 1) {
+              msy.dat[grep("RECRUITMENT PARAMETER", msy.dat)] <-
+                "RECRUITMENT PARAMETER                REC1     1.00"
+              msy.dat[grep("RECRUITMENT SIGMA", msy.dat)] <-
+                "RECRUITMENT SIGMA                    RSIG     0.00"
+            }
 
             writeLines(msy.dat, dat.out)
-              message(paste(my.l[l], ":", my.r[r]))
+              message(paste0(ifelse(mortality, "M(", "1+("), component, ") ",
+                "MSYL: ", my.l[l], " - ", "MSYR: ", my.r[r]))
               flush.console()
             converged <- FALSE
             test <- system(executable, intern = TRUE)

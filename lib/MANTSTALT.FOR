@@ -36,10 +36,10 @@ C    method is used to solve for the density dependent exponent.
       INTEGER MORTIPA
 
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
-     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED
+     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED,XBEST,FUNKBEST
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1,DERIV,MSYLPRED
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
-      DOUBLE PRECISION SSBEST
+      DOUBLE PRECISION XBEST(100),FUNKBEST
       INTEGER DTYPE,PHASE
 
       COMMON /INITS/ INITA,INITZ
@@ -54,7 +54,7 @@ C    method is used to solve for the density dependent exponent.
 
 C     LOCAL VARIABLES
       INTEGER MYLOOP,MYLOOP2
-      DOUBLE PRECISION try(4),keep(4),oldss(2)
+      DOUBLE PRECISION try(2),keep(2),oldss
 
 C     Need to do this?
       IF (MSYLSAVE.EQ.MSYL.AND.MSYRSAVE.EQ.MSYR2) RETURN
@@ -79,106 +79,49 @@ C     First find A and Z (DTYPE = 1)
       DTYPE = 1
       FMSYPASS = MSYR2
       MSYLPASS = MSYL
-      try = 0.0
-      try(1) = INITA
-      try(2) = INITZ
 
-      keep = 0.0
-      oldss = 10000
+      keep(1) = log(1.1)
+      X(1) = log(1.1)
+      keep(2) = log(2.39)
+      X(2) = log(2.39)
+
+      PHASE = 1
+      oldss = FUNK(X)
+      WRITE(*,*) oldss
       OPEN (31,FILE='XY')
-      DO 1001 MYLOOP=1,20,1
-        try(1) = try(1) + 0.1
-        X(1) = try(1)
-        try(2) = 0.1
-        DO 1002 MYLOOP2=1,20,1
-        try(2) = try(2) + 0.05
-        X(2) = try(2)
-        PHASE = 3
-        SS = FUNK(X)
-        IF (SS.LT.oldss(1)) THEN
+      try(1) = INITA
+      DO 1001 MYLOOP=1,25,1
+        try(1) = try(1) + 0.02
+        X(1) = log(try(1))
+        try(2) = INITZ
+        DO 1002 MYLOOP2=1,25,1
+         try(2) = try(2) + 0.01
+         X(2) = log(try(2))
+         SS = FUNK(X)
+         IF (SS.LT.oldss) THEN
+          WRITE(*,*) SS,try(1),try(2)
           keep(1) = X(1)
           keep(2) = X(2)
-          oldss(1) = SS
+          oldss = SS
           WRITE (31,*) "X",try(1),try(2),X(1),X(2),SS
         ENDIF
 1002  CONTINUE
 1001  CONTINUE
       X(1) = keep(1)
       X(2) = keep(2)
+      WRITE(*,*) keep(1),keep(2),oldSS
       PHASE = 1
       CALL FIT22(X,SS,2)
       PHASE = 2
       CALL FIT22(X,SS,2)
-      SSBEST = SS
-      WRITE(*,*) "FINA",AA0,ZZ0,AA1,ZZ1,SS
-      WRITE(*,701) DERIV,MSYLPRED
-1003  CONTINUE
+      PHASE = 3
       CALL FIT22(X,SS,2)
-      WRITE(*,*) "FINA",AA0,ZZ0,AA1,ZZ1,SS
+      WRITE(*,*) "FINA",AA1,ZZ1,SS
       WRITE(*,701) DERIV,MSYLPRED
-      IF (SSBEST-SS.GT.1.0E-05) GOTO 1003
-C
-      IF (OPTDT.EQ.1.OR.SS.LT.1.0e-7) GOTO 1999
-
-      DO 2001 MYLOOP=1,20,1
-        try(3) = try(3) - 0.1
-        Y(1) = try(3)
-        try(4) = -0.1
-        DO 2002 MYLOOP2=1,20,1
-        try(4) = try(4) - 0.05
-        Y(2) = try(4)
-        PHASE = 3
-        SS2 = FUNK(Y)
-        IF (SS2.LT.oldss(2)) THEN
-          keep(3) = Y(1)
-          keep(4) = Y(2)
-          oldss(2) = SS2
-          WRITE (31,*) "Y",try(3),try(4),Y(3),Y(4),SS2
-        ENDIF
-2002  CONTINUE
-2001  CONTINUE
-      Y(1) = keep(3)
-      Y(2) = keep(4)
-      PHASE = 1
-      CALL FIT22(Y,SS2,2)
-      PHASE = 2
-      CALL FIT22(Y,SS2,2)
-      SSBEST = SS
-      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
-      WRITE(*,701) DERIV,MSYLPRED
-2003  CONTINUE
-      CALL FIT22(Y,SS2,2)
-      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
-      WRITE(*,701) DERIV,MSYLPRED
-      IF (SSBEST-SS.GT.1.0E-05) GOTO 2003
-
-      IF (SS2.LE.SS) THEN
-       X = Y
-       SS = SS2
-      ELSE
-       SS = FUNK(X)
-      ENDIF
-
-      Y(1) = keep(3)
-      Y(2) = keep(4)
-      PHASE = 1
-      CALL FIT22(Y,SS2,2)
-      PHASE = 2
-      CALL FIT22(Y,SS2,2)
-      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS2
-      WRITE(*,701) DERIV,MSYLPRED
-      IF (SS2.LE.SS) THEN
-       X = Y
-       SS = SS2
-      ELSE
-       SS = FUNK(X)
-      ENDIF
-1999  CONTINUE
-
 
       CLOSE (31)
       CALL MODELPROJ(MSYR2)
-      WRITE(*,*) "FIN",AA0,ZZ0,AA1,ZZ1,SS
+      WRITE(*,*) "FIN",AA1,ZZ1,SS
       IF (ABS(SS).GT.1.0E-5) WRITE(*,*) "WARNING"
 
       DO 1000 IFF = 1,100
@@ -191,32 +134,46 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
       DTYPE = 2
       STOREOPTF = OPTF
       OPTF = 0
+      FUNKBEST = 1.0E20
       X(1) = log(MSYR2)
       CALL FIT22 (X,SS,1)
+      X = XBEST
       CALL FIT22 (X,SS,1)
+      X = XBEST
+      SS = FUNK(X)
       AMSYR0 = EXP(X(1))
       AMSYL0 = MSYLOUT(0)
       OPTF = 1
+      FUNKBEST = 1.0E20
       X(1) = log(MSYR2)
       CALL FIT22 (X,SS,1)
+      X = XBEST
       CALL FIT22 (X,SS,1)
+      X = XBEST
+      SS = FUNK(X)
       AMSYR1 = EXP(X(1))
       AMSYL1 = MSYLOUT(1)
       OPTF = 2
+      FUNKBEST = 1.0E20
       X(1) = log(MSYR2)
+      SS = FUNK(X)
+      WRITE(*,*) SS,MSYLOUT(2)
       CALL FIT22 (X,SS,1)
+      X = XBEST
       CALL FIT22 (X,SS,1)
+      X = XBEST
+      SS = FUNK(X)
       AMSYR2 = EXP(X(1))
       AMSYL2 = MSYLOUT(2)
       OPTF = STOREOPTF
-      WRITE(*,*) "C"
+      WRITE(*,*) "C:R(Row1),L(Row2)"
       WRITE(*,600) AMSYR0,AMSYR1,AMSYR2
       WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
 C
       RETURN
 609   FORMAT(1x,F9.5,1x,F9.5,1x,3(F9.5,1x))
 600   FORMAT(1x,3(F6.3,1x))
-701   FORMAT(1x,F7.3,1x,F7.3)
+701   FORMAT(2x,F10.8)
       END
 C
 C ===================================================================================================================================
@@ -245,9 +202,10 @@ C
       INTEGER MORTIPA
 
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
-     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED
+     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED,XBEST,FUNKBEST
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1,DERIV,MSYLPRED
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
+      DOUBLE PRECISION XBEST(100),FUNKBEST
       INTEGER DTYPE,PHASE
 C
 C     GLOBAL VARIABLES
@@ -421,9 +379,10 @@ C
       INTEGER OPTDD,OPTF,OPTMSYL,OPTDK,OPTDT
 
       COMMON / DENSPASS / AA0,AA1,ZZ0,ZZ1,DTYPE,FMSYPASS,MSYLPASS,
-     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED
+     +     CATCHOUT,MSYLOUT,PHASE,DERIV,MSYLPRED,XBEST,FUNKBEST
       DOUBLE PRECISION AA0,AA1,ZZ0,ZZ1,DERIV,MSYLPRED
       DOUBLE PRECISION FMSYPASS,MSYLPASS,CATCHOUT,MSYLOUT(0:2)
+      DOUBLE PRECISION XBEST(100),FUNKBEST
       INTEGER DTYPE,PHASE
 C
 C     GLOBAL VARIABLES
@@ -482,7 +441,13 @@ C     Objective function is to maximize catch
       IF (DTYPE.EQ.2) THEN
        FF = EXP(X(1))
        CALL MODELPROJ(FF)
+       WRITE(*,*) FF,CATCHOUT
        FUNK = -CATCHOUT
+      ENDIF
+C
+      IF (FUNK.LT.FUNKBEST) THEN
+       FUNKBEST = FUNK
+       XBEST = X
       ENDIF
 C
       RETURN
