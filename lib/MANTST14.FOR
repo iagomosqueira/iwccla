@@ -908,7 +908,7 @@ C
       IF (ERR) STOP
 
    95 FORMAT (' ',A,T41,I6,4X,A)
-   96 FORMAT (' ',A,T41,F12.5,F14.5)
+   96 FORMAT (' ',A,T41,F15.5,F15.5)
    97 FORMAT (' ',A,T41,F6.2, : 4X,'starting in year',I3)
    98 FORMAT (' Survey parameters:',T20,4(A8,':',F6.3),A9,I5)
 
