@@ -54,7 +54,7 @@ if (length(dir(pattern = ".exe")) == 1) {
   timesince <- as.numeric(Sys.time() - file.info(executable)$mtime, units = "mins")
   message("Created executable")
   if (timesince > 1) {
-    message(paste(executable.in, "was compiled", timesince, "days ago.",
+    message(paste(executable.in, "was compiled", timesince, "mins ago.",
       "You should recompile."))
   }
 }
@@ -72,8 +72,8 @@ dat.results <- ifelse(grepl("z", executable.in), "RES0", "RESTEST")
 if (!loadold) {
   res <- list()
   counter <- 0
-  my.l <- seq(0.3, 0.8, by = 0.1)
-  my.r <- seq(0.01, 0.08, by = 0.01)
+  my.l <- c(0.3, 0.4)   #seq(0.3,  0.8,  by = 0.1)
+  my.r <- c(0.01, 0.02) #seq(0.01, 0.08, by = 0.01)
   for(mortality in c(FALSE, TRUE)) {
     for (component in 1:2) {
         for (l in seq_along(my.l)) {
