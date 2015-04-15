@@ -48,6 +48,7 @@ C    method is used to solve for the density dependent exponent.
       EXTERNAL ZCALC,SURV,SMSYR,FUNK
       DOUBLE PRECISION MORT1,MORT2,SURV,SMSYR,MSYR2
       DOUBLE PRECISION X(100),SS,FF,FUNK,Y(100),SS2
+      DOUBLE PRECISION AA1STORE,ZZ1STORE,SSBEST
       INTEGER OK,L,MORTIP,STOREOPTF,IFF
       DOUBLE PRECISION MSYLSAVE,MSYRSAVE
       SAVE MSYLSAVE,MSYRSAVE
@@ -92,11 +93,14 @@ C     First find A and Z (DTYPE = 1)
       try(1) = INITA
       DO 1001 MYLOOP=1,25,1
         try(1) = try(1) + 0.02
+        try(1) = 0.02*EXP(0.4d0*MYLOOP)
         X(1) = log(try(1))
         try(2) = INITZ
-        DO 1002 MYLOOP2=1,25,1
+        DO 1002 MYLOOP2=1,50,1
          try(2) = try(2) + 0.01
+         try(2) = 0.1 + 0.1*MYLOOP2
          X(2) = log(try(2))
+         WRITE(*,*) try(1),try(2)
          SS = FUNK(X)
          IF (SS.LT.oldss) THEN
           WRITE(*,*) SS,try(1),try(2)
@@ -115,9 +119,11 @@ C     First find A and Z (DTYPE = 1)
       PHASE = 2
       CALL FIT22(X,SS,2)
       PHASE = 3
-      CALL FIT22(X,SS,2)
-      WRITE(*,*) "FINA",AA1,ZZ1,SS
+      SSBEST = FUNK(X)
+9898  CALL FIT22(X,SS,2)
+      WRITE(*,*) "FINA",AA1,ZZ1,SS,SSBEST
       WRITE(*,701) DERIV,MSYLPRED
+      IF (ABS(SS-SSBEST).GT.0.00001) GOTO 9898
 
       CLOSE (31)
       CALL MODELPROJ(MSYR2)
@@ -169,9 +175,30 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
       WRITE(*,*) "C:R(Row1),L(Row2)"
       WRITE(*,600) AMSYR0,AMSYR1,AMSYR2
       WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
+
+      AA1STORE = AA1
+      ZZ1STORE = ZZ1
+      DO 2000 MYLOOP = 1,20
+       DO 2000 MYLOOP2 = 1,20
+        FUNKBEST = 1.0E20
+        AA1 = 0.01*EXP(0.5d0*MYLOOP)
+        ZZ1 = -0.2 +0.25*MYLOOP2
+        X(1) = log(0.01)
+        CALL FIT22(X,SS,1)
+        X = XBEST
+        SS = FUNK(X)
+        AMSYR2 = EXP(X(1))
+        AMSYL2 = MSYLOUT(OPTF)
+        WRITE(*,610) OPTF,AA1,ZZ1,AMSYR2,AMSYL2
+2000  CONTINUE
+      OPTF = STOREOPTF
+      AA1 = AA1STORE
+      ZZ1 = ZZ1STORE
+
 C
       RETURN
 609   FORMAT(1x,F9.5,1x,F9.5,1x,3(F9.5,1x))
+610   FORMAT(1x,I2,1x,F9.3,1x,F9.3,1x,F7.5,1x,F7.5)
 600   FORMAT(1x,3(F6.3,1x))
 701   FORMAT(2x,F10.8)
       END
@@ -441,7 +468,7 @@ C     Objective function is to maximize catch
       IF (DTYPE.EQ.2) THEN
        FF = EXP(X(1))
        CALL MODELPROJ(FF)
-       WRITE(*,*) FF,CATCHOUT
+C       WRITE(*,*) FF,CATCHOUT
        FUNK = -CATCHOUT
       ENDIF
 C
