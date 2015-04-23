@@ -111,17 +111,27 @@ C     First find A and Z (DTYPE = 1)
       X(2) = keep(2)
       PHASE = 1
       CALL FIT22(X,SS,2)
+      WRITE(*,112) "Phase1:",AA1,ZZ1,SS
       PHASE = 2
       CALL FIT22(X,SS,2)
+      X = XBEST
+      CALL FIT22(X,SS,2)
+      WRITE(*,112) "Phase2:",AA1,ZZ1,SS
       PHASE = 3
       SSBEST = FUNK(X)
 9898  CALL FIT22(X,SS,2)
-      WRITE(*,*) "FINA",AA1,ZZ1,SS,SSBEST
-      WRITE(*,701) DERIV,MSYLPRED
-      IF (ABS(SS-SSBEST).GT.0.00001) GOTO 9898
+      WRITE(*,112) "Phase3:",AA1,ZZ1,SS
+  112 FORMAT(1X, A, "A", 1X, F18.8, "  Z", F15.8, "  SS", 1X, F15.8)
+C      WRITE(*,*) "FINA",AA1,ZZ1,SS,SSBEST
+C      WRITE(*,701) DERIV,MSYLPRED
+      IF (ABS(SS-SSBEST).GT.0.0000001) THEN
+       WRITE(*,*) SS,SSBEST
+       SSBEST = SS
+       GOTO 9898
+      ENDIF 
 
       CALL MODELPROJ(MSYR2)
-      WRITE(*,*) "FIN",AA1,ZZ1,SS
+C      WRITE(*,*) "FIN",AA1,ZZ1,SS
       IF (ABS(SS).GT.1.0E-5) WRITE(*,*) "WARNING"
 
       DO 1000 IFF = 1,100
@@ -165,9 +175,9 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
       AMSYR2 = EXP(X(1))
       AMSYL2 = MSYLOUT(2)
       OPTF = STOREOPTF
-      WRITE(*,*) "C:R(Row1),L(Row2)"
-      WRITE(*,600) AMSYR0,AMSYR1,AMSYR2
-      WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
+C      WRITE(*,*) "C:R(Row1),L(Row2)"
+C      WRITE(*,600) AMSYR0,AMSYR1,AMSYR2
+C      WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
 
       AA1STORE = AA1
       ZZ1STORE = ZZ1
@@ -177,10 +187,17 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
         AA1 = 0.005*EXP(0.1d0*MYLOOP)
         ZZ1 = -0.2 +0.07*MYLOOP2
         X(1) = log(0.01)
-        CALL FIT22(X,SS,1)
+        SSBEST = 1.0E20
+        XBEST = 0
+2099    CALL FIT22(X,SS,1)
         X = XBEST
         SS = FUNK(X)
-        AMSYR2 = EXP(X(1))
+        WRITE(*,*) MYLOOP2,SS,X(1)
+        IF (ABS(SS-SSBEST).GT.1.0E-5) THEN
+         SSBEST = SS
+         GOTO 2099
+        ENDIF 
+        AMSYR2 = EXP(XBEST(1))
         AMSYL2 = MSYLOUT(OPTF)
         WRITE (31,610) OPTF,AA1,ZZ1,AMSYR2,AMSYL2
 2000  CONTINUE
@@ -451,6 +468,8 @@ C      Objective function
        ENDIF
        IF (PHASE.EQ.3) THEN
         FUNK = ABS(DERIV)+(MSYLPRED-MSYLPASS)**2.0
+        WRITE(*,111) DERIV, FUNK, " MSYL(pred,T) ", MSYLPRED, MSYLPASS
+  111 FORMAT("Phase3: Deriv ",F13.8," FUNK ",F10.7,A,F8.5,1X,F8.5)
        ENDIF
 C
       ENDIF
@@ -459,7 +478,7 @@ C     Objective function is to maximize catch
       IF (DTYPE.EQ.2) THEN
        FF = EXP(X(1))
        CALL MODELPROJ(FF)
-       FUNK = -CATCHOUT
+       FUNK = -CATCHOUT*1000
       ENDIF
 C
       IF (FUNK.LT.FUNKBEST) THEN
@@ -483,7 +502,7 @@ C     IMPLICIT NONE
       EXTERNAL FUNK
 
 C     SET UP TOLERANCES AND GRIDDING
-      TOL = 0.0001
+      TOL = 0.00000001
       GRD = 1.2
 
       DO 1 I=1,NDIM+1
