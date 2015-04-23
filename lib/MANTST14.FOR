@@ -1158,7 +1158,7 @@ C     Has convergence taken place?  [Has been tightened: formerly .GE.0.0001D0]
 
 C       Update loop count and check is not wasting time
         ICOUNT = ICOUNT + 1
-        IF (ICOUNT.GT.500) STOP '**** ERROR: SETK HAS NOT CONVERGED'
+        IF (ICOUNT.GT.900) STOP '**** ERROR: SETK HAS NOT CONVERGED'
 
       GO TO 100
 

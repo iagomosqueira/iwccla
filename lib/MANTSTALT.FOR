@@ -88,7 +88,6 @@ C     First find A and Z (DTYPE = 1)
 
       PHASE = 1
       oldss = FUNK(X)
-      WRITE(*,*) oldss
       OPEN (31,FILE='XY')
       try(1) = INITA
       DO 1001 MYLOOP=1,25,1
@@ -100,20 +99,16 @@ C     First find A and Z (DTYPE = 1)
          try(2) = try(2) + 0.01
          try(2) = 0.1 + 0.1*MYLOOP2
          X(2) = log(try(2))
-         WRITE(*,*) try(1),try(2)
          SS = FUNK(X)
          IF (SS.LT.oldss) THEN
-          WRITE(*,*) SS,try(1),try(2)
           keep(1) = X(1)
           keep(2) = X(2)
           oldss = SS
-          WRITE (31,*) "X",try(1),try(2),X(1),X(2),SS
         ENDIF
 1002  CONTINUE
 1001  CONTINUE
       X(1) = keep(1)
       X(2) = keep(2)
-      WRITE(*,*) keep(1),keep(2),oldSS
       PHASE = 1
       CALL FIT22(X,SS,2)
       PHASE = 2
@@ -125,7 +120,6 @@ C     First find A and Z (DTYPE = 1)
       WRITE(*,701) DERIV,MSYLPRED
       IF (ABS(SS-SSBEST).GT.0.00001) GOTO 9898
 
-      CLOSE (31)
       CALL MODELPROJ(MSYR2)
       WRITE(*,*) "FIN",AA1,ZZ1,SS
       IF (ABS(SS).GT.1.0E-5) WRITE(*,*) "WARNING"
@@ -163,7 +157,6 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
       FUNKBEST = 1.0E20
       X(1) = log(MSYR2)
       SS = FUNK(X)
-      WRITE(*,*) SS,MSYLOUT(2)
       CALL FIT22 (X,SS,1)
       X = XBEST
       CALL FIT22 (X,SS,1)
@@ -178,27 +171,27 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
 
       AA1STORE = AA1
       ZZ1STORE = ZZ1
-      DO 2000 MYLOOP = 1,20
-       DO 2000 MYLOOP2 = 1,20
+      DO 2000 MYLOOP = 1,75
+       DO 2000 MYLOOP2 = 3,102
         FUNKBEST = 1.0E20
-        AA1 = 0.01*EXP(0.5d0*MYLOOP)
-        ZZ1 = -0.2 +0.25*MYLOOP2
+        AA1 = 0.005*EXP(0.1d0*MYLOOP)
+        ZZ1 = -0.2 +0.07*MYLOOP2
         X(1) = log(0.01)
         CALL FIT22(X,SS,1)
         X = XBEST
         SS = FUNK(X)
         AMSYR2 = EXP(X(1))
         AMSYL2 = MSYLOUT(OPTF)
-        WRITE(*,610) OPTF,AA1,ZZ1,AMSYR2,AMSYL2
+        WRITE (31,610) OPTF,AA1,ZZ1,AMSYR2,AMSYL2
 2000  CONTINUE
       OPTF = STOREOPTF
       AA1 = AA1STORE
       ZZ1 = ZZ1STORE
-
+      CLOSE (31)
 C
       RETURN
 609   FORMAT(1x,F9.5,1x,F9.5,1x,3(F9.5,1x))
-610   FORMAT(1x,I2,1x,F9.3,1x,F9.3,1x,F7.5,1x,F7.5)
+610   FORMAT(1x,I2,1x,2(F10.5,1x),2(F15.10,1x))
 600   FORMAT(1x,3(F6.3,1x))
 701   FORMAT(2x,F10.8)
       END
@@ -365,7 +358,6 @@ C      Find density-dependent component
         DEPL = NMAT(IYR)/NMAT(0)
        ENDIF
        IF (OPTDT.EQ.0) THEN
-C        WRITE(*,*) AA0,ZZ0,DEPL
         IF (DEPL.LT.0) THEN
          DENST = 0
         ELSE
@@ -378,7 +370,6 @@ C
 C      ADD Recruitment
        UNRC(IYR,0) = FEC*NMAT(IYR)*(1.0d0+DENST)
        RC(IYR,0)   = 0.0
-C       WRITE(*,600) IYR,NTOT(IYR),NEXP(IYR),NMAT(IYR)
 C
 10000 CONTINUE
       CATCHOUT = CATCH
@@ -468,7 +459,6 @@ C     Objective function is to maximize catch
       IF (DTYPE.EQ.2) THEN
        FF = EXP(X(1))
        CALL MODELPROJ(FF)
-C       WRITE(*,*) FF,CATCHOUT
        FUNK = -CATCHOUT
       ENDIF
 C
