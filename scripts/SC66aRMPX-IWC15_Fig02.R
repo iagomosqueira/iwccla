@@ -64,8 +64,8 @@ xyzinterp <- interp(xyz[, "mat.MSYR"], xyz[, "mat.MSYL"],
 
 image(xyzinterp, xlab = expression(italic(MSYR[mat])),
   ylab = expression(italic(MSYL[mat])), las = 1,
-  col = grey(seq(0.1, 0.95, length = 20)))
-contour(xyzinterp, add = TRUE, labcex = 0.8, nlevels = 19)
+  col = grey(seq(0.1, 0.95, length = 50)))
+contour(xyzinterp, add = TRUE, labcex = 0.8, nlevels = 7)
 
 xyzinterp <- interp(xyz[, "mat.A"], xyz[, "mat.z"],
   xyz[, "mat.MSYR"] / xyz[, "all.MSYR"],
@@ -75,8 +75,8 @@ xyzinterp <- interp(xyz[, "mat.A"], xyz[, "mat.z"],
 
 image(xyzinterp, xlab = expression(italic(A)),
   ylab = expression(italic(z)), las = 1,
-  col = grey(seq(0.1, 0.95, length = 20)))
-contour(xyzinterp, add = TRUE, labcex = 0.8, nlevels = 10)
+  col = grey(seq(0.1, 0.95, length = 50)))
+contour(xyzinterp, add = TRUE, labcex = 0.8, nlevels = 7)
 
 ###############################################################################
 ###############################################################################
