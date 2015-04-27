@@ -1,4 +1,5 @@
 /lib/**.exe
+/lib/RES*
 /logistics
 /norway/*
 /references/**.pdf
