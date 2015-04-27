@@ -7,10 +7,10 @@ C     Program to run MANTST12 with ZERO catches
 C *********************************************************************
 
       SUBROUTINE EXTRA (NTRIAL, OPTRAN, ERATE, ENDSUR, IOUT, PROG,ITUNE,
-     +                  OPTDEPL) 
+     +                  OPTDEPL)
 
-C     To avoid wasting time EXTRA sets the number of trials to 1 (except in 
-C     random parameter or epidemic trials) and the year of last survey to 0 
+C     To avoid wasting time EXTRA sets the number of trials to 1 (except in
+C     random parameter or epidemic trials) and the year of last survey to 0
 C     Routine also used to open output files.
 
       INTEGER NTRIAL, OPTRAN,ENDSUR,IOUT,ITUNE,OPTDEPL
