@@ -1,5 +1,6 @@
 /lib/**.exe
 /lib/RES*
+/lib/MANLOG
 /logistics
 /norway/*
 /references/**.pdf
