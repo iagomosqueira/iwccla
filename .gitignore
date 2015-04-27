@@ -4,6 +4,9 @@
 /logistics
 /norway/*
 /references/**.pdf
+/SC66aRMPX-IWC15/input/*
+/SC66aRMPX-IWC15/lib/*
+/SC66aRMPX-IWC15/results/*
 /test/input
 /test/lib
 /test/results
