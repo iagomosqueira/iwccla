@@ -151,7 +151,7 @@ C  ***********************************************************************
       SUBROUTINE ZBRAC(FUNC,PARS,M,X1,X2,F1,F2,SUCCES)
 C
 C  This subroutine is based on the Numerical Recipes Software Library
-C  (Refer, W.H.Press, B.P.Flannery, S.A.Teukolsky & W.T.Vetterling 1986.  
+C  (Refer, W.H.Press, B.P.Flannery, S.A.Teukolsky & W.T.Vetterling 1986.
 C  Numerical Recipes: The Art of Scientific Computing.  CUP, Cambridge. 818pp.
 C
 C  Given a function FUNC and an initial guessed range X1 to X2, the
@@ -170,7 +170,7 @@ C
       LOGICAL SUCCES
       PARAMETER (FACTOR=1.6D0,NTRY=50)
 C
-      IF(X1.EQ.X2)PAUSE 'You have to guess an initial range'
+      IF(X1.EQ.X2) WRITE(*,*) 'You have to guess an initial range'
       PARS(M) = X1
       F1 = FUNC(PARS,IERR)
       IF (IERR .NE. 0) THEN
@@ -213,7 +213,7 @@ C
       SUBROUTINE ZBRENT(FUNC,PARS,M,X1,X2,FX1,FX2,TOL,IERR)
 
 C  This subroutine is based on the Numerical Recipes Software Library
-C  (Refer, W.H.Press, B.P.Flannery, S.A.Teukolsky & W.T.Vetterling 1986.  
+C  (Refer, W.H.Press, B.P.Flannery, S.A.Teukolsky & W.T.Vetterling 1986.
 C  Numerical Recipes: The Art of Scientific Computing.  CUP, Cambridge. 818pp.
 C
 C  Using Brent's method, find the root of a function FUNC known to
@@ -232,7 +232,7 @@ C
       B=X2
       FB = FX2
 C
-      IF(FB*FA.GT.0.D0) PAUSE 'Root must be bracketed for ZBRENT.'
+      IF(FB*FA.GT.0.D0) WRITE(*,*) 'Root must be bracketed for ZBRENT.'
       FC=FB
       DO 11 ITER=1,ITMAX
 C
@@ -303,7 +303,7 @@ C  Evaluate new trial root
         IF (IERR .NE. 0) RETURN
 11    CONTINUE
 C
-      PAUSE 'ZBRENT exceeding maximum iterations.'
+      WRITE(*,*) 'ZBRENT exceeding maximum iterations.'
       PARS(M)=B
       RETURN
       END
