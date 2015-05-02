@@ -501,7 +501,7 @@ C    Changed by RBH: Output to standard output is modified.
      +     RR1(I5),(RR1(I50)+RR1(I51))*.5
 
 C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
-      OPEN(IOUT978,FILE='RESOUT.RES',status='unknown')
+      OPEN(IOUT978,FILE='..\RESOUT.RES',ACCESS='APPEND')
 
       WRITE (IOUT978,'(A3,A10,F7.3,7(3F7.3,2X),F8.3,2A16,F8.3,2X,A)')
      +     ASCALE,REF,(CT(I50)+CT(I51))*.5,
@@ -514,7 +514,7 @@ C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
      +     (M1FIN(I50)+M1FIN(I51))*.5,M1FIN(I5),M1FIN(I96),
      +     AAV,CRR,CRR1,DEPL,DESC
       CLOSE(IOUT978)
-      OPEN(IOUT979,FILE='MSYL.RES',ACCESS='APPEND')
+      OPEN(IOUT979,FILE='..\MSYL.RES',ACCESS='APPEND')
       WRITE (IOUT979,'(A10,9F8.5,2X,A)') REF,MSYLT,MSYLE,MSYLM,
      +     AMSYRT,AMSYLT,AMSYRE,AMSYLE,AMSYRM,AMSYLM,DESC
       CLOSE(IOUT979)
