@@ -128,7 +128,7 @@ C      WRITE(*,701) DERIV,MSYLPRED
        WRITE(*,*) SS,SSBEST
        SSBEST = SS
        GOTO 9898
-      ENDIF 
+      ENDIF
 
       CALL MODELPROJ(MSYR2)
 C      WRITE(*,*) "FIN",AA1,ZZ1,SS
@@ -196,7 +196,7 @@ C      WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
         IF (ABS(SS-SSBEST).GT.1.0E-5) THEN
          SSBEST = SS
          GOTO 2099
-        ENDIF 
+        ENDIF
         AMSYR2 = EXP(XBEST(1))
         AMSYL2 = MSYLOUT(OPTF)
         WRITE (31,610) OPTF,AA1,ZZ1,AMSYR2,AMSYL2
