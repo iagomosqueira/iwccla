@@ -67,12 +67,16 @@ for (ind in torun) {
     msyr99 = basetrials[ind, "msyr99"], msyr99yr = basetrials[ind, "msyryr"],
     erate = basetrials[ind, "epd"], istep = basetrials[ind, "istep"])
 
-  system("gfortran Man-v14.for", show.output.on.console = verbose)
-  if (Sys.time() - file.info("a.exe")$mtime > 2) {
-    stop(paste("Man-v14.for was not compiled correctly. Go to directory:",
-      getwd()))
+  system("gfortran Man-v14z.for -o az.exe", show.output.on.console = verbose)
+  system("gfortran Man-v14.for -o a.exe", show.output.on.console = verbose)
+  system("gfortran MANRESV9.for -o res.exe", show.output.on.console = verbose)
+
+  if (any(Sys.time() - file.info(dir(pattern = ".exe"))$mtime > 2)) {
+    stop(paste("An executable was not compiled correctly in", getwd()))
   }
+  system("az", show.output.on.console = verbose)
   system("a", show.output.on.console = verbose)
+  system("res", show.output.on.console = verbose)
   setwd("..")
 }
 
