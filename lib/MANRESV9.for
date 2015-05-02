@@ -30,7 +30,7 @@ C
 C     AAV has been corrected. Now the nominator and denominator in the
 C     definition are summed over the same number of years.
 C
-C     The status of the output files 'MSYL.RES' and 'RESOUT.RES' has been
+C     The status of the output files 'MSYL.RRR' and 'RESOUT.RRR' has been
 C     changed from 'APPEND' to 'unknown'.
 C
 C     The output units corresponding to 'Andre.out' and 'Andre2.out' are
@@ -143,7 +143,7 @@ C     Changed by RBH: The array PP is included.
      +     PP(400,0:2000),Avec(0:2),Zvec(0:2)
       REAL PSCALE2(0:2000),PQ,PQMIN(400)
       REAL MSYLT,MSYLE,MSYLM,AMSYRT,AMSYLT,AMSYRE,AMSYLE,AMSYRM,AMSYLM
-      
+
       INTEGER ISTEP,NYEAR,OPTRAN,OPTMOD, MAXAGE,NTRIAL,ISCALE,NREAD,IYR,
      +        N,I5,I10,I25,I50,I51,I96,IP,IYR54,IYR541,
      +        I,IN,IN2,IN3,IPNT,IOUT2,OPTDEPL,OPTF,OPTMSYL,OPTDD
@@ -198,9 +198,9 @@ C     Changed by RBH: Skip three lines instead of four
         ISTEP = 0
       ENDIF
 
-      READ (IN,'(T52,F12.5)') MSYL,MSYR1
-      READ (IN,'(T52,F12.5)') Zvec(0),Avec(0),Zvec(1),Avec(1),Zvec(2),Avec(2)
-      READ (IN,'(T52,F12.5)') K1,K1P,DEPL
+      READ (IN,'(T51,F12.5)') MSYL,MSYR1
+      READ (IN,'(T51,F12.5)') Zvec(0),Avec(0),Zvec(1),Avec(1),Zvec(2),Avec(2)
+      READ (IN,'(T51,F12.5)') K1,K1P,DEPL
       READ (IN,'(/// T41,F12.5 //)') ERATE
       A1 = Avec(OPTDD)
       Z = Zvec(OPTDD)
@@ -257,17 +257,16 @@ C     Set IRR & IRPL for trials in which to calculate RR and RPL
      +                   .AND.OPTDEPL.EQ.0
 
 C READ DATA AND INCREMENT STORED VARIABLES ------------------------------------
-
       DO 200 N = 1,NTRIAL
 
 C       Read trial heading line & check that trial number is correct
-        READ (IN,'(/ 6X,I4)') NREAD
+        READ (IN,'(/ 6xI4)') NREAD
         READ (IN,'(16X,20F10.5)') MSYLT,MSYLE,MSYLM,AMSYRT,AMSYLT,
      +         AMSYRE,AMSYLE,AMSYRM,AMSYLM
         DO 58 IP = 0, NINT(AMSYLM*1000.0)
           SY(IP) = -1.0
    58   CONTINUE
-     
+
         IF (NREAD.NE.N) THEN
           WRITE (IPNT,'('' **** ERROR IN READING TRIAL NUMBER'')')
           PRINT *,N,NREAD
@@ -292,13 +291,13 @@ C       Changed by RBH: The zero catch trajectory is read in free format.
               ELSE
                  READ (IN2,*) IREAD,PZERO(IYR),P1ZERO(IYR)
               ENDIF
-
 C             Changed by RBH: Check that year number read from 'RES0' is correct.
               IF (IYR.NE.IREAD) THEN
                  STOP ' * ERROR IN READING YEAR NUMBER FROM RES0'
               ENDIF
 
    59      CONTINUE
+          WRITE(*,*) PZERO(0),K1,PZERO(0)/K1*1000.0,DEPL*1000.0
           IF ( NINT(PZERO(0)/K1*1000.0-DEPL*1000.0).GT.0 )
      +              STOP 'ERROR IN PZERO'
 
@@ -411,8 +410,8 @@ C           Increment the continuing catch statistic
             IF (PK.GT.AMSYLM) PK = AMSYLM                                   .
             IP = NINT(PK*1000.0)
 C           If necessary set SY(IP) = sustainable yield at popn level IP / K.
-            IF (SY(IP).EQ.-1.0) CALL SETSY (SY,MSYR1,A1,Z,M,MAXAGE,
-     +                                         OPTMOD,IP,OPTDD)
+c            IF (SY(IP).EQ.-1.0) CALL SETSY (SY,MSYR1,A1,Z,M,MAXAGE,
+c     +                                         OPTMOD,IP,OPTDD)
             CC(N) = CC(N) + MIN (C,SY(IP))                                  [5]
           ENDIF
 
@@ -432,7 +431,7 @@ C       End of trial N.  Store final stock size & total catch
 
   200 CONTINUE
 
-      
+
 C CALCULATE SUMMARY STATISTICS ------------------------------------------------
 
 C     All data now read.  Calculate the summary statistics
@@ -501,7 +500,7 @@ C    Changed by RBH: Output to standard output is modified.
      +     RR1(I5),(RR1(I50)+RR1(I51))*.5
 
 C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
-      OPEN(IOUT978,FILE='..\RESOUT.RES',ACCESS='APPEND')
+      OPEN(IOUT978,FILE='..\RESOUT.RRR',ACCESS='APPEND')
 
       WRITE (IOUT978,'(A3,A10,F7.3,7(3F7.3,2X),F8.3,2A16,F8.3,2X,A)')
      +     ASCALE,REF,(CT(I50)+CT(I51))*.5,
@@ -514,7 +513,7 @@ C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
      +     (M1FIN(I50)+M1FIN(I51))*.5,M1FIN(I5),M1FIN(I96),
      +     AAV,CRR,CRR1,DEPL,DESC
       CLOSE(IOUT978)
-      OPEN(IOUT979,FILE='..\MSYL.RES',ACCESS='APPEND')
+      OPEN(IOUT979,FILE='..\MSYL.RRR',ACCESS='APPEND')
       WRITE (IOUT979,'(A10,9F8.5,2X,A)') REF,MSYLT,MSYLE,MSYLM,
      +     AMSYRT,AMSYLT,AMSYRE,AMSYLE,AMSYRM,AMSYLM,DESC
       CLOSE(IOUT979)
