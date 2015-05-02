@@ -26,8 +26,13 @@ getz <- function(data, myvar) {
 ###############################################################################
 ###############################################################################
 dir.xy <- file.path("input")
-f1 <- read.table(file.path(dir.xy, "XYallmor_L0.3_R0.02.txt"), header = FALSE)
-f2 <- read.table(file.path(dir.xy, "XYmatmor_L0.3_R0.02.txt"), header = FALSE)
+myfiles <- dir("input", pattern = "XY", full.names = TRUE)
+if (grepl("all", myfiles[1])) {
+  myfiles <- rev(myfiles)
+}
+
+f1 <- read.table(myfiles[1], header = FALSE)
+f2 <- read.table(myfiles[2], header = FALSE)
 
 colnames(f1) <- c("OPTF", "A", "z", "MSYR", "MSYL")
 colnames(f2) <- colnames(f1)
