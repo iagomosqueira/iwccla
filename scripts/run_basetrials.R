@@ -34,7 +34,7 @@ torun <- 1:12
 dir.create(dir.basetrials, showWarnings = FALSE)
 
 # source function to write dat files
-source(file.path("scripts", "create_dat.R"))
+source(file.path("R", "create_dat.R"))
 
 # Check that base trials csv exists
 if (!file.exists("Trials_KFJ_base.csv")) {
