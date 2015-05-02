@@ -57,7 +57,7 @@ for (ind in torun) {
   done <- mapply(file.copy, from = files2get, MoreArgs = list(to = getwd(),
     overwrite = TRUE))
   # Create the data file and overwrite COPY.dat
-  create_dat(out = "COPY.dat", optdt = basetrials[ind, "dt"],
+  create_dat(out = "COPY.dat", case = ind, optdt = basetrials[ind, "dt"],
     depl = basetrials[ind, "depl"], component = basetrials[ind, "component"],
     msyr1 = basetrials[ind, "msyr"], msyl = basetrials[ind, "msyl"],
     ifreq = basetrials[ind, "survyr"], mat1 = basetrials[ind, "agemat"],
