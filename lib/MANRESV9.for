@@ -140,7 +140,7 @@ C     Changed by RBH: The array PP is included.
      +     MAT1,MSIG,REC1,RSIG,MORT1,MORT2,K1P,P1ZERO(0:2000),P1,
      +     PSCALE1(0:2000),P1FIN(400),PT1MIN(400),RR1(400),MFIN(400),
      +     M1FIN(400),PMATF(400,0:2000),PBirth(400,0:2000),
-     +     PP(400,0:2000)
+     +     PP(400,0:2000),Avec(0:2),Zvec(0:2)
       REAL PSCALE2(0:2000),PQ,PQMIN(400)
       REAL MSYLT,MSYLE,MSYLM,AMSYRT,AMSYLT,AMSYRE,AMSYLE,AMSYRM,AMSYLM
       
@@ -199,9 +199,12 @@ C     Changed by RBH: Skip three lines instead of four
         ISTEP = 0
       ENDIF
 
-      READ (IN,'((T41,F12.5))') MSYL,MSYR1,Z,A1,K1,K1P,DEPL
+      READ (IN,'(T52,F12.5)') MSYL,MSYR1
+      READ (IN,'(T52,F12.5)') Zvec(0),Avec(0),Zvec(1),Avec(1),Zvec(2),Avec(2)
+      READ (IN,'(T52,F12.5)') K1,K1P,DEPL
       READ (IN,'(/// T41,F12.5 //)') ERATE
-
+      A1 = Avec(OPTDD)
+      Z = Zvec(OPTDD)
 C     Read the scaling option ISCALE which defines how the statistics
 C          will be scaled
       READ (IN3,'(I1)') ISCALE
