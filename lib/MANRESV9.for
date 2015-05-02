@@ -1,4 +1,4 @@
-C     Last change:  AEP   18 Jan 2007    
+C     Last change:  AEP   18 Jan 2007
 C     Is the same as V6 except the zero catch trajectory is read in
 C     instead of being calculated in this program.
 C     Coastal trials sections deleted
@@ -9,32 +9,32 @@ C     Generalized the Continuning catch statistic
 C     MANRES Version 8  (29 March 1995)
 
 C   Changes by RBH, April 2007:
-C 
-C     Three lines instead of four are skipped just before reading 'NTRIAL' 
+C
+C     Three lines instead of four are skipped just before reading 'NTRIAL'
 C     and 'NYEAR' from 'RESTEST' in order to read the correct input from
 C     'RESTEST'.
 C
-C     The trajectories in 'RESTEST' and 'RES0' are read in free format instead 
+C     The trajectories in 'RESTEST' and 'RES0' are read in free format instead
 C     of fixed format.
 C
-C     Because birth trajectories do not appear in 'RESTEST', birth 
+C     Because birth trajectories do not appear in 'RESTEST', birth
 C     trajectories are not read. Instead birth is set equal to 0.
 C
-C     It is checked that year numbers read from 'RESTEST' and 'RES0' appear 
+C     It is checked that year numbers read from 'RESTEST' and 'RES0' appear
 C     in the following order: 0, 1, ..., NYEAR.
 C
-C     The tolerance in the subroutine that finds SY has been increased from 
-C     0.00001 to 0.0001 because it sometimes does not converge when the 
+C     The tolerance in the subroutine that finds SY has been increased from
+C     0.00001 to 0.0001 because it sometimes does not converge when the
 C     tolerance is too low.
 C
-C     AAV has been corrected. Now the nominator and denominator in the 
+C     AAV has been corrected. Now the nominator and denominator in the
 C     definition are summed over the same number of years.
 C
 C     The status of the output files 'MSYL.RES' and 'RESOUT.RES' has been
-C     changed from 'APPEND' to 'unknown'. 
+C     changed from 'APPEND' to 'unknown'.
 C
-C     The output units corresponding to 'Andre.out' and 'Andre2.out' are 
-C     changed. 
+C     The output units corresponding to 'Andre.out' and 'Andre2.out' are
+C     changed.
 C
 C     The output to standard output has been modified.
 C     The fields have been reordered.
@@ -51,11 +51,11 @@ C  The program reads in the results from the management trials and
 C  calculates the following required summary statistics.
 C  (Reference: Tokyo report (RIWC 42, page 318) & Kirkwood fax 7/10/91)
 C    1  Total catch over management period (CT): median, 5%, 95% & mean values
-C    2  Final population size (PFIN): median, 5% & 95% values 
+C    2  Final population size (PFIN): median, 5% & 95% values
 C    3  Minimum population sizes reached in each trial (PMIN): 5,10 & 25% values
 C    4  Average annual variation (AAV)
 C       = mean annual change in catch / mean catch over all simulations
-C  * 5  Continuing catch distribution (CC): median, 5% & 95% values  
+C  * 5  Continuing catch distribution (CC): median, 5% & 95% values
 C  * 6  Realised protection level distribution (RPL): median & 5%iles
 C       = lowest stock size for which a catch was set
 C    7  Relative recovery distribution (RR) : median & 5%iles
@@ -64,26 +64,26 @@ C
 C  * Not for trials with varying K or MSYR or M (epidemics)
 C
 C    Store the following for graphical presentation:
-C    i     Mean population trajectory over the NTRIAL simulations 
+C    i     Mean population trajectory over the NTRIAL simulations
 C    ii    Set of maximum & minimum populations reached in each year
 C    iii   Mean catch trajectory over the NTRIAL simulations
 C    iv    First 2 stochastic catch trajectories
 C
 C  Note: catch & population sizes are scaled by the carrying capacity K1
 C      unless ISCALE=1.  ISCALE =1 (read in) on varying K or MSYR, epidemics or
-C      random parameter trials when population sizes are scaled by the 
+C      random parameter trials when population sizes are scaled by the
 C      stock size resulting if zero catch is taken during the management period.
 C
 C PARAMETERS -------------------------------------------------------------------
 
 C **  Single stock version
 
-C     P       Population size at start of current year (before catch is taken)   
+C     P       Population size at start of current year (before catch is taken)
 C     C       Catch in current year   (set by management procedure)
 C     PSCALE(IYR) Used to scale size in IYR = K1 in base cases.
 C             For varying K or MSYR, epidemics or random parameter trials
 C             PSCALE = PZERO
-C     PZERO(IYR) The population in IYR if zero catch is taken after year 0.  
+C     PZERO(IYR) The population in IYR if zero catch is taken after year 0.
 C             It is read in from file RES0
 C     NTRIAL  Number of trials.  Read in.  1-400
 C     REALNT  = REAL(NTRIAL)
@@ -96,7 +96,7 @@ C     PMEAN(IYR) Mean population size in year IYR                           [i]
 C     PIMIN(IYR) Minimum size reached in year IYR in any trial             [ii]
 C     PIMAX(IYR) Maximum size reached in year IYR in any trial             [ii]
 C     RPL(N)     Realised protection level in trial N                       [6]
-C     RR(N)      Relative recovery statistic = population in year when zero 
+C     RR(N)      Relative recovery statistic = population in year when zero
 C                catch trajectory = 0.54K  (Use interpolation)              [7]
 C     RR1(N)     As for RR(N), except relevant to the 1+ population
 C     IYR54      is last year in which the zero catch trajectory < 0.54K    [7]
@@ -121,8 +121,8 @@ C     REF     Reference number of run
 
 C     OPTRAN  = 1 if random values of MSYR, NPCAT & DEPL used for each trial.
 C     OPTMOD  Population model.             0: Standard Pella Tomlinson
-C            1: P-T with maximum recruitment limitation  
-C            2: Tent Model  (constant MSYR only)         
+C            1: P-T with maximum recruitment limitation
+C            2: Tent Model  (constant MSYR only)
 C            3: Age structured, maturity = recruitment [base case]
 C            4: Age structured, differing ages of maturity & recruitment
 C               with MSY / 1+ population at MSYL = base case ratio
@@ -134,7 +134,7 @@ C     Changed by RBH: The array PP is included.
       REAL MSYL,M,PSCALE(0:2000),PZERO(0:2000),ERATE,DEPL,MSYR1,REALNT,
      +     P,K1,A1,Z,RPL(400),PFIN(400),PTMIN(400),PK,RR(400),K99,
      +     MSYR99,KTOT, KTOT1,C, CTAV, CSTORE, AAV, CTSUM, CT(400),
-     +     CTT, CTTSUM, 
+     +     CTT, CTTSUM,
      +     CC(400), SY(0:2000), SUMAV, CMEAN(0:2000), CSTOC(0:2000,2),
      +     PMEAN(0:2000), PIMIN(0:2000), PIMAX(0:2000), PL54,
      +     MAT1,MSIG,REC1,RSIG,MORT1,MORT2,K1P,P1ZERO(0:2000),P1,
@@ -162,28 +162,28 @@ C INITIALISATION --------------------------------------------------------------
 
 C     This version of MANRES is for single stocks only
 
-C     Read in data. First copy lines defining run parameters to output 
+C     Read in data. First copy lines defining run parameters to output
 C                   Skip the same lines in the zero catch file
       DO 5 I=1,200
         READ (IN,'(A)') LINE
         IF (LINE(1:10).EQ.'Trial:   1') GO TO 6
         WRITE (IPNT,'(1X,A)') LINE
-        READ (IN2,'()') 
+        READ (IN2,'()')
     5 CONTINUE
     6 REWIND IN
       BACKSPACE IN2
 
 C     Now read in required parameters
       READ (IN,'(/6X,A10 /A/)') REF,DESC
-      READ (IN,'( / T41,I6)') OPTRAN    
+      READ (IN,'( / T41,I6)') OPTRAN
       READ (IN,'(T41,I6)') OPTDEPL
       READ (IN,'(T41,F6.2 //  T41,F6.3)') K99,MSYR99
       READ (IN,'( / T41,I6 )') OPTMOD
 
-C     Changed by RBH: Skip three lines instead of four  
+C     Changed by RBH: Skip three lines instead of four
       READ (IN,'( /// (T41,I6))') NTRIAL,NYEAR
 
-      READ (IN,'(///)') 
+      READ (IN,'(///)')
       IF (OPTMOD.LT.3) THEN
         READ (IN,'(//T41,I6)') ISTEP
         READ (IN,'(T41,F12.5 //)')  M
@@ -195,14 +195,14 @@ C     Changed by RBH: Skip three lines instead of four
         READ (IN,'(T41,I6)') OPTF
         READ (IN,'(T41,I6)') OPTMSYL
         READ (IN,'(T41,I6)') OPTDD
-        READ (IN,'(/)') 
+        READ (IN,'(/)')
         ISTEP = 0
       ENDIF
 
       READ (IN,'((T41,F12.5))') MSYL,MSYR1,Z,A1,K1,K1P,DEPL
       READ (IN,'(/// T41,F12.5 //)') ERATE
 
-C     Read the scaling option ISCALE which defines how the statistics 
+C     Read the scaling option ISCALE which defines how the statistics
 C          will be scaled
       READ (IN3,'(I1)') ISCALE
       CLOSE (IN3)
@@ -216,7 +216,7 @@ C     Calculate required percentiles to be printed out
       I96 = NTRIAL - I5 + 1
       REALNT = REAL(NTRIAL)
 
-C     Initialise arrays 
+C     Initialise arrays
       IYR54 = -1
       IYR541 = -1
       CTAV = 0.0
@@ -246,13 +246,13 @@ C     Call SETUPA to set up the age-structured population parameters
       ICC = K99.EQ.0.0 .AND. MSYR99.EQ.0. .AND. ERATE.EQ.0.0 .AND.
      +      ISTEP.EQ.0 .AND. OPTRAN.NE.1  .AND. OPTDEPL.NE.1
 C      ICC = .FALSE.
-      IF (ICC.AND.OPTMOD.GE.3) 
+      IF (ICC.AND.OPTMOD.GE.3)
      +          CALL SETUPA (MAXAGE,MAT1,MSIG,REC1,RSIG,MORT1,MORT2)      [5]
 
 C     Set IRR & IRPL for trials in which to calculate RR and RPL
       IRPL = K99.EQ.0.0 .AND. ERATE.EQ.0.0                                  [6]
       IRR  = DEPL.LT.0.54 .AND.K99.EQ.0. .AND.OPTRAN.NE.1.AND.ERATE.EQ.0.   [7]
-     +                   .AND.OPTDEPL.EQ.0 
+     +                   .AND.OPTDEPL.EQ.0
 
 C READ DATA AND INCREMENT STORED VARIABLES ------------------------------------
 
@@ -281,9 +281,9 @@ C       Read in parameters if they change with each trial
 
 C       Read zero catch trajectory into PZERO
 C       Changed by RBH: The zero catch trajectory is read in free format.
-        IF (N.EQ.1 .OR. OPTDEPL.EQ.1. OR. OPTRAN.EQ.1 .OR. 
+        IF (N.EQ.1 .OR. OPTDEPL.EQ.1. OR. OPTRAN.EQ.1 .OR.
      +                                             ERATE.GT.0.0) THEN
-           READ (IN2,'(////)') 
+           READ (IN2,'(////)')
            DO 59 IYR=0,NYEAR
               IF (IYR.NE.NYEAR) THEN
                  READ (IN2,*) IREAD,PZERO(IYR),P1ZERO(IYR),DUMMY
@@ -297,7 +297,7 @@ C             Changed by RBH: Check that year number read from 'RES0' is correct
               ENDIF
 
    59      CONTINUE
-          IF ( NINT(PZERO(0)/K1*1000.0-DEPL*1000.0).GT.0 ) 
+          IF ( NINT(PZERO(0)/K1*1000.0-DEPL*1000.0).GT.0 )
      +              STOP 'ERROR IN PZERO'
 
 C         Set IYR54 to the last year in which the zero catch trajectory < 0.54K
@@ -309,19 +309,19 @@ C         Set IYR54 to the last year in which the zero catch trajectory < 0.54K
             DO 70 IYR=1,NYEAR
               IF (P1ZERO(IYR) .GE. 0.9*AMSYLT*K1P) GO TO 72
    70       CONTINUE
-   72       IYR541 = IYR-1              
+   72       IYR541 = IYR-1
           ENDIF
 
-C         Set PSCALE (= K unless ISCALE=1 when the zero catch trajectory 
+C         Set PSCALE (= K unless ISCALE=1 when the zero catch trajectory
 C             is used instead)
-          IF (ISCALE.NE.1) THEN 
+          IF (ISCALE.NE.1) THEN
             DO 64 IYR=0,NYEAR
-              PSCALE(IYR) = K1   
+              PSCALE(IYR) = K1
               PSCALE1(IYR) = K1P
    64       CONTINUE
-          ELSE 
+          ELSE
             DO 65 IYR=0,NYEAR
-              PSCALE(IYR) = PZERO(IYR) 
+              PSCALE(IYR) = PZERO(IYR)
               PSCALE1(IYR) = P1ZERO(IYR)
    65       CONTINUE
           ENDIF
@@ -329,7 +329,7 @@ C             is used instead)
             PSCALE2(IYR) = PZERO(IYR)
    66     CONTINUE
 
-          KTOT = K1 
+          KTOT = K1
           KTOT1 = K1P
 
         ENDIF
@@ -391,11 +391,11 @@ C
           IF (PK.LT.RPL(N) .AND. C.GT.0.0) RPL(N) = PK                      [6]
 
 C         Catch variables: scale by initial K
-          C = C / KTOT       
+          C = C / KTOT
 
 C         Changed by RBH. Now the nominator and denominator in the definition of AAV
 C         are summed over the same number of years.
-          IF (IYR .LT. (NYEAR-1)) THEN                               
+          IF (IYR .LT. (NYEAR-1)) THEN
              CTT = CTT + C                                                  [1]
           ELSE
              CT(N) = CTT + C
@@ -442,11 +442,11 @@ C     Changed by RBH: Sort PP
       CALL SHSORT (PQMIN,NTRIAL,1,1)                                        [3]
       CALL SHSORT (P1FIN,NTRIAL,1,1)                                        [2]
       CALL SHSORT (PT1MIN,NTRIAL,1,1)                                       [3]
-      CALL SHSORT (MFIN,NTRIAL,1,1)                                        
-      CALL SHSORT (M1FIN,NTRIAL,1,1)                                       
-      CALL SHSORT (PP,NTRIAL,(Nyear+1),2001)                              
-      CALL SHSORT (PMATF,NTRIAL,(Nyear+1),2001)                               
-      CALL SHSORT (PBIRTH,NTRIAL,(NYear+1),2001)                               
+      CALL SHSORT (MFIN,NTRIAL,1,1)
+      CALL SHSORT (M1FIN,NTRIAL,1,1)
+      CALL SHSORT (PP,NTRIAL,(Nyear+1),2001)
+      CALL SHSORT (PMATF,NTRIAL,(Nyear+1),2001)
+      CALL SHSORT (PBIRTH,NTRIAL,(NYear+1),2001)
       IF (ICC)  CALL SHSORT (CC,NTRIAL,1,1)                                 [5]
       IF (IRPL) CALL SHSORT (RPL,NTRIAL,1,1)                                [6]
       IF (IRR)  CALL SHSORT (RR,NTRIAL,1,1)                                 [7]
@@ -474,7 +474,7 @@ C     Print * in results line, col 1 if stock sizes scaled by 0 catch trajectory
      +      ,'P(low) & P(final) statistics are scaled by the stock size'
      +      ,' obtained after a zero catch during the management period'
       WRITE(IPNT,999)'RPL','no catch was set during that simulation'
-      WRITE(IPNT,999)'RR','the zero catch trajectory didnot reach 0.54K'
+      WRITE(IPNT,999)'RR','the zero catch trajectory didnt reach 0.54K'
  999  FORMAT (' ***** in the',A4,' column indicates that ',A)
 
       WRITE (IPNT,'(/A7,A16,T30,A,T55,A,T75,A,T94,A,T113,A8,2A16)')
@@ -495,14 +495,14 @@ C    Changed by RBH: Output to standard output is modified.
      +     CC(I96)*10.
       IF (IRPL) WRITE(CRPL,'(2F6.3)')RPL(I5),(RPL(I50)+RPL(I51))*.5
       IF (IRR) WRITE (CRR,'(2F6.3)') RR(I5),(RR(I50)+RR(I51))*.5
-      IF (IRR) WRITE (CRR1,'(2(2X,F6.3))') 
+      IF (IRR) WRITE (CRR1,'(2(2X,F6.3))')
      +     RR1(I5),(RR1(I50)+RR1(I51))*.5
 
 C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
       OPEN(IOUT978,FILE='RESOUT.RES',status='unknown')
 
-      WRITE (IOUT978,'(A3,A10,F7.3,7(3F7.3,2X),F8.3,2A16,F8.3,2X,A)') 
-     +     ASCALE,REF,(CT(I50)+CT(I51))*.5, 
+      WRITE (IOUT978,'(A3,A10,F7.3,7(3F7.3,2X),F8.3,2A16,F8.3,2X,A)')
+     +     ASCALE,REF,(CT(I50)+CT(I51))*.5,
      +     CT(I5),CT(I96),CTAV,
      +     (PFIN(I50)+PFIN(I51))*.5,PFIN(I5),PFIN(I96),
      +     (P1FIN(I50)+P1FIN(I51))*.5,P1FIN(I5),P1FIN(I96),
@@ -529,7 +529,7 @@ C     Changed by RBH: Output to standard output is modified.
 C     Changed by RBH: Output to 'SS-TRAJ.OUT' includes the median, the 5% and 95% quantiles
 C     of the scaled population size.
       WRITE (IOUT2,'(2A)') 'Note: ignore zero catch trajectory ',
-     +        '(P: C0 column) in random parameter or epidemic trials'  
+     +        '(P: C0 column) in random parameter or epidemic trials'
       WRITE (IOUT2,'(//1X,3A/)') REF, ASCALE
       WRITE (IOUT2,'(6X,10A9)') 'P5% ','MedP','P95%',
      +     'MeanP','MinP','MaxP','MeanC','C1','C2',' P: C0'
@@ -554,7 +554,7 @@ C     Changed by RBH: The output unit is changed to 'IOUT999'..
       WRITE(IOUT999,10602)
       DO 11000 N = 1,Ntrial
        WRITE(IOUT999,10601) N/FLOAT(Ntrial),PFIN(N),PTMIN(N),PQMIN(N)
-11000 CONTINUE       
+11000 CONTINUE
       CLOSE(IOUT999)
 
 C     Changed by RBH: The output unit is changed to 'IOUT998'.
@@ -570,7 +570,7 @@ C     Changed by RBH: The output unit is changed to 'IOUT998'.
       CLOSE(IOUT998)
       STOP
 10602 FORMAT(1x," PROB  PFIN PFMINA PMINS")
-10601 FORMAT(1x,4(F5.3,1x))      
+10601 FORMAT(1x,4(F5.3,1x))
 10701 FORMAT(1x," Year Female Pop Size       Births"/
      +       1x,"        5%   Median  95%   5% Median 95%")
 10702 FORMAT(1x,I4,1x,2(3(F5.3,2x)))
@@ -610,7 +610,7 @@ C       Tent model:  (this assumes MSYR is constant)
         SY(IP) = MSYR1 * P
 
         RETURN
- 
+
       ENDIF
 
 C     Age structured model (OPTMOD >= 3)
@@ -619,13 +619,13 @@ C     Find fishing survivorship UF which balances with population level P
 C     (P = Nmature / Kmature)
       R(0)   = RECF(0)
       ICOUNT = 0
-      UFMAX = 1.0 
+      UFMAX = 1.0
       UFMIN = 0.8
-      
+
    10 UF = (UFMIN + UFMAX) * 0.5
       ICOUNT = ICOUNT + 1
 C
-C     Per-recruit calculations 
+C     Per-recruit calculations
       RREC = R(0)
       RMAT = 0.0
       RTOT = 0.0
@@ -642,7 +642,7 @@ C     All animals in maximum age class are mature and recruited
       RTOT = RTOT + R(MAXAGE)
       RREC = RREC + R(MAXAGE)
 C
-C     Special case (OPTMODEL=3) 
+C     Special case (OPTMODEL=3)
       IF (OPTMOD.EQ.3) RMAT = RREC
 C
 C     Recruitment
@@ -654,13 +654,13 @@ C     Recruitment
         TheRec = TERM2**(1/Z)/RMAT
        ELSEIF (OPTDD.EQ.1) THEN
         TheRec = TERM2**(1/Z)/RTOT
-       ELSEIF (OPTDD.EQ.0) THEN 
+       ELSEIF (OPTDD.EQ.0) THEN
         TheRec = TERM2**(1/Z)/RREC
        ELSE
         WRITE(*,*) "Invalid value for OPTDD"
         STOP
        ENDIF
-      ENDIF 
+      ENDIF
       DIF = TheRec*RMAT - P
 
 C     Changed by RBH: The tolerance has been increased from 0.00001 to 0.0001.
@@ -673,7 +673,7 @@ C     Changed by RBH: The tolerance has been increased from 0.00001 to 0.0001.
       ENDIF
       IF (ICOUNT.GT.500) STOP ' **** ERROR: SY NOT FOUND'
       GO TO 10
-      
+
    90 CONTINUE
       IF (OPTMOD.EQ.3) THEN
         SY(IP) = (1.0-UF) * P
@@ -725,7 +725,7 @@ C     set RECF =fraction of unrecruited animals of age A which recruit
 C     at age A+1, except RECF(0) = fraction recruited of age 0
       CALL SETO (RECF,RSIG,REC1,MAXAGE)
       CALL TRFORM(RECF,MAXAGE)
- 
+
 C     Set up unrecruited component relative to # of age 0
       UNR(0) = 1.0 - RECF(0)
       DO 9 L = 1,MAXAGE
@@ -849,4 +849,4 @@ C
    20 CONTINUE
       RETURN
       END
-      
+
