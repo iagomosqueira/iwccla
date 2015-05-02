@@ -181,8 +181,7 @@ C     Now read in required parameters
       READ (IN,'( / T41,I6 )') OPTMOD
 
 C     Changed by RBH: Skip three lines instead of four
-      READ (IN,'( /// (T41,I6))') NTRIAL,NYEAR
-
+      READ (IN,'( ///// (T41,I6))') NTRIAL,NYEAR
       READ (IN,'(///)')
       IF (OPTMOD.LT.3) THEN
         READ (IN,'(//T41,I6)') ISTEP
@@ -263,7 +262,7 @@ C READ DATA AND INCREMENT STORED VARIABLES ------------------------------------
 
 C       Read trial heading line & check that trial number is correct
         READ (IN,'(/ 6X,I4)') NREAD
-        READ (IN,'(16X,20F8.5)') MSYLT,MSYLE,MSYLM,AMSYRT,AMSYLT,
+        READ (IN,'(16X,20F10.5)') MSYLT,MSYLE,MSYLM,AMSYRT,AMSYLT,
      +         AMSYRE,AMSYLE,AMSYRM,AMSYLM
         DO 58 IP = 0, NINT(AMSYLM*1000.0)
           SY(IP) = -1.0
