@@ -521,7 +521,7 @@ C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
 C
 C     Changed by RBH: Output to standard output is modified.
       WRITE (IPNT,'(A3,A10,F6.3,F6.1,2X,4F6.3,2X,2(3F6.3,2X),
-     +     A20,F8.3,2X,2A16,2X,A))') 
+     +     A20,F8.3,2X,2A16,2X,A)')
      +     ASCALE,REF,DEPL,MSYR1*100.0,
      +     CT(I5),(CT(I50)+CT(I51))*.5,CT(I96),CTAV,
      +     PFIN(I5),(PFIN(I50)+PFIN(I51))*.5,PFIN(I96),
