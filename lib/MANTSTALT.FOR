@@ -122,8 +122,6 @@ C     First find A and Z (DTYPE = 1)
 9898  CALL FIT22(X,SS,2)
       WRITE(*,112) "Phase3:",AA1,ZZ1,SS
   112 FORMAT(1X, A, "A", 1X, F18.8, "  Z", F15.8, "  SS", 1X, F15.8)
-C      WRITE(*,*) "FINA",AA1,ZZ1,SS,SSBEST
-C      WRITE(*,701) DERIV,MSYLPRED
       IF (ABS(SS-SSBEST).GT.0.0000001) THEN
        WRITE(*,*) SS,SSBEST
        SSBEST = SS
@@ -175,9 +173,6 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
       AMSYR2 = EXP(X(1))
       AMSYL2 = MSYLOUT(2)
       OPTF = STOREOPTF
-C      WRITE(*,*) "C:R(Row1),L(Row2)"
-C      WRITE(*,600) AMSYR0,AMSYR1,AMSYR2
-C      WRITE(*,600) AMSYL0,AMSYL1,AMSYL2
 
       AA1STORE = AA1
       ZZ1STORE = ZZ1
