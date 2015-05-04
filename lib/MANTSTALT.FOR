@@ -187,7 +187,6 @@ C     Find MSYL and MSYR for alternative definitions of selectivity
 2099    CALL FIT22(X,SS,1)
         X = XBEST
         SS = FUNK(X)
-        WRITE(*,*) MYLOOP2,SS,X(1)
         IF (ABS(SS-SSBEST).GT.1.0E-5) THEN
          SSBEST = SS
          GOTO 2099
