@@ -114,7 +114,7 @@ C     First find A and Z (DTYPE = 1)
       WRITE(*,112) "Phase1:",AA1,ZZ1,SS
       PHASE = 2
       CALL FIT22(X,SS,2)
-      X = XBEST
+C      X = XBEST
       CALL FIT22(X,SS,2)
       WRITE(*,112) "Phase2:",AA1,ZZ1,SS
       PHASE = 3
