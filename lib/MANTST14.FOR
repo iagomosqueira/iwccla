@@ -936,11 +936,6 @@ C     REPORT prints out PTRUE & CATCH arrays from year 0
       DOUBLE PRECISION CATCH(-65:2000)
       INTEGER IOUT,IYR,I
 
-      WRITE(*,*) "MSYL_TRUE_mat", PTRUE(IYR-1)/PTRUE(-30)
-      WRITE(*,*) "MYSL_TRUE_1+", PSURV(IYR-1)/K1P
-      WRITE(*,*) "MSYR_TRUE_mat", CATCH(IYR-1)/PTRUE(IYR-1)
-      WRITE(*,*) "MSYR_TRUE_1+", CATCH(IYR-1)/PSURV(IYR-1)
-
       WRITE (IOUT,'(A,6A14)') 'Year','Stock 1','CM 1'
       DO 10 I = 0,IYR-1
        WRITE (IOUT,'(I4,6F15.5)') I,PTRUE(I),PSURV(I),CATCH(I),BIRSUM(I)
