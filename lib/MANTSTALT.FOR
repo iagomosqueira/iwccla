@@ -462,8 +462,8 @@ C      Objective function
        ENDIF
        IF (PHASE.EQ.3) THEN
         FUNK = ABS(DERIV)+(MSYLPRED-MSYLPASS)**2.0
-        WRITE(*,111) DERIV, FUNK, " MSYL(pred,T) ", MSYLPRED, MSYLPASS
-  111 FORMAT("Phase3: Deriv ",F13.8," FUNK ",F10.7,A,F8.5,1X,F8.5)
+        WRITE(*,111) FUNK, " MSYL(pred,T) ", MSYLPRED, MSYLPASS
+  111 FORMAT("Phase3: FUNK ",F10.7,A,F8.5,1X,F8.5)
        ENDIF
 C
       ENDIF
