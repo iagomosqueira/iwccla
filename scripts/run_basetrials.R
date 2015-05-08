@@ -16,13 +16,24 @@
 ###############################################################################
 ###############################################################################
 #### Step
+#### ToDo list
+###############################################################################
+###############################################################################
+# a. Add a call where it tells it which par file to use, where the default
+#    is AEP's file such that he can compare the old runs to the new runs.
+# b. Add a few things to increase the capability of MANTST14.FOR
+
+###############################################################################
+###############################################################################
+#### Step
 #### Set variable inputs
 ###############################################################################
 ###############################################################################
 dir.base <- getwd()
 dir.basetrials <- "basetrials"
+dir.recreation <- "recreation"
 verbose <- FALSE
-torun <- 1:12
+torun <- 1:24
 
 ###############################################################################
 ###############################################################################
@@ -31,7 +42,8 @@ torun <- 1:12
 ###############################################################################
 ###############################################################################
 # Create the directory for base trials
-dir.create(dir.basetrials, showWarnings = FALSE)
+dir.create(dir.basetrials, showWarnings = verbose)
+dir.create(dir.recreation, showWarnings = verbose)
 
 # source function to write dat files
 source(file.path("R", "create_dat.R"))
@@ -57,7 +69,8 @@ for (ind in torun) {
   done <- mapply(file.copy, from = files2get, MoreArgs = list(to = getwd(),
     overwrite = TRUE))
   # Create the data file and overwrite COPY.dat
-  create_dat(out = "COPY.dat", case = ind, optdt = basetrials[ind, "dt"],
+  create_dat(out = "COPY.dat", case = basetrials[ind, "name"],
+    nyear = basetrials[ind, "nyear"], optdt = basetrials[ind, "dt"],
     depl = basetrials[ind, "depl"], component = basetrials[ind, "component"],
     msyr1 = basetrials[ind, "msyr"], msyl = basetrials[ind, "msyl"],
     ifreq = basetrials[ind, "survyr"], mat1 = basetrials[ind, "agemat"],
