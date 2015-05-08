@@ -77,7 +77,7 @@ create_dat <- function(out, case = "T1A-D1",
   # Set up the dat object
   dat <- vector(length = 47)
   dat[1] <- paste0("MANAGEMENT PARAMETERS         CASE  ", case)
-  dat[2] <- paste0("Written by create_dat by (KFJ)")
+  dat[2] <- paste0(case, " Using create_dat (KFJ)")
   dat[3] <- ""
   if (!optran %in% 0:1) stop(paste("optran (0:1) is", optran))
   dat[4] <- paste0("RANDOM PARAMETERS OPTION             OPTRAN    ", optran)
