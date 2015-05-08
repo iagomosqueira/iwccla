@@ -356,7 +356,8 @@ C         Changed by RBH: Check that year number read from 'RESTEST' is correct.
           IF (IYR.NE.IREAD) THEN
              STOP ' * ERROR IN READING YEAR NUMBER FROM RESTEST'
           ENDIF
-          IF (IYR.EQ.0.AND.P.NE.PZERO(0)) STOP ' * ERROR: file mismatch'
+          IF (IYR.EQ.0.AND.ABS(P-PZERO(0)).GT.0.01) 
+     +      STOP ' * ERROR: file mismatch'
 
 C         Population size variables: scale by PSCALE
           Birth = Birth / P
