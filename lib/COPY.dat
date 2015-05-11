@@ -13,9 +13,9 @@ No. OF TRIALS                        NTRIAL    2
 No. OF YEARS IN SIMULATION           NYEAR   100
 No. OF YEARS OF PREMANAGEMENT CATCH  NPCAT    30
 YEARS OF PREMANAGEMENT PROTECTION    NPPROT    0
-TRUE MSYL(1)                         MSYL     0.4
-TRUE MSY RATE(1)                     MSYR1    0.025000
-PREMANAGEMENT DEPLETION (1)          DEPL     0.3
+TRUE MSYL(1)                         MSYL     0.6
+TRUE MSY RATE(1)                     MSYR1    0.01
+PREMANAGEMENT DEPLETION (1)          DEPL     0.6
 CHANGING K OPTION                    K99        0.000
 CHANGING MSYR OPTION                 MSYR99     0.000
 CHANGING MSYR STEP                   ISTEP     0
