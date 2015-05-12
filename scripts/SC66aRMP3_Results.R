@@ -21,6 +21,9 @@
 ###############################################################################
 paper <- "SC66aRMP3"
 
+dir.wk <- "c:/iwccla/ms"
+dir.rs <- "c:/users/kelli/dropbox/iwccla"
+
 width.msyl <- c(11, rep(8, 9))
 width.resout <- c(15, rep(7, 4), rep(c(9, 7, 7), 6), 9)
 
@@ -37,10 +40,11 @@ cols.resout <- c("trial", rep("TC", 3), "tC", rep("PF", 3), "Pf1", "PF1", "PF2",
 ###############################################################################
 ###############################################################################
 #### Step
-#### Attach libraries
+#### Attach libraries and set directory
 ###############################################################################
 ###############################################################################
 library(xtable)
+setwd(dir.wk)
 
 ###############################################################################
 ###############################################################################
@@ -77,13 +81,16 @@ colnames(data.pars) <- c("parameter", "alt1", "alt2", "original")
 #### Read in results
 ###############################################################################
 ###############################################################################
-aep300 <- read.fwf(file.path("basetrials", "MSYL.RRR"))
+aep300 <- read.fwf(file.path(dir.rs, "orig_300", "RESOUT.RRR"), width.resout, as.is = FALSE)
+aep100 <- read.fwf(file.path(dir.rs, "orig_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
+# ps4300 <- read.fwf(file.path(dir.rs, "pslope4_300", "RESOUT.RRR"), width.resout, as.is = FALSE)
+ps4100 <- read.fwf(file.path(dir.rs, "pslope4_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
+colnames(aep300) <- cols.resout
+colnames(aep100) <- cols.resout
+# colnames(ps4300) <- cols.resout
+colnames(ps4100) <- cols.resout
 
-aepm300 <- read.fwf("c:/users/kelli/dropbox/MSYL.RRR", width.msyl)
-aepr300 <- read.fwf("c:/users/kelli/dropbox/RESOUT.RRR", width.resout)
-colnames(aepr300) <- cols.resout
-
-args(read.fwf)
+ps9100 <- ps9300 <- ps4300 <- ps4100
 
 ###############################################################################
 ###############################################################################
@@ -128,32 +135,50 @@ print(xtable(data.pars,
 #### Table on summary statistics for the 6 base-case trials for the four groups
 ###############################################################################
 ###############################################################################
-myrows <- 1:12
-mycols <- 1:5
-data.table <- droplevels(aepr300[myrows, mycols])
-colnames(data.table) <- LETTERS[mycols]
-data.table[, 1] <- sapply(strsplit(as.character(data.table[, 1]), "-"),
-  function(x) {
-    temp <- x[2:3]
-    gsub("[[:space:]]+", "", paste(temp, collapse = "-"))
-})
+myrows <- 1:24
+mycols <- c(1:8, 12:14, 24)
 
-data.table <- merge(data.table[1:6, ], data.table[7:12, ], by = "A",
-  suffixes = c(".x", ".y"))
 data.table <- rbind(
-  c("", "\\underline{median}",
-    "", "\\underline{5th\\%ile}",
-    "", "\\underline{96th\\%ile}",
-    "", "\\underline{mean}", ""),
-  c("trial", rep(c("F", "M"), 4)),
-  data.table[, order(colnames(data.table))])
+  aep300[myrows, mycols],
+  aep100[myrows, mycols],
+  ps4300[myrows, mycols],
+  ps4100[myrows, mycols],
+  ps9300[myrows, mycols],
+  ps9100[myrows, mycols])
+
+# Working with
+# Total catch: median, 5%, 96%, mean
+# Terminal population: median, 5%, 96%
+# Lowest population: a, b, c
+# AAV
+toprow <- t(data.frame(top = c("Trial", "", "Total catch", "", "",
+  "Final population size", "", "", "Lowest population size", "", "", "AAV"),
+  second = c("", "Med", "5\\%", "96\\%", "Mean", "Med", "5\\%", "96\\%",
+  "", "", "", ""), stringsAsFactors = FALSE))
+colnames(toprow) <- colnames(data.table)
+data.table <- rbind(toprow, data.table)
 
 mylabel <- "totalcatch"
 print(xtable(data.table,
   digits = 3),
   include.rownames = FALSE,
   include.colnames = FALSE,
-  hline.after = c(0, 2, NROW(data.table)),
   sanitize.text.function = function(x){x},
   file = paste0(paper, "_", mylabel, ".tex"))
 
+system(paste("pandoc -f latex -t docx", paste0(paper, "_", mylabel, ".tex"),
+  "-o", paste0(paper, "_", mylabel, ".docx")))
+
+###############################################################################
+###############################################################################
+#### Step
+#### Response curve
+###############################################################################
+###############################################################################
+keep <-
+plotme <- subset(aep100, trial %in% keep)
+
+mat <- layout(matrix(c(1,2,3,4,5,1,2,3,6,7), 2, 5, byrow = TRUE))
+plot()
+
+head(aep100)
