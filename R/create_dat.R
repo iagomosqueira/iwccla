@@ -74,6 +74,11 @@ create_dat <- function(out, case = "T1A-D1",
   # Set up which component density dependence acts on
   optf <- optmsyl <- optdd <- component
 
+  # Set up error in catch rate
+  if (optc > 0) {
+    caterr <- optc
+    optc <- 2 # The 2 switch changes optc to act on reported catch & PTRUE(0)
+  }
   # Set up the dat object
   dat <- vector(length = 47)
   dat[1] <- paste0("MANAGEMENT PARAMETERS         CASE  ", case)
@@ -139,6 +144,11 @@ create_dat <- function(out, case = "T1A-D1",
   if (msyr99 > 0) {
     dat <- append(dat, values = paste0("K99 YEAR                             MSIG     ",
       msyr99yr), after = ifelse(is.null(k99yr), 22, 23))
+  }
+  here <- grep("INITA", dat)
+  if (optc > 0) {
+    dat <- append(dat, values = paste0("STARTING VALUE FOR A                 INITA    ",
+      caterr), after = here - 1)
   }
 
   if (!is.null(out)) writeLines(dat, out)
