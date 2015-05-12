@@ -70,8 +70,8 @@ The Revised Management Procedure (RMP) of the International Whaling
 Commission (IWC) \autocite{iwc_2013_rmp} represents a rigorously-tested
 mechanism to provide risk-averse advice regarding catch limits for
 baleen whales. The catch limit algorithm (\emph{CLA}), the process used
-to calculate area specific catch limits, represents a major component of
-the RMP. The \emph{CLA} was developed based on a rigorous set of
+to calculate area-specific catch limits, represents a major component of
+the RMP. The \emph{CLA} was developed based on a set of
 simulation trials which explored the performance of candidate
 \emph{CLAs} given uncertainty in population dynamics and demographic
 parameters. Before any changes can be made to the established RMP,
@@ -99,36 +99,34 @@ that the lower bound for MSYR in trials should be $MSYR_{1+} = 1\%$.
 
 \emph{Trials structure}
 
-The IWC \autocite{iwc_2007} proposed a set of trials that should be
+The Scientific Committee agreed on a set of trials that should be
 conducted when a proposal were to be made for a revision to the
 \emph{CLA}, to highlight the differences in performance of the
-procedures (Table 1). The IWC \autocite{iwc_2007} also proposed
-that response curve plots be produced for MSY rates of 1\%, 1.5\%, and
+procedures (\autocite{iwc_2007}; Table 1). The IWC \autocite{iwc_2007} also proposed
+that `response curve' plots be produced for MSY rates of 1\%, 1.5\%, and
 4\% and the following scenarios:
 
 \begin{enumerate}[a.]
 \itemsep1pt\parskip0pt\parsep0pt
 \item
-  Initial depletion of 0.05\emph{K}, 0.1\emph{K}, 0.2\emph{K},
+  initial depletion of 0.05\emph{K}, 0.1\emph{K}, 0.2\emph{K},
   0.3\emph{K} (R trials), 0.4\emph{K}, 0.5\emph{K}, 0.6\emph{K} (S
   trials), 0.8\emph{K}, and 0.99\emph{K} (D trials);
 \item
-  Unreported catch level (for initial depletion levels of 0.3\emph{K},
+  unreported catch level (for initial depletion levels of 0.3\emph{K},
   0.6\emph{K}, and 0.99\emph{K}), where the reported catch is either
   100\%, 80\%, 60\%, 40\%, 20\%, or 1\% of the true catch; and
 \item
-  Positive bias in survey estimates (for initial depletion levels of
+  positive bias in survey estimates (for initial depletion levels of
   0.3\emph{K}, 0.6\emph{K}, and 0.99\emph{K}): No bias (1.0), 1.2, 1.4,
   1.6, 1.8, and 2.0.
 \end{enumerate}
 
 The tables of results and the response curve plots show how total catch,
-final population size, lowest populations size, realized protection
-level (lowest realized depletion level at which catches and
-average annual catch variation (AAV) are non-zero)
-change as aspects of the trials are changed.
-Results are not shown for the relative recovery statistic
-and the continuous catch statistics owing to difficulties in defining these
+final population size, lowest populations size,
+and average annual catch variation (AAV) change as aspects of the trials are changed.
+Results are not shown for the relative recovery statistic, realized protection level,
+and the continuing catch statistics owing to difficulties in defining these
 statistics when natural mortality is changing over time
 (and because these statistics were not used to select previous RMP variants).
 Population sizes are scaled by \emph{K}, except when \emph{K} varies.
@@ -146,18 +144,16 @@ The reported statistics are as follows:
   \emph{Pf} distribution: (a) median, (b) 5th \%ile, and (c) 96th \%ile;
 \item
   \emph{Pmin} distribution: (a) median, (b) 5th \%ile, and (c) 96th
-  \%ile;
+  \%ile; and
 \item
-  Average annual catch distribution; and
-\item
-  Realized protection level distribution: (a) median; and (b) 5th \%ile.
+  AAV distribution.
 \end{enumerate}
 
 All trials are conducted for 100-year and 300-year projection periods
 when density-dependence acts on fecundity or natural mortality
 \autocite{johnson_2015_iwc1} and whether MSYR pertains to the total (1+)
 or mature female component of the population. For consistency, MSYL and
-the density-dependence are assumed to pertain to the same population
+the density-dependence component are assumed to pertain to the same population
 component as that to which MSYR pertains.
 
 ~
@@ -186,26 +182,54 @@ $MSYR_{1+}=1\%$ and $MSYR_{mat}=4\%$ are the focus for additional
 analyses as these choices were selected during the MSYR review.
 Figure 2 \ref{fig:respcurv_base} shows response curve plots for trials ???.
 
-\subsubsection{TABLES}\label{tables}
-Table 1. Full set of trials required to replace the current version of
+
+\begin{center}
+Table 1.
+
+Full set of trials required to replace the current version of
 the Revised Management Procedure (RMP).
+\end{center}
+
+~
+
 \input{SC66aRMP3_trial1}
 
 ~
 
-Table 2. An example data file used to run a single trial with 400 simulations,
+\begin{center}
+Table 2.
+
+An example data file used to run a single trial with 400 simulations,
 for when density-dependence impacts fecundity through the 1+ population.
+\end{center}
+
+~
+
 \input{SC66aRMP3_datfile.tex}
 
 ~
 
-Table 3. Specification of the \emph{CLA} variants.
+\begin{center}
+Table 3.
+
+Specification of the \emph{CLA} variants.
+\end{center}
+
+~
+
 \input{SC66aRMP3_parfile.tex}
 
-Table 4. Median, 5\% percentile, 96th\% percentile, and mean of the total
+\begin{center}
+Table 4.
+
+Median, 5\% percentile, 96th\% percentile, and mean of the total
 catch distribution for when density dependence impacts fecundity (F)
 or natural mortalitly (M). All values are scaled by carrying capacity (\emph{K}).
 400 replicates were performed in each case.
+\end{center}
+
+~
+
 \input{SC66aRMP3_totalcatch.tex}
 
 % ~
