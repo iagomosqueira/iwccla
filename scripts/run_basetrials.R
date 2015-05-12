@@ -32,6 +32,7 @@
 dir.base <- getwd()
 dir.basetrials <- "basetrials"
 dir.recreation <- "recreation"
+dir.pslope4100 <- "pslope4100"
 verbose <- FALSE
 torun <- 1:24
 
@@ -44,6 +45,7 @@ torun <- 1:24
 # Create the directory for base trials
 dir.create(dir.basetrials, showWarnings = verbose)
 dir.create(dir.recreation, showWarnings = verbose)
+dir.create(dir.pslope4100, showWarnings = verbose)
 
 # source function to write dat files
 source(file.path("R", "create_dat.R"))
@@ -61,6 +63,7 @@ basetrials <- read.csv("Trials_KFJ_base.csv", header = TRUE)
 ###############################################################################
 ###############################################################################
 setwd(dir.basetrials)
+setwd(dir.pslope4100)
 
 for (ind in torun) {
   dir.create(as.character(ind), showWarnings = FALSE)
@@ -68,6 +71,9 @@ for (ind in torun) {
   files2get <- dir(file.path(dir.base, "lib"), full.names = TRUE)
   done <- mapply(file.copy, from = files2get, MoreArgs = list(to = getwd(),
     overwrite = TRUE))
+  if (grepl("pslope4", getwd())) {
+    ignore <- file.copy("CLC-N.pslope.4.7157.PAR", "CLC-N.PAR", overwrite = TRUE)
+  }
   # Create the data file and overwrite COPY.dat
   create_dat(out = "COPY.dat", case = basetrials[ind, "name"],
     nyear = basetrials[ind, "nyear"], optdt = basetrials[ind, "dt"],
