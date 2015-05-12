@@ -33,6 +33,10 @@ dir.base <- getwd()
 dir.basetrials <- "basetrials"
 dir.recreation <- "recreation"
 dir.pslope4100 <- "pslope4100"
+dir.pslope4300 <- "pslope4300"
+dir.pslope9100 <- "pslope9100"
+dir.pslope9300 <- "pslope9300"
+
 verbose <- FALSE
 torun <- 1:24
 
@@ -46,6 +50,9 @@ torun <- 1:24
 dir.create(dir.basetrials, showWarnings = verbose)
 dir.create(dir.recreation, showWarnings = verbose)
 dir.create(dir.pslope4100, showWarnings = verbose)
+dir.create(dir.pslope4300, showWarnings = verbose)
+dir.create(dir.pslope9100, showWarnings = verbose)
+dir.create(dir.pslope9300, showWarnings = verbose)
 
 # source function to write dat files
 source(file.path("R", "create_dat.R"))
@@ -63,7 +70,11 @@ basetrials <- read.csv("Trials_KFJ_base.csv", header = TRUE)
 ###############################################################################
 ###############################################################################
 setwd(dir.basetrials)
-setwd(dir.pslope4100)
+setwd(dir.pslope9100)
+
+if (grepl("100$", getwd())) {
+  basetrials$nyear <- 100
+}
 
 for (ind in torun) {
   dir.create(as.character(ind), showWarnings = FALSE)
@@ -73,6 +84,9 @@ for (ind in torun) {
     overwrite = TRUE))
   if (grepl("pslope4", getwd())) {
     ignore <- file.copy("CLC-N.pslope.4.7157.PAR", "CLC-N.PAR", overwrite = TRUE)
+  }
+  if (grepl("pslope9", getwd())) {
+    ignore <- file.copy("CLC-N.pslope.9.3443.PAR", "CLC-N.PAR", overwrite = TRUE)
   }
   # Create the data file and overwrite COPY.dat
   create_dat(out = "COPY.dat", case = basetrials[ind, "name"],
