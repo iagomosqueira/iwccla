@@ -747,8 +747,9 @@ C     Print out parameter list
       OPT(0) = 'Constant bias'
       OPT(1) = 'Bias doubles linearly'
       OPT(2) = 'Bias decreases to 2/3 initial value'
+      OPT(3) = 'Bias decreases to 1/2 initial value'
       I = OPTB
-      IF (OPTB.LT.0.OR.OPTB.GT.2) THEN
+      IF (OPTB.LT.0.OR.OPTB.GT.3) THEN
         ERR = .TRUE.
         I = -1
       ENDIF
