@@ -88,7 +88,6 @@ create_dat <- function(out, case = "T1A-D1",
   dat[4] <- paste0("RANDOM PARAMETERS OPTION             OPTRAN    ", optran)
   if (!optb %in% 0:1) stop(paste("optb (0:1) is", optb))
   dat[5] <- paste0("VARIABLE BIAS OPTION                 OPTB      ", optb)
-  if (!optc %in% 0:1) stop(paste("optc (0:1) is", optc))
   dat[6] <- paste0("REPORTED CATCH OPTION                OPTC      ", optc)
   dat[7] <- paste0("PRODUCTION MODEL OPTION              OPTMOD    5")
   dat[8] <- paste0("P>K BIRTH CALCULATION OPTION         OPTDK     0")
@@ -147,7 +146,7 @@ create_dat <- function(out, case = "T1A-D1",
   }
   here <- grep("INITA", dat)
   if (optc > 0) {
-    dat <- append(dat, values = paste0("STARTING VALUE FOR A                 INITA    ",
+    dat <- append(dat, values = paste0("VALUE FOR CATCH RATE ERROR           CATERR   ",
       caterr), after = here - 1)
   }
 
