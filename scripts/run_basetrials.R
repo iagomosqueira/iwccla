@@ -19,9 +19,7 @@
 #### ToDo list
 ###############################################################################
 ###############################################################################
-# a. Add a call where it tells it which par file to use, where the default
-#    is AEP's file such that he can compare the old runs to the new runs.
-# b. Add a few things to increase the capability of MANTST14.FOR
+# a. Add a few things to increase the capability of MANTST14.FOR
 
 ###############################################################################
 ###############################################################################
@@ -29,16 +27,11 @@
 #### Set variable inputs
 ###############################################################################
 ###############################################################################
-dir.base <- getwd()
-dir.basetrials <- "basetrials"
-dir.recreation <- "recreation"
-dir.pslope4100 <- "pslope4100"
-dir.pslope4300 <- "pslope4300"
-dir.pslope9100 <- "pslope9100"
-dir.pslope9300 <- "pslope9300"
+base <- getwd()
+dirs <- c("orig100", "orig300", "pslope4100", "pslope4300")
 
 verbose <- FALSE
-torun <- 1:24
+torun <- :200
 
 ###############################################################################
 ###############################################################################
@@ -46,13 +39,8 @@ torun <- 1:24
 #### Set the working directory and source some files
 ###############################################################################
 ###############################################################################
-# Create the directory for base trials
-dir.create(dir.basetrials, showWarnings = verbose)
-dir.create(dir.recreation, showWarnings = verbose)
-dir.create(dir.pslope4100, showWarnings = verbose)
-dir.create(dir.pslope4300, showWarnings = verbose)
-dir.create(dir.pslope9100, showWarnings = verbose)
-dir.create(dir.pslope9300, showWarnings = verbose)
+# Create the directories for base trials
+mapply(dir.create, dirs, MoreArgs = list(showWarnings = verbose))
 
 # source function to write dat files
 source(file.path("R", "create_dat.R"))
@@ -69,25 +57,38 @@ basetrials <- read.csv("Trials_KFJ_base.csv", header = TRUE)
 #### Run the trials
 ###############################################################################
 ###############################################################################
-setwd(dir.basetrials)
-setwd(dir.pslope9100)
+for(fd in dirs) {
+  setwd(eval(parse(fd)))
 
 if (grepl("100$", getwd())) {
   basetrials$nyear <- 100
 }
 
 for (ind in torun) {
+  # Determine if time-varying
+  timevarying <- ifelse(any(!is.null(basetrials[, c("kyear", "msyryr")])),
+    TRUE, FALSE)
+
+  # Create the directory: if time-varying and nyear = 300 then skip
+  if (timevarying & basetrials$nyear[ind] == 300) next
   dir.create(as.character(ind), showWarnings = FALSE)
   setwd(as.character(ind))
-  files2get <- dir(file.path(dir.base, "lib"), full.names = TRUE)
+
+  # Copy files over to the new directory, assumes compiled programs exists
+  files2get <- dir(file.path(base, "lib"), full.names = TRUE)
   done <- mapply(file.copy, from = files2get, MoreArgs = list(to = getwd(),
     overwrite = TRUE))
+
+  # If working with alternative use the Norwegian par file w/ Pslope = 4.7157
   if (grepl("pslope4", getwd())) {
     ignore <- file.copy("CLC-N.pslope.4.7157.PAR", "CLC-N.PAR", overwrite = TRUE)
   }
-  if (grepl("pslope9", getwd())) {
-    ignore <- file.copy("CLC-N.pslope.9.3443.PAR", "CLC-N.PAR", overwrite = TRUE)
+
+  # If time-varying change the ISCALE.dat
+  if (timevarying) {
+    iscale <- writeLines("1", "ISCALE.dat")
   }
+
   # Create the data file and overwrite COPY.dat
   create_dat(out = "COPY.dat", case = basetrials[ind, "name"],
     nyear = basetrials[ind, "nyear"], optdt = basetrials[ind, "dt"],
@@ -98,22 +99,19 @@ for (ind in torun) {
     npcat = basetrials[ind, "catch"], k99 = basetrials[ind, "k99"],
     k99yr = basetrials[ind, "kyear"], optb = basetrials[ind, "biasopt"],
     msyr99 = basetrials[ind, "msyr99"], msyr99yr = basetrials[ind, "msyryr"],
-    erate = basetrials[ind, "epd"], istep = basetrials[ind, "istep"])
+    erate = basetrials[ind, "epd"], istep = basetrials[ind, "istep"],
+    inita = basetrials[ind, "inita"], initz = basetrials[ind, "initz"],
+    optc = basetrials[ind, "cerror"])
 
-  system("gfortran Man-v14z.for -o az.exe", show.output.on.console = verbose)
-  system("gfortran Man-v14.for -o a.exe", show.output.on.console = verbose)
-  system("gfortran MANRESV9.for -o res.exe", show.output.on.console = verbose)
-
-  if (any(Sys.time() - file.info(dir(pattern = ".exe"))$mtime > 2)) {
-    stop(paste("An executable was not compiled correctly in", getwd()))
-  }
-  system("az", show.output.on.console = verbose)
-  system("a", show.output.on.console = verbose)
+  system("az",  show.output.on.console = verbose)
+  system("a",   show.output.on.console = verbose)
   system("res", show.output.on.console = verbose)
   setwd("..")
 }
 
 if (verbose) message(paste("Trials in", getwd(), "are done."))
+setwd(base)
+}
 
 ###############################################################################
 ###############################################################################
@@ -121,4 +119,4 @@ if (verbose) message(paste("Trials in", getwd(), "are done."))
 #### End of file
 ###############################################################################
 ###############################################################################
-setwd(dir.base)
+
