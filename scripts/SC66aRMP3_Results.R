@@ -89,17 +89,10 @@ colnames(data.pars) <- c("parameter", "alt1", "alt2", "original")
 ###############################################################################
 aep300 <- read.fwf(file.path(dir.rs, "orig_300", "RESOUT.RRR"), width.resout, as.is = FALSE)
 aep100 <- read.fwf(file.path(dir.rs, "orig_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
-# ps4300 <- read.fwf(file.path(dir.rs, "pslope4_300", "RESOUT.RRR"), width.resout, as.is = FALSE)
+ps4300 <- read.fwf(file.path(dir.rs, "pslope4_300", "RESOUT.RRR"), width.resout, as.is = FALSE)
 ps4100 <- read.fwf(file.path(dir.rs, "pslope4_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
-ps9100 <- read.fwf(file.path(dir.rs, "pslope9_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
 colnames(aep300) <- colnames(aep100) <- cols.resout
-
-# FAKE
-ps9300 <- ps4300 <- ps9100
-ps9300[, ] <- ps4300[, ] <- NA
-
 colnames(ps4300) <- colnames(ps4100) <- cols.resout
-colnames(ps9300) <- colnames(ps9100) <- cols.resout
 
 ###############################################################################
 ###############################################################################
@@ -144,16 +137,14 @@ print(xtable(data.pars,
 #### Table on summary statistics for the 6 base-case trials for the four groups
 ###############################################################################
 ###############################################################################
-myrows <- 1:24
+myrows <- 1:12
 mycols <- c(1:8, 12:14, 24)
 
 data.table <- rbind(
   aep300[myrows, mycols],
   aep100[myrows, mycols],
   ps4300[myrows, mycols],
-  ps4100[myrows, mycols],
-  ps9300[myrows, mycols],
-  ps9100[myrows, mycols])
+  ps4100[myrows, mycols])
 
 # Working with
 # Total catch: median, 5%, 96%, mean
@@ -186,27 +177,28 @@ system(paste("pandoc -f latex -t docx", paste0(paper, "_", mylabel, ".tex"),
 ###############################################################################
 limtc <- c(0, 2.5)
 limpf <- c(0, 1)
+limaa <- c(0, 0.2)
 
 sheet <- read.csv(fn.basetrials, header = TRUE)
 keep <- subset(sheet, curve %in% c("a", "all", "ab") & component == 1 & dt == 0 &
   msyr == 0.01 & !depl %in% c(0.60, 0.99))
 keep <- keep[order(keep$depl), ]
-plotme <- aep100[rownames(keep), ]
+plotme <- data.frame(aep100[rownames(keep), ], stringsAsFactors = FALSE)
+symb <- LETTERS[1:dim(plotme)[1]]
 
-head(plotme)
 # response curve a
-par(mfrow = c(1, 5), las = 1, mar = rep(0, 4), oma = rep(5, 4),
+jpeg(paste0(paper, "_Fig01.jpeg"), quality = 100)
+par(mfrow = c(1, 8), las = 1, mar = rep(0, 4), oma = c(0, 2, 0, 0),
   tck = 0.05, mgp = c(3, 0.1, 0))
-errbar(x = 1:dim(plotme)[1], y = plotme[, 2], yplus = plotme[, 4], yminus = plotme[, 3],
-  xaxt = "n", ylim = limtc)
-errbar(x = 1:dim(plotme)[1], y = plotme[, 6], yplus = plotme[, 8], yminus = plotme[, 7],
-  xaxt = "n", ylim = limpf)
-errbar(x = 1:dim(plotme)[1], y = plotme[, 6], yplus = plotme[, 8], yminus = plotme[, 7],
-  xaxt = "n", ylim = limpf)
+errbar(x = 1:dim(plotme)[1], y = plotme[, 2], yplus = plotme[, 4],
+  yminus = plotme[, 3], xaxt = "n", ylim = limtc, pch = symb, xlim = xlim)
+errbar(x = 1:dim(plotme)[1], y = plotme[, 6], yplus = plotme[, 8],
+  yminus = plotme[, 7], xaxt = "n", ylim = limpf, pch = symb)
+errbar(x = 1:dim(plotme)[1], y = plotme[, 12], yplus = plotme[, 14],
+  yminus = plotme[, 13], xaxt = "n", ylim = limpf, pch = symb)
+y <- as.numeric(as.character(plotme[, 24]))
+plot(x = 1:dim(plotme)[1], y = y, ylim = limaa, xaxt = "n", pch = symb)
+dev.off()
 
-
-
-with(plotme, errbar(x,mean,max,min))
-grid(nx=NA, ny=NULL)
 
 
