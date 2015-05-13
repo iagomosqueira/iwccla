@@ -94,6 +94,11 @@ ps4100 <- read.fwf(file.path(dir.rs, "pslope4_100", "RESOUT.RRR"), width.resout,
 colnames(aep300) <- colnames(aep100) <- cols.resout
 colnames(ps4300) <- colnames(ps4100) <- cols.resout
 
+aep300$trial <- gsub("^[[:space:]]+|[[:space:]]+$", "", aep300$trial)
+aep100$trial <- gsub("^[[:space:]]+|[[:space:]]+$", "", aep100$trial)
+ps4300$trial <- gsub("^[[:space:]]+|[[:space:]]+$", "", ps4300$trial)
+ps4100$trial <- gsub("^[[:space:]]+|[[:space:]]+$", "", ps4100$trial)
+
 ###############################################################################
 ###############################################################################
 #### Step
@@ -177,28 +182,62 @@ system(paste("pandoc -f latex -t docx", paste0(paper, "_", mylabel, ".tex"),
 ###############################################################################
 limtc <- c(0, 2.5)
 limpf <- c(0, 1)
-limaa <- c(0, 0.2)
+limaa <- c(0, 0.4)
 
 sheet <- read.csv(fn.basetrials, header = TRUE)
 keep <- subset(sheet, curve %in% c("a", "all", "ab") & component == 1 & dt == 0 &
   msyr == 0.01 & !depl %in% c(0.60, 0.99))
 keep <- keep[order(keep$depl), ]
-plotme <- data.frame(aep100[rownames(keep), ], stringsAsFactors = FALSE)
-symb <- LETTERS[1:dim(plotme)[1]]
+orig <- data.frame(aep100[match(keep$name, aep100$trial), ],
+  stringsAsFactors = FALSE)
+orig$AAV <- gsub("[[:punct:]]", "", orig$AAV)
+alt <- data.frame(ps4100[match(keep$name, ps4100$trial), ],
+  stringsAsFactors = FALSE)
+alt$AAV <- gsub("[[:punct:]]", "", alt$AAV)
+symb <- LETTERS[1:dim(orig)[1]]
+
 
 # response curve a
 jpeg(paste0(paper, "_Fig01.jpeg"), quality = 100)
-par(mfrow = c(1, 8), las = 1, mar = rep(0, 4), oma = c(0, 2, 0, 0),
+par(mfrow = c(1, 7), las = 1, mar = rep(0.1, 4), oma = c(0.2, 3, 0.2, 0.2),
   tck = 0.05, mgp = c(3, 0.1, 0))
-errbar(x = 1:dim(plotme)[1], y = plotme[, 2], yplus = plotme[, 4],
-  yminus = plotme[, 3], xaxt = "n", ylim = limtc, pch = symb, xlim = xlim)
-errbar(x = 1:dim(plotme)[1], y = plotme[, 6], yplus = plotme[, 8],
-  yminus = plotme[, 7], xaxt = "n", ylim = limpf, pch = symb)
-errbar(x = 1:dim(plotme)[1], y = plotme[, 12], yplus = plotme[, 14],
-  yminus = plotme[, 13], xaxt = "n", ylim = limpf, pch = symb)
-y <- as.numeric(as.character(plotme[, 24]))
-plot(x = 1:dim(plotme)[1], y = y, ylim = limaa, xaxt = "n", pch = symb)
+errbar(x = 1:dim(orig)[1], y = orig[, 2], yplus = orig[, 4], frame.plot = FALSE,
+  yminus = orig[, 3], xaxt = "n", ylim = limtc, pch = symb, xlim = xlim)
+mtext(side = 3, outer = FALSE, "Total catch", line = -1, adj = 1)
+legend(x = -2, y = limtc[2], bty = "n", "Orig")
+errbar(x = 1:dim(alt)[1], y = alt[, 2], yplus = alt[, 4], frame.plot = FALSE,
+  yminus = alt[, 3], xaxt = "n", ylim = limtc, pch = symb, xlim = xlim, yaxt = "n")
+axis(2, labels = FALSE)
+legend(x = -2, y = limtc[2], bty = "n", "Alt")
+
+errbar(x = 1:dim(orig)[1], y = orig[, 6], yplus = orig[, 8], frame.plot = FALSE,
+  yminus = orig[, 7], xaxt = "n", ylim = limpf, pch = symb, xlim = xlim)
+mtext(side = 3, outer = FALSE, "Final size", line = -1, adj = 1)
+legend(x = -2, y = limpf[2], bty = "n", "Orig")
+errbar(x = 1:dim(alt)[1], y = alt[, 6], yplus = alt[, 8], frame.plot = FALSE,
+  yminus = alt[, 7], xaxt = "n", ylim = limpf, pch = symb, xlim = xlim, yaxt = "n")
+axis(2, labels = FALSE)
+legend(x = -2, y = limpf[2], bty = "n", "Alt")
+
+errbar(x = 1:dim(orig)[1], y = orig[, 12], yplus = orig[, 14], frame.plot = FALSE,
+  yminus = orig[, 13], xaxt = "n", ylim = limpf, pch = symb, xlim = xlim)
+mtext(side = 3, outer = FALSE, "Lowest size", line = -1, adj = 1)
+legend(x = -2, y = limpf[2], bty = "n", "Orig")
+errbar(x = 1:dim(alt)[1], y = alt[, 12], yplus = alt[, 14], frame.plot = FALSE,
+  yminus = alt[, 13], xaxt = "n", ylim = limpf, pch = symb, xlim = xlim, yaxt = "n")
+axis(2, labels = FALSE)
+legend(x = -2, y = limpf[2], bty = "n", "Alt")
+
+y <- as.numeric(orig[, 24])
+plot(x = 1:dim(orig)[1], y = y, ylim = limaa, xaxt = "n", pch = symb,
+  frame.plot = FALSE, yaxt = "n")
+legend(x = 0, y = limaa[2] / 2, bty = "n", "Orig")
+y <- as.numeric(as.character(alt[, 24]))
+points(x = 1:dim(alt)[1], y = y + 0.2, ylim = limaa, xaxt = "n", pch = symb,
+  yaxt = "n")
+axis(2, at = seq(0, limaa[2], length.out = 5),
+  labels = c(0, limaa[2]/4, limaa[2]/2, limaa[2]/4, limaa[2]/2))
+mtext(side = 3, outer = FALSE, "AAV", line = -1)
+legend(x = 0, y = limaa[2], bty = "n", "Alt")
 dev.off()
-
-
 
