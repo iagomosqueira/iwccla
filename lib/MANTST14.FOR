@@ -143,6 +143,7 @@ C               defines the inital seeds. (For tuning & factorial expt.)
 C            3: New seeds are generated
 C     OPTB   Option controlling bias   0: Constant
 C            1: Linear, doubles        2: Linear, decreases by 1/3 eg 1.5 -> 1.0
+C            3: Decrease from 1 to 0.5
 C     OPTC   Defines reported premanagement catch (i.e. as reported to
 C            the management procedure).
 C            0: True catch (CATERR=1)
@@ -305,10 +306,13 @@ C     Set Z, the density dependent exponent using MSYL.
       ENDIF
 
 C     Set BINC, the annual bias increment. (1): Doubled  (2): Reduced by 1/3
+C     (3): Reduced by 1/2
       IF (OPTB.EQ.1) THEN
         BINC = BIAS0 / DBLE(NYEAR-1)
       ELSE IF (OPTB.EQ.2) THEN
         BINC = -BIAS0 / DBLE(3*NYEAR-3)
+      ELSE IF (OPTB.EQ.3) THEN
+        BINC = -BIAS0 / DBLE(2*NYEAR-2)
       ENDIF
 
 C     Call RDPARS to initialise management routine
