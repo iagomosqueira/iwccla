@@ -29,9 +29,9 @@
 ###############################################################################
 base <- getwd()
 dirs <- c("orig100", "orig300", "pslope4100", "pslope4300")
-
+if (Sys.info()["user"] != "kelli") dirs <- dirs[grep("300", dirs)]
 verbose <- FALSE
-torun <- :200
+torun <- "c"
 
 ###############################################################################
 ###############################################################################
@@ -50,6 +50,9 @@ if (!file.exists("Trials_KFJ_base.csv")) {
   stop("Base case file (Trials_KFJ_base.csv) does not exist")
 }
 basetrials <- read.csv("Trials_KFJ_base.csv", header = TRUE)
+if (is.character(torun)) {
+  torun <- grep("c", basetrials$curve)
+}
 
 ###############################################################################
 ###############################################################################
