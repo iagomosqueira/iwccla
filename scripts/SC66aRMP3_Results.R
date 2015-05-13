@@ -21,16 +21,18 @@
 ###############################################################################
 paper <- "SC66aRMP3"
 
-dir.wk <- "c:/iwccla/ms"
+dir.home <- "c:/iwccla"
 dir.rs <- "c:/users/kelli/dropbox/iwccla"
 
 width.msyl <- c(11, rep(8, 9))
 width.resout <- c(15, rep(7, 4), rep(c(9, 7, 7), 6), 9)
 
-fn.100 <- c("recreation")
+fn.100 <- c("orig_100")
 fn.300 <- c("basetrials")
 fn.dat <- file.path("..", "lib", "COPY.dat")
 fn.pars <- dir(file.path("..", "lib"), pattern = "PAR", full.names = TRUE)
+fn.basetrials <- file.path(dir.home, "Trials_KFJ_base.csv")
+
 cols.msyl <- c()
 # Work with TC, PF, ML, AAV
 cols.resout <- c("trial", rep("TC", 3), "tC", rep("PF", 3), "Pf1", "PF1", "PF2",
@@ -43,7 +45,11 @@ cols.resout <- c("trial", rep("TC", 3), "tC", rep("PF", 3), "Pf1", "PF1", "PF2",
 #### Attach libraries and set directory
 ###############################################################################
 ###############################################################################
+#plot error bars
+library(Hmisc)
 library(xtable)
+
+dir.wk <- file.path(dir.home, "ms")
 setwd(dir.wk)
 
 ###############################################################################
@@ -85,12 +91,15 @@ aep300 <- read.fwf(file.path(dir.rs, "orig_300", "RESOUT.RRR"), width.resout, as
 aep100 <- read.fwf(file.path(dir.rs, "orig_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
 # ps4300 <- read.fwf(file.path(dir.rs, "pslope4_300", "RESOUT.RRR"), width.resout, as.is = FALSE)
 ps4100 <- read.fwf(file.path(dir.rs, "pslope4_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
-colnames(aep300) <- cols.resout
-colnames(aep100) <- cols.resout
-# colnames(ps4300) <- cols.resout
-colnames(ps4100) <- cols.resout
+ps9100 <- read.fwf(file.path(dir.rs, "pslope9_100", "RESOUT.RRR"), width.resout, as.is = FALSE)
+colnames(aep300) <- colnames(aep100) <- cols.resout
 
-ps9100 <- ps9300 <- ps4300 <- ps4100
+# FAKE
+ps9300 <- ps4300 <- ps9100
+ps9300[, ] <- ps4300[, ] <- NA
+
+colnames(ps4300) <- colnames(ps4100) <- cols.resout
+colnames(ps9300) <- colnames(ps9100) <- cols.resout
 
 ###############################################################################
 ###############################################################################
@@ -175,10 +184,29 @@ system(paste("pandoc -f latex -t docx", paste0(paper, "_", mylabel, ".tex"),
 #### Response curve
 ###############################################################################
 ###############################################################################
-keep <-
-plotme <- subset(aep100, trial %in% keep)
+limtc <- c(0, 2.5)
+limpf <- c(0, 1)
 
-mat <- layout(matrix(c(1,2,3,4,5,1,2,3,6,7), 2, 5, byrow = TRUE))
-plot()
+sheet <- read.csv(fn.basetrials, header = TRUE)
+keep <- subset(sheet, curve %in% c("a", "all", "ab") & component == 1 & dt == 0 &
+  msyr == 0.01 & !depl %in% c(0.60, 0.99))
+keep <- keep[order(keep$depl), ]
+plotme <- aep100[rownames(keep), ]
 
-head(aep100)
+head(plotme)
+# response curve a
+par(mfrow = c(1, 5), las = 1, mar = rep(0, 4), oma = rep(5, 4),
+  tck = 0.05, mgp = c(3, 0.1, 0))
+errbar(x = 1:dim(plotme)[1], y = plotme[, 2], yplus = plotme[, 4], yminus = plotme[, 3],
+  xaxt = "n", ylim = limtc)
+errbar(x = 1:dim(plotme)[1], y = plotme[, 6], yplus = plotme[, 8], yminus = plotme[, 7],
+  xaxt = "n", ylim = limpf)
+errbar(x = 1:dim(plotme)[1], y = plotme[, 6], yplus = plotme[, 8], yminus = plotme[, 7],
+  xaxt = "n", ylim = limpf)
+
+
+
+with(plotme, errbar(x,mean,max,min))
+grid(nx=NA, ny=NULL)
+
+
