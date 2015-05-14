@@ -19,7 +19,7 @@
 #### ToDo list
 ###############################################################################
 ###############################################################################
-# a. Add a few things to increase the capability of MANTST14.FOR
+#
 
 ###############################################################################
 ###############################################################################
@@ -31,7 +31,8 @@ base <- getwd()
 dirs <- c("orig100", "orig300", "pslope4100", "pslope4300")
 if (Sys.info()["user"] != "kelli") dirs <- dirs[grep("300", dirs)]
 verbose <- FALSE
-torun <- "c"
+torun <- 22:157
+run <- FALSE
 
 ###############################################################################
 ###############################################################################
@@ -66,21 +67,24 @@ for(fd in dirs) {
 if (grepl("100$", getwd())) {
   basetrials$nyear <- 100
 }
+if (grepl("300$", getwd())) { basetrials$nyear <- 300 }
 
 for (ind in torun) {
   # Determine if time-varying
-  timevarying <- ifelse(any(!is.null(basetrials[, c("kyear", "msyryr")])),
+  timevarying <- ifelse(any(is.null(basetrials[ind, c("kyear", "msyryr")])),
     TRUE, FALSE)
 
   # Create the directory: if time-varying and nyear = 300 then skip
   if (timevarying & basetrials$nyear[ind] == 300) next
-  dir.create(as.character(ind), showWarnings = FALSE)
-  setwd(as.character(ind))
+  if (run) {
+    dir.create(as.character(ind), showWarnings = FALSE)
+    setwd(as.character(ind))
 
-  # Copy files over to the new directory, assumes compiled programs exists
-  files2get <- dir(file.path(base, "lib"), full.names = TRUE)
-  done <- mapply(file.copy, from = files2get, MoreArgs = list(to = getwd(),
-    overwrite = TRUE))
+    # Copy files over to the new directory, assumes compiled programs exists
+    files2get <- dir(file.path(base, "lib"), full.names = TRUE)
+    done <- mapply(file.copy, from = files2get, MoreArgs = list(to = getwd(),
+      overwrite = TRUE))
+  }
 
   # If working with alternative use the Norwegian par file w/ Pslope = 4.7157
   if (grepl("pslope4", getwd())) {
@@ -93,7 +97,7 @@ for (ind in torun) {
   }
 
   # Create the data file and overwrite COPY.dat
-  create_dat(out = "COPY.dat", case = basetrials[ind, "name"],
+  create_dat(out = paste0(ind, ".dat"), case = basetrials[ind, "name"],
     nyear = basetrials[ind, "nyear"], optdt = basetrials[ind, "dt"],
     depl = basetrials[ind, "depl"], component = basetrials[ind, "component"],
     msyr1 = basetrials[ind, "msyr"], msyl = basetrials[ind, "msyl"],
@@ -106,10 +110,12 @@ for (ind in torun) {
     inita = basetrials[ind, "inita"], initz = basetrials[ind, "initz"],
     optc = basetrials[ind, "cerror"])
 
-  system("az",  show.output.on.console = verbose)
-  system("a",   show.output.on.console = verbose)
-  system("res", show.output.on.console = verbose)
-  setwd("..")
+  if (run) {
+    system("az",  show.output.on.console = verbose)
+    system("a",   show.output.on.console = verbose)
+    system("res", show.output.on.console = verbose)
+    setwd("..")
+  }
 }
 
 if (verbose) message(paste("Trials in", getwd(), "are done."))
