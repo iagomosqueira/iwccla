@@ -97,7 +97,8 @@ for (ind in torun) {
   }
 
   # Create the data file and overwrite COPY.dat
-  create_dat(out = paste0(ind, ".dat"), case = basetrials[ind, "name"],
+  create_dat(out = paste0(ifelse(run, "COPY", ind), ".dat"),
+    case = basetrials[ind, "name"],
     nyear = basetrials[ind, "nyear"], optdt = basetrials[ind, "dt"],
     depl = basetrials[ind, "depl"], component = basetrials[ind, "component"],
     msyr1 = basetrials[ind, "msyr"], msyl = basetrials[ind, "msyl"],
