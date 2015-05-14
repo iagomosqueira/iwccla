@@ -72,6 +72,7 @@ plot_curve <- function(orig, alt, keep, out) {
   y <- as.numeric(as.character(alt[, 24]))
   points(x = 1:dim(alt)[1], y = y + limaa[2] / 2, ylim = limaa, xaxt = "n", pch = symb,
     yaxt = "n")
+  mtext(side = 3, "Orig", line = -2, cex = little)
   axis(2, at = seq(0, limaa[2], length.out = 9),
     labels = c(0, seq(limaa[2]/8, limaa[2]/2, length.out = 4),
       seq(limaa[2]/8, limaa[2]/2, length.out = 4)))
