@@ -67,10 +67,10 @@ plot_curve <- function(orig, alt, keep, out) {
   text(x = xlim[1], y = limpf[2] * 1.05, "Lowest size", cex = big, xpd = NA)
 
   y <- as.numeric(orig[, 24])
-  plot(x = 1:dim(orig)[1], y = y, ylim = limaa, xaxt = "n", pch = symb,
+  plot(x = 1:dim(alt)[1], y = y + limaa[2] / 2, ylim = limaa, xaxt = "n", pch = symb,
     frame.plot = FALSE, yaxt = "n", xlim = c(0, dim(orig)[1]))
   y <- as.numeric(as.character(alt[, 24]))
-  points(x = 1:dim(alt)[1], y = y + limaa[2] / 2, ylim = limaa, xaxt = "n", pch = symb,
+  points(x = 1:dim(orig)[1], y = y, ylim = limaa, xaxt = "n", pch = symb,
     yaxt = "n")
   mtext(side = 3, "Orig", line = -2, cex = little)
   axis(2, at = seq(0, limaa[2], length.out = 9),
