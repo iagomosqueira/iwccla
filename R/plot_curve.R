@@ -13,7 +13,7 @@
 
 plot_curve <- function(plot1, plot2, keep, out) {
 
-  myplot <- function(orig, alt, little = 0.6, big = 0.95,
+  myplot <- function(orig, alt, little = 0.6, big = 0.95, label = "",
     limtc = c(0, 2.5), limpf = c(0, 1), limaa = c(0, 0.8)) {
     num <- dim(orig)[1]
     print(num)
@@ -23,6 +23,7 @@ plot_curve <- function(plot1, plot2, keep, out) {
     errbar(x = 1:dim(orig)[1], y = orig[, 2], yplus = orig[, 4], frame.plot = FALSE,
       yminus = orig[, 3], xaxt = "n", ylim = limtc, pch = symb, xlim = xlim)
     axis(2, at = seq(limtc[1], limtc[2], by = .25)[seq(2,11,by = 2)], label = FALSE)
+    mtext(side = 3, label, padj = 0, line = 1, cex = big * 0.8)
     mtext(side = 3, "Orig", line = -2, cex = little)
     errbar(x = 1:dim(alt)[1], y = alt[, 2], yplus = alt[, 4], frame.plot = FALSE,
       yminus = alt[, 3], xaxt = "n", ylim = limtc, pch = symb, xlim = xlim, yaxt = "n")
@@ -68,31 +69,29 @@ plot_curve <- function(plot1, plot2, keep, out) {
     abline(h = limaa[2] / 2, xpd = FALSE)
   }
 
-  plota <- plot1[grepl("F", plot1$trial), ]
-  plota <- data.frame(plota[match(keep$name, plota$trial), ],
+  keepa <- keep[grepl("^F", keep$name), ]
+  plota <- data.frame(plot1[match(keepa$name, plot1$trial), ],
     stringsAsFactors = FALSE)
   plota$AAV <- gsub("[[:punct:]]$|[[:space:]]", "", plota$AAV)
-  plotb <- plot2[grepl("F", plot2$trial), ]
-  plotb <- data.frame(plotb[match(keep$name, plotb$trial), ],
+  plotb <- data.frame(plot2[match(keepa$name, plot2$trial), ],
     stringsAsFactors = FALSE)
   plotb$AAV <- gsub("[[:punct:]]$|[[:space:]]", "", plotb$AAV)
 
-  plotc <- plot1[grepl("M", plot1$trial), ]
-  plotc <- data.frame(plotc[match(keep$name, plotc$trial), ],
+  keepb <- keep[grepl("^M", keep$name), ]
+  plotc <- data.frame(plot1[match(keepb$name, plot1$trial), ],
     stringsAsFactors = FALSE)
   plotc$AAV <- gsub("[[:punct:]]$|[[:space:]]", "", plotc$AAV)
-
-  plotd <- plot2[grepl("M", plot2$trial), ]
-  plotd <- data.frame(plotd[match(keep$name, plotd$trial), ],
+  plotd <- data.frame(plot2[match(keepb$name, plot2$trial), ],
     stringsAsFactors = FALSE)
   plotd$AAV <- gsub("[[:punct:]]$|[[:space:]]", "", plotd$AAV)
 
-  # response curve a
-  jpeg(paste0(out, ".jpeg"), res = 100, width = 600)
-  par(mfrow = c(1, 14), las = 1, mar = rep(0.1, 4), oma = c(0.2, 3, 2.5, 0.2),
+  mars <- rep(0.1, 4)
+  jpeg(paste0(out, ".jpeg"), res = 100, width = 1100)
+  par(mfrow = c(1, 15), las = 1, mar = mars, oma = c(0.2, 3, 2.5, 0.2),
     tck = 0.05, mgp = c(3, 0.1, 0))
-  myplot(plota, plotb)
-  myplot(plotc, plotd)
+  myplot(plota, plotb, label = "Fecundity")
+  plot(0, 0, type = "n", frame.plot = FALSE, xaxt = "n", yaxt = "n")
+  myplot(plotc, plotd, label = "Natural Morality")
   dev.off()
 
 }
