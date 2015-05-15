@@ -86,7 +86,7 @@ create_dat <- function(out, case = "T1A-D1",
   dat[3] <- ""
   if (!optran %in% 0:1) stop(paste("optran (0:1) is", optran))
   dat[4] <- paste0("RANDOM PARAMETERS OPTION             OPTRAN    ", optran)
-  if (!optb %in% 0:1) stop(paste("optb (0:1) is", optb))
+  if (!optb %in% 0:3) stop(paste("optb (0:1) is", optb))
   dat[5] <- paste0("VARIABLE BIAS OPTION                 OPTB      ", optb)
   dat[6] <- paste0("REPORTED CATCH OPTION                OPTC      ", optc)
   dat[7] <- paste0("PRODUCTION MODEL OPTION              OPTMOD    5")
