@@ -106,7 +106,7 @@ create_dat <- function(out, case = "T1A-D1",
   dat[18] <- paste0("PREMANAGEMENT DEPLETION (1)          DEPL     ", depl)
   dat[19] <- paste0("CHANGING K OPTION                    K99        ", k99)
   dat[20] <- paste0("CHANGING MSYR OPTION                 MSYR99     ", msyr99)
-  dat[21] <- paste0("CHANGING MSYR STEP                   ISTEP     ", istep)
+  dat[21] <- paste0("CHANGING MSYR STEP                   ISTEP   ", istep)
   dat[22] <- paste0("MATURITY PARAMETER                   MAT1     ", mat1)
   dat[23] <- paste0("MATURITY SIGMA                       MSIG     1.20")
   dat[24] <- paste0("RECRUITMENT PARAMETER                REC1     7.00")
