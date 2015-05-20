@@ -28,11 +28,10 @@
 ###############################################################################
 ###############################################################################
 base <- getwd()
-dirs <- c("orig100", "orig300", "pslope4100", "pslope4300")
-if (Sys.info()["user"] != "kelli") dirs <- dirs[grep("300", dirs)]
-verbose <- FALSE
-torun <- 22:157
-run <- FALSE
+dirs <- c("orig100", "orig300", "pslope4100", "pslope4300")[3]
+verbose <- TRUE
+torun <- c(337:360)
+run <- TRUE
 
 ###############################################################################
 ###############################################################################
@@ -51,9 +50,6 @@ if (!file.exists("Trials_KFJ_base.csv")) {
   stop("Base case file (Trials_KFJ_base.csv) does not exist")
 }
 basetrials <- read.csv("Trials_KFJ_base.csv", header = TRUE)
-if (is.character(torun)) {
-  torun <- grep("c", basetrials$curve)
-}
 
 ###############################################################################
 ###############################################################################
@@ -73,6 +69,7 @@ for (ind in torun) {
   # Determine if time-varying
   timevarying <- ifelse(any(is.null(basetrials[ind, c("kyear", "msyryr")])),
     TRUE, FALSE)
+  if(basetrials[ind, "istep"] > 0) timevarying <- TRUE
 
   # Create the directory: if time-varying and nyear = 300 then skip
   if (timevarying & basetrials$nyear[ind] == 300) next
@@ -114,7 +111,7 @@ for (ind in torun) {
   if (run) {
     system("az",  show.output.on.console = verbose)
     system("a",   show.output.on.console = verbose)
-    system("res", show.output.on.console = verbose)
+    # system("res", show.output.on.console = verbose)
     setwd("..")
   }
 }
