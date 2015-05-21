@@ -157,14 +157,11 @@ test[test$name == "M2-T6cD-S4", c("o100", "o300", "p100", "p300")] <- "bad"
 test[test$name == "M2-T6cA-D4", "p300"] <- "bad"
 test[test$name == "M1-T20-D1", "p300"] <- "bad"
 # Currently running
-test$o100[c(343:372)] <- "Jordyn"
+test$o100[c(337:360)] <- "Kelli"
 
-test$p100[c(343:372)] <- "Kelli"
+test$p100[c(337:360)] <- "Kelli"
 
-test$o300[c(208:216, 245:276, 313:372)] <- "Andre"
-test$o300[c(190:192)] <- "Kelli"
-
-test$p300[c(259, 344:349, 356:359)] <- "Andre"
+test$o300[c(356:359)] <- "Andre"
 
 test[test$o100 != TRUE, c("name", "PF.o100", "o100")]
 test[test$p100 != TRUE, c("name", "PF.p100", "p100")]
@@ -333,3 +330,15 @@ keep <- subset(sheet, curve %in% c("d", "all") & component == 2 &
   depl %in% c(0.99))
 keep <- keep[order(keep$survbias), ]
 plot_curve(aep100, ps4100, aep300, ps4300, keep, paste0(paper, "_Fig04_29"))
+
+###############################################################################
+###############################################################################
+#### Step
+#### Part 2
+###############################################################################
+###############################################################################
+keep <- subset(sheet, survbias == 0.5 & depl == 0.3 & biasopt == 0)
+keep <- keep[order(keep$survbias), ]
+plot_curve(aep100, aep300, ps4100, ps4300, keep,
+  paste0(paper, "test"), part = 2)
+
