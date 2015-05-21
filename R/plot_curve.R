@@ -11,7 +11,7 @@
 #' @author Kelli Faye Johnson
 #' @export
 
-plot_curve <- function(plot1, plot2, plot3, plot4, set, out) {
+plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
 
   myplot <- function(orig, alt, little = 0.6, big = 0.95, label = "",
     limtc = c(0, 2.5), limpf = c(0, 1), limaa = c(0, 0.8)) {
@@ -71,8 +71,8 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out) {
     text(x = num/2, y = limaa[2] * hdmlt, "AAV", cex = big, xpd = NA)
     abline(h = limaa[2] / 2, xpd = FALSE)
   }
-
   mars <- c(1.0, 0.1, 1.0, 0.1)
+  if (part == 1) {
   jpeg(paste0(out, ".jpeg"), res = 100, width = 1100, height = 600)
   par(mfrow = c(2, 15), las = 1, mar = mars, oma = c(0.2, 3, 2.5, 0.2),
     tck = 0.05, mgp = c(3, 0.1, 0))
@@ -113,9 +113,28 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out) {
   plotd$AAV <- gsub("[[:punct:]]$|[[:space:]]", "", plotd$AAV)
 
   myplot(plota, plotb, label = "", limtc = c(0, 7.5))
-  plot(0, 0, type = "n", frame.plot = FALSE, xaxt = "n", yaxt = "n")
+
   myplot(plotc, plotd, label = "", limtc = c(0, 7.5))
 
   dev.off()
+  }
+
+  if (part == 2) {
+    par(mfrow = c(1, 15), las = 1, mar = mars, oma = c(0.2, 3, 2.5, 0.2),
+    tck = 0.05, mgp = c(3, 0.1, 0))
+    plota <- rbind(plot1, plot2, plot3, plot4)
+    plota <- subset(plota, grepl("^F1", trial) & trial %in% keep$name)
+    plotb <- rbind(plot1, plot2, plot3, plot4)
+    plotb <- subset(plotb, grepl("^F2", trial) & trial %in% keep$name)
+
+    myplot(plota, plotb, label = "", limtc = c(0, 7.5))
+    plota <- rbind(plot1, plot2, plot3, plot4)
+    plota <- subset(plota, grepl("^M1", trial) & trial %in% keep$name)
+    plotb <- rbind(plot1, plot2, plot3, plot4)
+    plotb <- subset(plotb, grepl("^M2", trial) & trial %in% keep$name)
+    plot(0, 0, type = "n", frame.plot = FALSE, xaxt = "n", yaxt = "n")
+    myplot(plota, plotb, label = "", limtc = c(0, 7.5))
+  }
+
 
 }
