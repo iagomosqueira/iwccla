@@ -130,6 +130,9 @@ aep100$trial <- gsub("^[[:space:]]+|[[:space:]]+$", "", aep100$trial)
 ps4300$trial <- gsub("^[[:space:]]+|[[:space:]]+$", "", ps4300$trial)
 ps4100$trial <- gsub("^[[:space:]]+|[[:space:]]+$", "", ps4100$trial)
 
+aep100$trial <- gsub("^[[:punct:]]+ ", "\\1", aep100$trial)
+ps4100$trial <- gsub("^[[:punct:]]+ ", "\\1", ps4100$trial)
+
 ###############################################################################
 ###############################################################################
 #### Step
@@ -148,6 +151,7 @@ test$p100 <- ifelse(is.na(test$PF.p100), FALSE, TRUE)
 test$p300 <- ifelse(is.na(test$PF.p300), FALSE, TRUE)
 
 # Turn off timevarying for 300 years
+test[which(test$istep > 0), c("o300", "p300")] <- "DoNotDo"
 test[which(test$msyryr != "NULL" | test$kyear != "NULL"), ]$o300 <- "DoNotDo"
 test[which(test$msyryr != "NULL" | test$kyear != "NULL"), ]$p300 <- "DoNotDo"
 
@@ -156,12 +160,19 @@ test$o300[test$name == "M2-T1-cB4"] <- "bad"
 test[test$name == "M2-T6cD-S4", c("o100", "o300", "p100", "p300")] <- "bad"
 test[test$name == "M2-T6cA-D4", "p300"] <- "bad"
 test[test$name == "M1-T20-D1", "p300"] <- "bad"
+test[test$name == "M1-T10A-R1", "p300"] <- "bad"
+test[test$name == "M1-T10A-R1", "o300"] <- "bad"
+test[test$name == "M2-T5-S4", c("o300", "p300")] <- "bad"
+test[test$name == "M2-T10A-S4", c("o300", "p300")] <- "bad_didnotneed"
+
+#low convergence
+test[test$name == "M2-T10A-D4", "o300"] <- "badunitnumberbutranwlow"
+test[test$name == "M2-T10A-R4", "o300"] <- "QuotaFailedToReachRequiredAccuracy"
+
 # Currently running
-test$o100[c(337:360)] <- "Kelli"
+test$o100[c(344:349, 354:360)] <- "Kelli"
 
-test$p100[c(337:360)] <- "Kelli"
-
-test$o300[c(356:359)] <- "Andre"
+test$p100[c(344:360)] <- "Kelli"
 
 test[test$o100 != TRUE, c("name", "PF.o100", "o100")]
 test[test$p100 != TRUE, c("name", "PF.p100", "p100")]

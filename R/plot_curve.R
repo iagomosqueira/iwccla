@@ -27,7 +27,7 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
     axis2 <- axis2[seq(2, length(axis2), by = 2)]
 
     littlelabtxt <- c("Orig", "Alt")
-    if (part == 2) littlelabtxt <- c("0.01", "0.04")
+    if (part == 2) littlelabtxt <- c("1%", "4%")
     littlelab <- -1.1
 
     errbar(x = 1:num, y = orig[, 2], yplus = orig[, 4], frame.plot = FALSE,
@@ -131,12 +131,12 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
 
     plota <- subset(all, grepl("^F1", trial) & trial %in% keep$name)
     plotb <- subset(all, grepl("^F2", trial) & trial %in% keep$name)
-    myplot(plota, plotb, label = "", limtc = c(0, 7.5), label = "Fecundity")
+    myplot(plota, plotb, limtc = c(0, 7.5), label = "Fecundity")
 
     plotc <- subset(all, grepl("^M1", trial) & trial %in% keep$name)
     plotd <- subset(all, grepl("^M2", trial) & trial %in% keep$name)
     plot(0, 0, type = "n", frame.plot = FALSE, xaxt = "n", yaxt = "n")
-    myplot(plotc, plotd, label = "", limtc = c(0, 7.5), label = "Natural Mortality")
+    myplot(plotc, plotd, limtc = c(0, 7.5), label = "Natural Mortality")
 
     dev.off()
   }
