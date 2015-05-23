@@ -6,12 +6,16 @@
 #' @param alt A \code{data.frame} of \code{RESOUT.RRR}
 #' @param set A \code{data.frame} of trials with specific names and attributes.
 #' @param out A character value to save the plot to, no extension necessary.
-#' @return Nothing is returned to the console, instead a plot is saved to the disk.
+#'   If \code{NULL} then the plot will print to the screen rather than to the disk.
+#' @param part Can take the value of \code{1} or \code {2}, where the comparisons
+#'   are made across different parts of the data.
+#' @return A plot is printed to the disk according the the file name specified in \code{out}
+#'   or if out is \code{NULL} the plot is printed to the screen.
 ##' @seealso \code{\link{functionname}}
 #' @author Kelli Faye Johnson
 #' @export
 
-plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
+plot_curve <- function(plot1, plot2, plot3, plot4, set, out = NULL, part = 1) {
 
   myplot <- function(orig, alt, little = 0.6, big = 0.95, label = "",
     limtc = c(0, 2.5), limpf = c(0, 1), limaa = c(0, 0.8)) {
@@ -28,7 +32,7 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
 
     littlelabtxt <- c("Orig", "Alt")
     if (part == 2) littlelabtxt <- c("1%", "4%")
-    littlelab <- -1.1
+    littlelab <- -0.6
 
     errbar(x = 1:num, y = orig[, 2], yplus = orig[, 4], frame.plot = FALSE,
       yminus = orig[, 3], xaxt = "n", ylim = limtc, pch = symb, xlim = xlim)
@@ -76,7 +80,9 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
   }
   mars <- c(1.0, 0.1, 1.0, 0.1)
   if (part == 1) {
-    jpeg(paste0(out, ".jpeg"), res = 100, width = 1100, height = 600)
+    if (!is.null(out)) {
+      jpeg(paste0(out, ".jpeg"), res = 100, width = 1100, height = 600)
+    }
     par(mfrow = c(2, 15), las = 1, mar = mars, oma = c(0.2, 3, 2.5, 0.2),
       tck = 0.05, mgp = c(3, 0.1, 0))
     seta <- set[grepl("^F", set$name), ]
@@ -119,12 +125,17 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
 
     myplot(plotc, plotd, label = "", limtc = c(0, 7.5))
 
-    dev.off()
+    if (!is.null(out)) {
+      dev.off()
+    }
   }
 
   if (part == 2) {
-    jpeg(paste0(out, ".jpeg"), res = 100, width = 1100, height = 300)
-    par(mfrow = c(1, 15), las = 1, mar = mars, oma = c(0.2, 3, 2.5, 0.2),
+    if (!is.null(out)) {
+      jpeg(paste0(out, ".jpeg"), res = 100, width = 900, height = 260)
+    }
+
+    par(mfrow = c(1, 15), las = 1, mar = mars, oma = c(0.05, 3, 1.2, 0.2),
       tck = 0.05, mgp = c(3, 0.1, 0))
     all <- rbind(plot1, plot2, plot3, plot4)
     all$AAV <- gsub("[[:punct:]]$|[[:space:]]", "", all$AAV)
@@ -137,9 +148,8 @@ plot_curve <- function(plot1, plot2, plot3, plot4, set, out, part = 1) {
     plotd <- subset(all, grepl("^M2", trial) & trial %in% keep$name)
     plot(0, 0, type = "n", frame.plot = FALSE, xaxt = "n", yaxt = "n")
     myplot(plotc, plotd, limtc = c(0, 7.5), label = "Natural Mortality")
-
-    dev.off()
+    if (!is.null(out)) {
+      dev.off()
+    }
   }
-
-
 }
