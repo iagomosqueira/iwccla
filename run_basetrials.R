@@ -30,7 +30,7 @@
 base <- getwd()
 dirs <- c("orig100", "orig300", "pslope4100", "pslope4300")[3]
 verbose <- TRUE
-torun <- c(337:360)
+torun <- c(350:351, 358:360)
 run <- TRUE
 
 ###############################################################################
@@ -67,12 +67,15 @@ if (grepl("300$", getwd())) { basetrials$nyear <- 300 }
 
 for (ind in torun) {
   # Determine if time-varying
+  # All time-varying trials need to use the ISCALE.DAT = 1 for proper results
   timevarying <- ifelse(any(is.null(basetrials[ind, c("kyear", "msyryr")])),
     TRUE, FALSE)
-  if(basetrials[ind, "istep"] > 0) timevarying <- TRUE
+  if (basetrials[ind, "istep"] > 0) timevarying <- TRUE
+  if (basetrials[ind, "epd"] > 0) timevarying <- TRUE
 
   # Create the directory: if time-varying and nyear = 300 then skip
   if (timevarying & basetrials$nyear[ind] == 300) next
+  # If run == FALSE then a .dat file is produced but no trial is run
   if (run) {
     dir.create(as.character(ind), showWarnings = FALSE)
     setwd(as.character(ind))
@@ -111,12 +114,12 @@ for (ind in torun) {
   if (run) {
     system("az",  show.output.on.console = verbose)
     system("a",   show.output.on.console = verbose)
-    # system("res", show.output.on.console = verbose)
     setwd("..")
   }
 }
 
 if (verbose) message(paste("Trials in", getwd(), "are done."))
+flush.console()
 setwd(base)
 }
 
