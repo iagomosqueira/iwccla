@@ -65,8 +65,8 @@ test$p300 <- ifelse(is.na(test$PF.p300), FALSE, TRUE)
 
 # Turn off timevarying for 300 years
 test[which(test$istep > 0), c("o300", "p300")] <- "DoNotDo"
-test[which(test$msyryr != "NULL" | test$kyear != "NULL" | test$epd > 0), ]$o300 <- "DoNotDo"
-test[which(test$msyryr != "NULL" | test$kyear != "NULL" | test$epd > 0), ]$p300 <- "DoNotDo"
+test[which(test$msyryr != "NULL" | test$kyear != "NULL"), ]$o300 <- "DoNotDo"
+test[which(test$msyryr != "NULL" | test$kyear != "NULL"), ]$p300 <- "DoNotDo"
 
 # Define bad runs
 test$o300[test$name == "M2-T1-cB4"] <- "bad"
@@ -88,12 +88,12 @@ test[test$name == "M2-T19-D4",  "o100"] <- "low"
 test[test$name == "M1-T20-D1",  "o100"] <- "low"
 test[test$name == "M2-T12B-D4", "p100"] <- "low"
 test[test$name == "M2-T12A-D4", "p100"] <- "low"
-test[test$name == "M2-T19-D4", "p100"] <- "low"
-test[test$name == "M1-T20-D1", "p100"] <- "low"
-test[test$name == "M1-T20-D1", "p300"] <- "low"
+test[test$name == "M2-T19-D4",  "p100"] <- "low"
+test[test$name == "M1-T20-D1",  "p100"] <- "low"
+test[test$name == "M1-T20-D1",  "p300"] <- "low"
 
 # Currently running
-test$o100[c(346:349, 354:360)] <- "Kelli"
+test$o100[c(346:349, 355:360)] <- "Kelli"
 test$o100[c(385:392)] <- "Andre"
 
 test$p100[c(346:360)] <- "Kelli"
