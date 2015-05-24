@@ -71,10 +71,10 @@ for (ind in torun) {
   timevarying <- ifelse(any(is.null(basetrials[ind, c("kyear", "msyryr")])),
     TRUE, FALSE)
   if (basetrials[ind, "istep"] > 0) timevarying <- TRUE
-  if (basetrials[ind, "epd"] > 0) timevarying <- TRUE
-
   # Create the directory: if time-varying and nyear = 300 then skip
   if (timevarying & basetrials$nyear[ind] == 300) next
+  if (basetrials[ind, "epd"] > 0) timevarying <- TRUE
+
   # If run == FALSE then a .dat file is produced but no trial is run
   if (run) {
     dir.create(as.character(ind), showWarnings = FALSE)
