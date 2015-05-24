@@ -91,18 +91,18 @@ test[test$name == "M2-T12A-D4", "p100"] <- "low"
 test[test$name == "M2-T19-D4",  "p100"] <- "low"
 test[test$name == "M1-T20-D1",  "p100"] <- "low"
 test[test$name == "M1-T20-D1",  "p300"] <- "low"
+test[test$name == "M1-T9-D1",   "o100"] <- "low"
 
 # Currently running
-test$o100[c(346:349, 355:360)] <- "Kelli"
-test$o100[c(385:392)] <- "Andre"
+test$o100[c(355, 358:360)] <- "Kelli"
+test$p100[c(355:360)] <- "Kelli"
+test$o300[c(385:392)] <- "Kelli"
+test$p300[c(385:392)] <- "Kelli"
 
-test$p100[c(346:360)] <- "Kelli"
-test$p100[c(385:392)] <- "Andre"
-
-test[test$o100 != TRUE, c("name", "PF.o100", "o100")]
-test[test$p100 != TRUE, c("name", "PF.p100", "p100")]
-test[!test$o300 %in% c(TRUE, "DoNotDo"), c("name", "PF.o300", "o300")]
-test[!test$p300 %in% c(TRUE, "DoNotDo"), c("name", "PF.p300", "p300")]
+test[!test$o100 %in% c(TRUE, "low"), c("name", "PF.o100", "o100")]
+test[!test$p100 %in% c(TRUE, "low"), c("name", "PF.p100", "p100")]
+test[!test$o300 %in% c(TRUE, "low", "DoNotDo"), c("name", "PF.o300", "o300")]
+test[!test$p300 %in% c(TRUE, "low", "DoNotDo"), c("name", "PF.p300", "p300")]
 
 write.csv(test, "c:/users/kelli/dropbox/ForKelli/runlist.csv", row.names = FALSE)
 
