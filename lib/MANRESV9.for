@@ -202,8 +202,8 @@ C     Changed by RBH: Skip three lines instead of four
       READ (IN,'(T51,F12.5)') Zvec(0),Avec(0),Zvec(1),Avec(1),Zvec(2),Avec(2)
       READ (IN,'(T51,F12.5)') K1,K1P,DEPL
       READ (IN,'(/// T41,F12.5 //)') ERATE
-      A1 = Avec(OPTDD)
-      Z = Zvec(OPTDD)
+      A1 = Avec(0)
+      Z = Zvec(0)
 C     Read the scaling option ISCALE which defines how the statistics
 C          will be scaled
       READ (IN3,'(I1)') ISCALE
@@ -297,7 +297,7 @@ C             Changed by RBH: Check that year number read from 'RES0' is correct
               ENDIF
 
    59      CONTINUE
-          WRITE(*,*) PZERO(0),K1,PZERO(0)/K1*1000.0,DEPL*1000.0
+C          WRITE(*,*) PZERO(0),K1,PZERO(0)/K1*1000.0,DEPL*1000.0
           IF ( NINT(PZERO(0)/K1*1000.0-DEPL*1000.0).GT.0 )
      +              STOP 'ERROR IN PZERO'
 
@@ -398,9 +398,9 @@ C         Catch variables: scale by initial K
 C         Changed by RBH. Now the nominator and denominator in the definition of AAV
 C         are summed over the same number of years.
           IF (IYR .LT. (NYEAR-1)) THEN
-             CTT = CTT + C                                                  [1]
+           CTT = CTT + C                                                  [1]
           ELSE
-             CT(N) = CTT + C
+           CT(N) = CTT + C
           ENDIF
 
           IF (IYR.GT.0) SUMAV = SUMAV + ABS(C - CSTORE)                     [4]
@@ -411,8 +411,8 @@ C           Increment the continuing catch statistic
             IF (PK.GT.AMSYLM) PK = AMSYLM                                   .
             IP = NINT(PK*1000.0)
 C           If necessary set SY(IP) = sustainable yield at popn level IP / K.
-c            IF (SY(IP).EQ.-1.0) CALL SETSY (SY,MSYR1,A1,Z,M,MAXAGE,
-c     +                                         OPTMOD,IP,OPTDD)
+            IF (SY(IP).EQ.-1.0) CALL SETSY (SY,MSYR1,A1,Z,M,MAXAGE,
+     +                                         OPTMOD,IP,OPTDD)
             CC(N) = CC(N) + MIN (C,SY(IP))                                  [5]
           ENDIF
 
@@ -518,6 +518,20 @@ C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
       WRITE (IOUT979,'(A10,9F8.5,2X,A)') REF,MSYLT,MSYLE,MSYLM,
      +     AMSYRT,AMSYLT,AMSYRE,AMSYLE,AMSYRM,AMSYLM,DESC
       CLOSE(IOUT979)
+
+C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
+      OPEN(IOUT978,FILE='..\RESOUT2.RRR',ACCESS='APPEND')
+C
+C     Changed by RBH: Output to standard output is modified.
+      WRITE (IOUT1978,'(A3,A10,F6.3,F6.3,2X,4F6.3,2X,2(3F6.3,2X),
+     +     A20,F8.3,2X,2A16,2X,A)')
+     +     ASCALE,REF,DEPL,MSYR1,
+     +     CT(I5),(CT(I50)+CT(I51))*.5,CT(I96),CTAV,
+     +     PFIN(I5),(PFIN(I50)+PFIN(I51))*.5,PFIN(I96),
+     +     PTMIN(I5),PTMIN(I10),PTMIN(I25),
+     +     CCC,AAV,CRPL,CRR,DESC
+      CLOSE(IOUT978)
+     
 C
 C     Changed by RBH: Output to standard output is modified.
       WRITE (IPNT,'(A3,A10,F6.3,F6.1,2X,4F6.3,2X,2(3F6.3,2X),
