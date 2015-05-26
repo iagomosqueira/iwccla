@@ -24,7 +24,7 @@
 base <- "c:/iwccla"
 setwd(base)
 
-dirs <- c("prob.7100", "prob.7300", "pslope1100", "pslope1300")
+dirs <- c("prob.7_100", "prob.7_300", "pslope1_100", "pslope1_300")
 
 verbose <- TRUE # Display output to console or not
 run <- TRUE
