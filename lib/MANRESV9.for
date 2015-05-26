@@ -523,7 +523,7 @@ C     Changed by RBH: status changed from 'APPEND' to 'unknown'.
       OPEN(IOUT978,FILE='..\RESOUT2.RRR',ACCESS='APPEND')
 C
 C     Changed by RBH: Output to standard output is modified.
-      WRITE (IOUT1978,'(A3,A10,F6.3,F6.3,2X,4F6.3,2X,2(3F6.3,2X),
+      WRITE (IOUT978,'(A3,A10,F6.3,F6.3,2X,4F6.3,2X,2(3F6.3,2X),
      +     A20,F8.3,2X,2A16,2X,A)')
      +     ASCALE,REF,DEPL,MSYR1,
      +     CT(I5),(CT(I50)+CT(I51))*.5,CT(I96),CTAV,
