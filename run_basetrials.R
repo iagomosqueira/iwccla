@@ -28,7 +28,7 @@
 ###############################################################################
 ###############################################################################
 base <- getwd()
-dirs <- c("orig100", "orig300", "pslope4100", "pslope4300")[1]
+dirs <- c("orig_100", "orig_300", "pslope4_100", "pslope4_300")
 verbose <- TRUE # Display output to console or not
 torun <- c(385:392)
 run <- TRUE # If FALSE only dat files are produced
