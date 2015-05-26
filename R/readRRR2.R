@@ -13,5 +13,5 @@ readRRR2 <- function (filename) {
     output$AAV <-  gsub("[[:punct:]]$", "", output$AAV)
   }
 
-    return(output)
+  return(output)
 }
