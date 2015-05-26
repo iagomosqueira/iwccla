@@ -30,7 +30,9 @@ verbose <- TRUE # Display output to console or not
 run <- TRUE
 
 trials <- read.csv("Trials_KFJ_tune.csv", header = TRUE)
-
+# torun <- 1:NROW(trials)
+trials <- trials[!trials$name %in% dir(dirs), ]
+torun <- 1:NROW(trials)
 # source function to write dat files
 source(file.path("R", "create_dat.R"))
 
@@ -50,7 +52,7 @@ if (grepl("100$", getwd())) {
 }
 if (grepl("300$", getwd())) { trials$nyear <- 300 }
 
-for (ind in 1:NROW(trials)) {
+for (ind in torun) {
   # If run == FALSE then a .dat file is produced but no trial is run
   if (run) {
     dir.forthisiter <- as.character(trials$name[ind])
