@@ -2,6 +2,7 @@
 /orig*
 /prob*
 /pslope*
+/tune*
 /lib/**.exe
 /lib/RES*
 /lib/MANLOG
