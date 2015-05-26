@@ -77,8 +77,9 @@ for (ind in torun) {
 
   # If run == FALSE then a .dat file is produced but no trial is run
   if (run) {
-    dir.create(as.character(ind), showWarnings = FALSE)
-    setwd(as.character(ind))
+    dir.forthisiter <- as.character(basetrials$name[ind])
+    dir.create(dir.forthisiter, showWarnings = FALSE)
+    setwd(as.character(dir.forthisiter))
 
     # Copy files over to the new directory, assumes compiled programs exists
     files2get <- dir(file.path(base, "lib"), full.names = TRUE)
@@ -97,7 +98,7 @@ for (ind in torun) {
   }
 
   # Create the data file and overwrite COPY.dat
-  create_dat(out = paste0(ifelse(run, "COPY", ind), ".dat"),
+  create_dat(out = paste0(ifelse(run, "COPY", basetrials[ind, "name"]), ".dat"),
     case = basetrials[ind, "name"],
     nyear = basetrials[ind, "nyear"], optdt = basetrials[ind, "dt"],
     depl = basetrials[ind, "depl"], component = basetrials[ind, "component"],
