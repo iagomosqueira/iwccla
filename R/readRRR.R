@@ -62,12 +62,16 @@ readRRR <- function (file, widths, header = FALSE, sep = "\t", skip = 0,
     close(FILE)
     FILE <- file(FILENAME, "r")
     output <- read.table(file = FILE, header = header, sep = sep, row.names = row.names,
-        col.names = col.names, quote = "", as.is = FALSE)
+        col.names = col.names, quote = "", as.is = FALSE, stringsAsFactors = FALSE,
+        strip.white = TRUE)
     output[, 1] <- gsub("^[[:space:]]+|[[:space:]]+$", "", output[, 1])
     output[, 1] <- gsub("^[[:punct:]]+[[:space:]]+", "\\1", output[, 1])
     colnames(output) <- c("trial", "TC", "TC", "TC", "tC", "PF", "PF", "PF",
       "Pf1", "PF1", "PF2", "PL", "PL", "PL", "PL1", "PL1", "PL1", "MF", "MF",
       "MF", "MF1", "MF1", "MF1", "AAV")
+    if (is.factor(output$AAV)) {
+      output$AAV <-  gsub("[[:punct:]]$", "", output$AAV)
+    }
 
     return(output)
 
