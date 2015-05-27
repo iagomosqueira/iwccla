@@ -21,7 +21,7 @@ plot_tune <- function(plot1, plot2, plot3, plot4, set, out = NULL) {
     ylim1 <- c(0, 4)
     ylim2 <- c(0, 1.07)
     ylim3 <- c(0, 2)
-    ylim4 <- c(0, 0.5)
+    ylim4 <- c(0, 0.05)
     labelline <- 1
     labelcex <- 0.8
     titleline <- 2.5
