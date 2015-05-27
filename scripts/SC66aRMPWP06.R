@@ -92,6 +92,31 @@ ps4300 <- readRRR2(file.path(dir.rs, "pslope4_300", "RESOUT2.RRR"))
 ###############################################################################
 ###############################################################################
 #### Step
+#### Table with results from all trials
+###############################################################################
+###############################################################################
+tblkp <- subset(sheet, T == "T1" & depl %in% c(0.3, 0.60, 0.99))
+tblkp <- tblkp[order(tblkp$dt, tblkp$component, tblkp$msyr), ]
+
+mycols <- -grep("depl|msyr|ccc", colnames(org100))
+blank <- org100[1, mycols]; blank[, ] <- "-"
+
+data.table <- rbind(
+  ps4100[match(tblkp$name, ps4100$trial), mycols, drop = TRUE], blank,
+  org100[match(tblkp$name, org100$trial), mycols, drop = TRUE], blank,
+
+  prb100[match(tblkp$name, prb100$trial), mycols, drop = TRUE], blank,
+  ps1100[match(tblkp$name, ps1100$trial), mycols, drop = TRUE], blank,
+
+  org300[match(tblkp$name, org300$trial), mycols, drop = TRUE], blank,
+  ps4300[match(tblkp$name, ps4300$trial), mycols, drop = TRUE], blank,
+
+  prb300[match(tblkp$name, prb300$trial), mycols, drop = TRUE], blank,
+  ps1300[match(tblkp$name, ps1300$trial), mycols, drop = TRUE])
+write.csv(data.table, file.path(paste0(paper, "_Table_02_base.csv")))
+###############################################################################
+###############################################################################
+#### Step
 #### Table on summary statistics for the 6 base-case trials for the four groups
 ###############################################################################
 ###############################################################################
@@ -163,7 +188,7 @@ yr100 <- rbind(cbind(
   getsection(org100, ps4100, ps1100, prb100, set = "D", trials = keep2)[, -1]),
   cbind(
   getsection(org100, ps4100, ps1100, prb100, set = "R", trials = keep1),
-  getsection(org100, ps4100, ps1100, prb100, set = "R", trials = keep)[, -1]))
+  getsection(org100, ps4100, ps1100, prb100, set = "R", trials = keep2)[, -1]))
 write.csv(yr100, paste0(paper, "_Table_", substitute(yr100), ".csv"),
   row.names = FALSE)
 
@@ -172,7 +197,7 @@ yr300 <- rbind(cbind(
   getsection(org300, ps4300, ps1300, prb300, set = "D", trials = keep2)[, -1]),
   cbind(
   getsection(org300, ps4300, ps1300, prb300, set = "R", trials = keep1),
-  getsection(org300, ps4300, ps1300, prb300, set = "R", trials = keep)[, -1]))
+  getsection(org300, ps4300, ps1300, prb300, set = "R", trials = keep2)[, -1]))
 write.csv(yr300, paste0(paper, "_Table_", substitute(yr300), ".csv"),
   row.names = FALSE)
 
