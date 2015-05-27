@@ -689,7 +689,7 @@ C     Changed by RBH: The tolerance has been increased from 0.00001 to 0.0001.
       ELSE
         UFMAX = UF
       ENDIF
-      IF (ICOUNT.GT.500) STOP ' **** ERROR: SY NOT FOUND'
+      IF (ICOUNT.GT.1000) STOP ' **** ERROR: SY NOT FOUND'
       GO TO 10
 
    90 CONTINUE
