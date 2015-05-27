@@ -93,27 +93,53 @@ ps4300 <- readRRR2(file.path(dir.rs, "pslope4_300", "RESOUT2.RRR"))
 ###############################################################################
 #### Step
 #### Table with results from all trials
+#### org100 and ps1100 are tuned to 0.723
+#### 4-3        5-1
+#### ps4300 and prb300 are tuned to 0.681
+#### 5-4        7-3
 ###############################################################################
 ###############################################################################
+
+###############################################################################
+###############################################################################
+#### Step
+#### Table of all results
+###############################################################################
+###############################################################################
+# Do a separate table for 100 and 300 year
+
 tblkp <- subset(sheet, T == "T1" & depl %in% c(0.3, 0.60, 0.99))
 tblkp <- tblkp[order(tblkp$dt, tblkp$component, tblkp$msyr), ]
 
-mycols <- -grep("depl|msyr|ccc", colnames(org100))
+mycols <- -grep("depl|msyr|ccc[0-9]", colnames(org100))
 blank <- org100[1, mycols]; blank[, ] <- "-"
 
 data.table <- rbind(
-  ps4100[match(tblkp$name, ps4100$trial), mycols, drop = TRUE], blank,
   org100[match(tblkp$name, org100$trial), mycols, drop = TRUE], blank,
-
-  prb100[match(tblkp$name, prb100$trial), mycols, drop = TRUE], blank,
   ps1100[match(tblkp$name, ps1100$trial), mycols, drop = TRUE], blank,
+  ps4100[match(tblkp$name, ps4100$trial), mycols, drop = TRUE], blank,
+  prb100[match(tblkp$name, prb100$trial), mycols, drop = TRUE], blank
+  )
+write.csv(data.table, file.path(paste0(paper, "_Table_all.csv")))
 
-  org300[match(tblkp$name, org300$trial), mycols, drop = TRUE], blank,
-  ps4300[match(tblkp$name, ps4300$trial), mycols, drop = TRUE], blank,
+###############################################################################
+###############################################################################
+#### Step
+#### Base trials
+###############################################################################
+###############################################################################
+resultsbase <- rbind(
+cbind(org100[org100$trial == "F1-T1-D1", mycols], org100[org100$trial == "F2-T1-D1", mycols][, -1]),
+cbind(ps1100[ps1100$trial == "F1-T1-D1", mycols], ps1100[ps1100$trial == "F2-T1-D1", mycols][, -1]),
+cbind(ps4100[ps4100$trial == "F1-T1-D1", mycols], ps4100[ps4100$trial == "F2-T1-D1", mycols][, -1]),
+cbind(prb100[prb100$trial == "F1-T1-D1", mycols], prb100[prb100$trial == "F2-T1-D1", mycols][, -1]),
+cbind(org300[org300$trial == "F1-T1-D1", mycols], org300[org300$trial == "F2-T1-D1", mycols][, -1]),
+cbind(ps1300[ps1300$trial == "F1-T1-D1", mycols], ps1300[ps1300$trial == "F2-T1-D1", mycols][, -1]),
+cbind(ps4300[ps4300$trial == "F1-T1-D1", mycols], ps4300[ps4300$trial == "F2-T1-D1", mycols][, -1]),
+cbind(prb300[prb300$trial == "F1-T1-D1", mycols], prb300[prb300$trial == "F2-T1-D1", mycols][, -1]))
+write.csv(resultsbase, file.path(paste0(paper, "_Table_base.csv")),
+  row.names = FALSE)
 
-  prb300[match(tblkp$name, prb300$trial), mycols, drop = TRUE], blank,
-  ps1300[match(tblkp$name, ps1300$trial), mycols, drop = TRUE])
-write.csv(data.table, file.path(paste0(paper, "_Table_02_base.csv")))
 ###############################################################################
 ###############################################################################
 #### Step
@@ -174,6 +200,25 @@ getsection <- function(vara, varb, varc, vard, ...) {
     temp)
 }
 
+# What do I need
+# keep1[!keep1$name %in% org100$trial, ]
+# keep2[!keep2$name %in% org100$trial, ]
+# keep1[!keep1$name %in% prb100$trial, ]
+# keep2[!keep2$name %in% prb100$trial, ]
+# keep1[!keep1$name %in% ps1100$trial, ]
+# keep2[!keep2$name %in% ps1100$trial, ]
+# keep1[!keep1$name %in% ps4100$trial, ]
+# keep2[!keep2$name %in% ps4100$trial, ]
+
+
+# keep1[!keep1$name %in% org300$trial, ]
+# keep2[!keep2$name %in% org300$trial, ]
+keep1[!keep1$name %in% prb300$trial, ]
+keep2[!keep2$name %in% prb300$trial, ]
+# keep1[!keep1$name %in% ps1300$trial, ]
+# keep2[!keep2$name %in% ps1300$trial, ]
+# keep1[!keep1$name %in% ps4300$trial, ]
+keep2[!keep2$name %in% ps4300$trial, ]
 
 ###############################################################################
 ###############################################################################
@@ -207,10 +252,10 @@ write.csv(yr300, paste0(paper, "_Table_", substitute(yr300), ".csv"),
 #### a
 ###############################################################################
 ###############################################################################
-plot_tune(org100, ps4100, ps1100, prb100, set = keep1, out = paste0(paper, "_Fig01_100"))
-plot_tune(org300, ps4300, ps1300, prb300, set = keep1, out = paste0(paper, "_Fig01_300"))
-plot_tune(org100, ps4100, ps1100, prb100, set = keep2, out = paste0(paper, "_Fig02_100"))
-plot_tune(org300, ps4300, ps1300, prb300, set = keep2, out = paste0(paper, "_Fig02_300"))
+plot_tune(org100, ps1100, prb100, ps4100, set = keep1, out = paste0(paper, "_Fig01_100"))
+plot_tune(org300, ps1300, prb300, ps4300, set = keep1, out = paste0(paper, "_Fig01_300"))
+plot_tune(org100, ps1100, prb100, ps4100, set = keep2, out = paste0(paper, "_Fig02_100"))
+plot_tune(org300, ps1300, prb300, ps4300, set = keep2, out = paste0(paper, "_Fig02_300"))
 
 ###############################################################################
 ###############################################################################
