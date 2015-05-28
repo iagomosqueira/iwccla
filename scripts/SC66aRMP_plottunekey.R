@@ -24,7 +24,7 @@
     titlecex <- 1
     xlim <- c(0, 5.5)
 
-jpeg("SC66aRMP_plot_tune.jpeg", res = 100, width = 900, height = 260)
+jpeg("SC66aRMP_plot_tune.jpeg", res = 100, width = 900, height = 400)
 par(oma = c(2, 2, 5, 2), las = 1, mar = rep(0.5, 4),
   tck = 0.05, mgp = c(3, 0.1, 0))
 nf <- layout(matrix(c(1, 3, 6, 2, 5, 4, 8,
@@ -32,12 +32,13 @@ nf <- layout(matrix(c(1, 3, 6, 2, 5, 4, 8,
 
 # 1 & 2
 for (count in 1:2){
+val <- ifelse(count == 1, "D", "R")
 errbar(x = 0.9, y = 2, yplus = 3, yminus = 1, frame.plot = FALSE, ylim = ylim1,
-  ylab = "", xaxt = "n", xlab = "", pch = "-", xlim = xlim)
-if (count == 1) text(3, y = 3, "TC (0.4D1 + \n0.4D4 + 0.2D7)")
-if (count == 2) text(3, y = 3, "TC (0.4R1 + \n0.4R4 + 0.2R7)")
-text(3, y = 2, "Low 5%\n TC")
-text(3, y = 1, "Bias = 0.5 \nLow 5% TC")
+  ylab = "", xaxt = "n", xlab = "", pch = 19, xlim = xlim, cap = 0.1)
+if (count == 1) text(3, y = 3, "TC \n(0.4D1 + \n0.4D4 + 0.2D7)")
+if (count == 2) text(3, y = 3, "TC \n(0.4R1 + \n0.4R4 + 0.2R7)")
+text(3, y = 2, paste(val, "\nLow 5%\n TC"))
+text(3, y = 1, paste(val, "\nBias = 0.5 \nLow 5% TC"))
 mtext(side = 3, "Total catch", line = labelline, cex = labelcex)
 if (count == 1) mtext(side = 3, "Development", line = titleline, cex = titlecex)
 if (count == 2) mtext(side = 3, "Rehabilitation", line = titleline, cex = titlecex)
@@ -45,21 +46,22 @@ if (count == 2) mtext(side = 3, "Rehabilitation", line = titleline, cex = titlec
 
 # 3 & 4
 for (count in 1:2) {
+val <- ifelse(count == 1, "D", "R")
 errbar(x = 1.2, y = 0.6, yplus = 0.9, yminus = 0.25,
-  frame.plot = FALSE, ylim = ylim2,
-  ylab = "", xaxt = "n", xlab = "-", pch = "-", xlim = xlim)
-text(x = 3, y = 0.9, "Low 5% \nP fin")
-text(x = 3, y = 0.6, "Low 5% \nP min")
-text(x = 3, y = 0.25, "Bias = 1.5 \n Low 5% \nP min")
+  frame.plot = FALSE, ylim = ylim2, cap = 0.1,
+  ylab = "", xaxt = "n", xlab = "-", pch = 19, xlim = xlim)
+text(x = 3, y = 0.9, paste(val, "\nLow 5% \nP fin"))
+text(x = 3, y = 0.6, paste(val, "\nLow 5% \nP min"))
+text(x = 3, y = 0.25,paste(val,  "\nBias = 1.5 \n Low 5% \nP min"))
 mtext(side = 3, "R-Risk", line = labelline, cex = labelcex)
 }
 
 # 5
-errbar(x = 1.1, y = 0.75, yplus = 0.75,
+errbar(x = 1.1, y = 0.75, yplus = 0.75, cap = 0.1,
   yminus = 0.25, frame.plot = FALSE, ylim = ylim2,
   ylab = "", xaxt = "n", xlab = "", pch = "", xlim = xlim)
 text(x = 3, y = 0.75, "S1\nLow 5% \nP min")
-text(x = 3, y = 0.25, "S1 Bias = 1.5\n Low 5% \nP min")
+text(x = 3, y = 0.25, "S1 \nBias = 1.5\n Low 5% \nP min")
 mtext(side = 3, "S-Risk", line = labelline, cex = labelcex)
 
 # 6 & 7
@@ -68,7 +70,7 @@ plot(x = 3, y = 1, frame.plot = FALSE, ylim = ylim3, xlim = xlim,
   ylab = "", xaxt = "n", xlab = "", pch = "")
 if (count == 1) text(x = 3, y = 1, "CC (0.4D1 + \n0.4D4 + 0.2D7)")
 if (count == 2) text(x = 3, y = 1, "CC (0.4R1 + \n0.4R4 + 0.2R7)")
-mtext(side = 3, "Cont catch", line = labelline, cex = labelcex)
+mtext(side = 3, "CC", line = labelline, cex = labelcex)
 
 # 8 & 9
 plot(x = 3, y = 0.05, frame.plot = FALSE,
