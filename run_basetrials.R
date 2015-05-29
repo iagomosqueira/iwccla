@@ -30,7 +30,7 @@
 base <- getwd()
 dirs <- c("orig_100", "orig_300", "pslope4_100", "pslope4_300")
 verbose <- TRUE # Display output to console or not
-torun <- c(385:392)
+
 run <- TRUE # If FALSE only dat files are produced
 
 ###############################################################################
@@ -50,7 +50,7 @@ if (!file.exists("Trials_KFJ_base.csv")) {
   stop("Base case file (Trials_KFJ_base.csv) does not exist")
 }
 basetrials <- read.csv("Trials_KFJ_base.csv", header = TRUE)
-
+torun <- 1:NROW(basetrials)
 ###############################################################################
 ###############################################################################
 #### Step

@@ -25,13 +25,10 @@ base <- "c:/iwccla"
 setwd(base)
 
 dirs <- c("prob.7_100", "prob.7_300", "pslope1_100", "pslope1_300")
-
 verbose <- TRUE # Display output to console or not
 run <- TRUE
 
 trials <- read.csv("Trials_KFJ_tune.csv", header = TRUE)
-# torun <- 1:NROW(trials)
-trials <- trials[!trials$name %in% dir(dirs), ]
 torun <- 1:NROW(trials)
 # source function to write dat files
 source(file.path("R", "create_dat.R"))
