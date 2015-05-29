@@ -62,10 +62,8 @@ ps4300 <- readRRR2(file.path(dir.rs, "pslope4_300", "RESOUT2.RRR"))
 ###############################################################################
 data <- rbind(
       data.frame("id" = "43", "year" = 100, org100),
-      data.frame("id" = "51", "year" = 100, ps1100),
       data.frame("id" = "54", "year" = 100, ps4100),
       data.frame("id" = "43", "year" = 300, org300),
-      data.frame("id" = "51", "year" = 300, ps1300),
       data.frame("id" = "54", "year" = 300, ps4300))
 data <- data[data$trial %in% sheet$name, ]
 data$F <- sapply(strsplit(data$trial, "-"), "[", 1)
@@ -79,8 +77,8 @@ final <- unlist(lapply(split(final, final$trial),
 # Set up repeated items for the plot
 num <- length(unique(final[[1]]$id))
 xlim <- c(0, num + 1.5)
-ylim1 <- c(0, 5)
-ylim2 <- c(0, 1.07)
+ylim1 <- c(0, 1.7)
+ylim2 <- c(0, 0.98)
 labelline <- 0.5; labelcex <- 0.8
 titleline <- 2.5;  titlecex <-1.0
 years <- c(100, 300)
@@ -99,27 +97,32 @@ nf <- layout(matrix(c(1, 7, 13, 4, 10, 16,
                       3, 9, 15, 6, 12, 18), ncol = 6, byrow = TRUE))
 plotorder <- apply(expand.grid(get, years), 1, paste, collapse = ".")
 plotorderid <- match(plotorder, names(final))
+fhline <- c(0.468, 100, 0.437, 100, 0.456, 100)
+lhline <- c(0.465, 100, 0.300, 100, 0.439, 100)
 
   # First plot of TC
   for (ind in plotorderid) {
     this <- strsplit(names(final[ind]), "\\.")[[1]]
     thistrial <- this[1]
     thisyr <- this[2]
-    errbar(x = 1:num, y = final[[ind]][, "tcMed"], cap = 0.1,
-      yplus = final[[ind]][, "tc95"], yminus = final[[ind]][, "tc5"],
+    divisor <- as.numeric(thisyr) / 100
+    errbar(x = 1:num,
+      y = final[[ind]][, "tcMed"] / divisor,
+      yplus = final[[ind]][, "tc95"] / divisor,
+      yminus = final[[ind]][, "tc5"] / divisor,
       xaxt = "n", xlab = "", ylab = "", frame.plot = FALSE, pch = "",
-      xlim = xlim,
-      ylim = ylim1 * ifelse(thisyr == 300, 2, 1))
-    text(x = 1:num, y = final[[ind]][, "tcMed"], final[[ind]]$id)
+      xlim = xlim, cap = 0.1,
+      ylim = ylim1)
+    text(x = 1:num, y = final[[ind]][, "tcMed"] / divisor, final[[ind]]$id)
     if (ind %in% plotorderid[1:3]) {
       mtext(side = 2, line = 1.5, cex = titlecex, thistrial, las = 0)
     }
-    if (ind == plotorderid[1]) {
-      mtext(side = 3, "Total catch", line = labelline, cex = labelcex)
+    if (thistrial == "F1-T1-D1" & thisyr == 100) {
+      mtext(side = 3, "TC per 100 yrs", line = labelline, cex = labelcex)
       mtext(side = 3, las = 0, line = titleline, paste(thisyr, "years"), adj = 0)
     }
-    if (ind == plotorderid[num+1]) {
-      mtext(side = 3, "Total catch", line = labelline, cex = labelcex)
+    if (thistrial == "F1-T1-D1" & thisyr == 300) {
+      mtext(side = 3, "TC per 100 yrs", line = labelline, cex = labelcex)
       mtext(side = 3, las = 0, line = titleline, paste(thisyr, "years"), adj = 0)
     }
   }
@@ -138,20 +141,25 @@ plotorderid <- match(plotorder, names(final))
     #   legend("topleft", lty = 2, legend = "Tune (43 & 51)", bty = "n")
     # }
     text(x = 1:num, y = final[[ind]][, "pfMed"], final[[ind]]$id)
-    if (ind %in% plotorderid[c(1, num+1)]) {
+    if (thistrial == "F1-T1-D1") {
       mtext(side = 3, "Final population", line = labelline, cex = labelcex)
     }
+    abline(h = fhline[ind], lty = 2)
   }
   # Third plot of lowest population size
   for (ind in plotorderid) {
+    this <- strsplit(names(final[ind]), "\\.")[[1]]
+    thistrial <- this[1]
+    thisyr <- this[2]
     errbar(x = 1:num, y = final[[ind]][, "pl10"],
       yplus = final[[ind]][, "pl25"], yminus = final[[ind]][, "pl5"],
       xaxt = "n", xlab = "", ylab = "", frame.plot = FALSE, pch = "",
       xlim = xlim, ylim = ylim2, cap = 0.1)
     text(x = 1:num, y = final[[ind]][, "pl10"], final[[ind]]$id)
-    if (ind %in% plotorderid[c(1, num+1)]) {
+    if (thistrial == "F1-T1-D1") {
       mtext(side = 3, "Lowest population", line = labelline, cex = labelcex)
     }
+    abline(h = lhline[ind], lty = 2)
   }
 
     dev.off()
