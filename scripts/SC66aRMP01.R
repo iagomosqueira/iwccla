@@ -14,7 +14,7 @@
 ###############################################################################
 dir.main <- "c:/iwccla"
 
-testname <- "SC66aRMPX-IWC15"
+testname <- "SC66aRMP01"
 executable.in <- "Man-v14z.for"
 executable <- "a.exe"
 # Length of simulation
@@ -33,7 +33,7 @@ loadold <- FALSE
 # Directory with master copy of all MANST programs
 dir.lib <- file.path(dir.main, "lib")
 # Directory where the tests will take place
-dir.run <- file.path(dir.main, "SC66aRMPX-IWC15")
+dir.run <- file.path(dir.main, testname)
 dir.create(file.path(dir.run, "results"),
   recursive = TRUE, showWarnings = FALSE)
 dir.create(file.path(dir.run, "input"), showWarnings = FALSE)
@@ -135,13 +135,13 @@ setwd(dir.run)
 ###############################################################################
 ###############################################################################
 # Figure 01
-jpeg(file.path("results", "SC66aRMP1-IWC15_Fig01.jpeg"), quality = 100)
-  source(file.path("..", "scripts", "SC66aRMPX-IWC15_Fig01.R"))
+jpeg(file.path("results", "SC66aRMP01_Fig01.jpeg"), quality = 100)
+  source(file.path("..", "scripts", "SC66aRMP01_Fig01.R"))
   dev.off()
 
 # Figure 02
-jpeg(file.path("results", "SC66aRMP1-IWC15_Fig02.jpeg"), quality = 100)
-  source(file.path("..", "scripts", "SC66aRMPX-IWC15_Fig02.R"))
+jpeg(file.path("results", "SC66aRMP01_Fig02.jpeg"), quality = 100)
+  source(file.path("..", "scripts", "SC66aRMP01_Fig02.R"))
   dev.off()
 
 ###############################################################################
