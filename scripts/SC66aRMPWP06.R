@@ -51,7 +51,7 @@ library(xtable, quietly = TRUE)
 setwd(dir.wk)
 source(file.path("..", "R", "readRRR2.R"))
 source(file.path("..", "R", "plot_tune.R"))
-source(file.path("..", "scripts", "SC66aRMP_plottunekey.R")
+source(file.path("..", "scripts", "SC66aRMP_plottunekey.R"))
 
 ###############################################################################
 ###############################################################################
