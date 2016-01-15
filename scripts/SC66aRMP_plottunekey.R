@@ -32,7 +32,7 @@ nf <- layout(matrix(c(1, 3, 6, 2, 5, 4, 8,
 
 # 1 & 2
 for (count in 1:2){
-val <- ifelse(count == 1, "D", "R")
+val <- ifelse(count == 1, "D1", "R1")
 errbar(x = 0.9, y = 2, yplus = 3, yminus = 1, frame.plot = FALSE, ylim = ylim1,
   ylab = "", xaxt = "n", xlab = "", pch = 19, xlim = xlim, cap = 0.1)
 if (count == 1) text(3, y = 3, "TC \n(0.4D1 + \n0.4D4 + 0.2D7)")
@@ -46,7 +46,7 @@ if (count == 2) mtext(side = 3, "Rehabilitation", line = titleline, cex = titlec
 
 # 3 & 4
 for (count in 1:2) {
-val <- ifelse(count == 1, "D", "R")
+val <- ifelse(count == 1, "D1", "R1")
 errbar(x = 1.2, y = 0.6, yplus = 0.9, yminus = 0.25,
   frame.plot = FALSE, ylim = ylim2, cap = 0.1,
   ylab = "", xaxt = "n", xlab = "-", pch = 19, xlim = xlim)
