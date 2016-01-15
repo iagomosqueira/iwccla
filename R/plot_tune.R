@@ -18,10 +18,10 @@
 
 plot_tune <- function(plot1, plot2, plot3, plot4, trialset, year = 100, out = NULL, ...) {
     num <- 4
-    ylim1 <- c(0, 4)
+    ylim1 <- c(0, ifelse(year == 100, 2.5, 5))
     ylim2 <- c(0, 1.07)
     ylim3 <- c(0, 2)
-    ylim4 <- c(0, 0.15)
+    ylim4 <- c(0, 0.11)
     labelline <- 1
     labelcex <- 0.8
     titleline <- 2.5
@@ -42,10 +42,10 @@ data2 <- apply(data2, 2, as.numeric)
 rownames(data2) <- myrownames
 
   if (!is.null(out)) {
-    jpeg(paste0(out, ".jpeg"), res = 100, width = 900, height = 260)
+    jpeg(paste0(out, ".jpeg"), res = 80, width = 700, height = 200)
   }
 
-par(oma = c(2, 5, 5, 2), las = 1, mar = rep(0.5, 4),
+par(oma = c(1, 5, 5, .5), las = 1, mar = rep(0.5, 4),
   tck = 0.05, mgp = c(3, 0.1, 0))
 nf <- layout(matrix(c(1, 2, 3, 5, 6, 7, 8,
                       1, 2, 4, 5, 6, 7, 9), ncol = 7, nrow = 2, byrow = TRUE))
@@ -55,14 +55,14 @@ words <- ifelse(unique(trialset$D) == "F1", "1+", "Mature")
 words <- paste(words, year, "years")
 errbar(x = 1:num, y = data1[, "L5TC"], yplus = data1[, "MedTC"],
   yminus = data1[, "L5TCB.5"], frame.plot = FALSE, ylim = ylim1,
-  ylab = "", xaxt = "n", xlab = "", pch = "", xlim = xlim, xpd = TRUE)
+  ylab = "", xaxt = "n", xlab = "", pch = "-", xlim = xlim, xpd = TRUE)
 text(1:num, y = data1[, "L5TC"], rownames(data1))
 mtext(side = 3, "Total catch", line = labelline, cex = labelcex)
 mtext(side = 3, "Development", line = titleline, cex = titlecex)
-mtext(side = 2, words, line = 1, las = 0)
+mtext(side = 2, words, line = 1.5, las = 0)
 errbar(x = 1:num, y = data1[, "L5Plo"], yplus = data1[, "L5Pf"],
   yminus = data1[, "L5PloB1.5"], frame.plot = FALSE, ylim = ylim2,
-  ylab = "", xaxt = "n", xlab = "", pch = "", xlim = xlim)
+  ylab = "", xaxt = "n", xlab = "", pch = "-", xlim = xlim)
 text(x = 1:num, y = data1[, "L5Plo"], rownames(data1))
 mtext(side = 3, "R-Risk", line = labelline, cex = labelcex)
 
@@ -70,7 +70,7 @@ plot(x = 1:num, y = data1[, "MedCC"], frame.plot = FALSE,
   ylim = ylim3, xlim = xlim,
   ylab = "", xaxt = "n", xlab = "", pch = "")
 text(x = 1:num, y = data1[, "MedCC"], rownames(data1))
-mtext(side = 3, "Cont catch", line = labelline, cex = labelcex)
+mtext(side = 3, "CC", line = labelline, cex = labelcex)
 
 plot(x = 1:num, y = data1[, "AAV"], frame.plot = FALSE,
   ylim = ylim4, xlim = xlim,
@@ -82,20 +82,20 @@ mtext(side = 3, "AAV", line = labelline - 2.35, cex = labelcex)
 # Data 2
 errbar(x = 1:num, y = data2[, "L5TC"], yplus = data2[, "MedTC"],
   yminus = data2[, "L5TCB.5"], frame.plot = FALSE, ylim = ylim1,
-  ylab = "", xaxt = "n", xlab = "", pch = "", xlim = xlim)
+  ylab = "", xaxt = "n", xlab = "", pch = "-", xlim = xlim)
 text(x = 1:num, y = data2[, "L5TC"], rownames(data1))
 mtext(side = 3, "Total catch", line = labelline, cex = labelcex)
 mtext(side = 3, "Rehabilitation", line = titleline, cex = titlecex)
 
 errbar(x = 1:num, y = data2[, "L5PloS1"], yplus = data2[, "L5PloS1"],
   yminus = data2[, "L5PloS1B1.5"], frame.plot = FALSE, ylim = ylim2,
-  ylab = "", xaxt = "n", xlab = "", pch = "", xlim = xlim)
+  ylab = "", xaxt = "n", xlab = "", pch = "-", xlim = xlim)
 text(x = 1:num, y = data2[, "L5PloS1"], rownames(data1))
 mtext(side = 3, "S-Risk", line = labelline, cex = labelcex)
 
 errbar(x = 1:num, y = data2[, "L5Plo"], yplus = data2[, "L5Pf"],
   yminus = data2[, "L5PloB1.5"], frame.plot = FALSE, ylim = ylim2,
-  ylab = "", xaxt = "n", xlab = "", pch = "", xlim = xlim)
+  ylab = "", xaxt = "n", xlab = "", pch = "-", xlim = xlim)
 text(x = 1:num, y = data2[, "L5Plo"], rownames(data1))
 mtext(side = 3, "R-Risk", line = labelline, cex = labelcex)
 
@@ -103,7 +103,7 @@ plot(x = 1:num, y = data2[, "MedCC"], frame.plot = FALSE,
   ylim = ylim3, xlim = xlim,
   ylab = "", xaxt = "n", xlab = "", pch = "")
 text(x = 1:num, y = data2[, "MedCC"], rownames(data1))
-mtext(side = 3, "Cont catch", line = labelline, cex = labelcex)
+mtext(side = 3, "CC", line = labelline, cex = labelcex)
 
 plot(x = 1:num, y = data2[, "AAV"], frame.plot = FALSE,
   ylim = ylim4, xlim = xlim,
