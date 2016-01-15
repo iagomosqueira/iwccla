@@ -23,6 +23,12 @@ paper <- "SC66aRMPWP06"
 
 dir.home <- "c:/iwccla"
 dir.rs <- "c:/users/kelli/dropbox/iwccla"
+
+if (!file.exists(dir.home)) {
+  dir.home <- "d:/iwccla"
+  dir.rs <- dir.home
+}
+
 dir.wk <- file.path(dir.home, "ms")
 
 width.resout <- c(15, rep(7, 4), rep(c(9, 7, 7), 6), 9)
