@@ -264,10 +264,10 @@ write.csv(comparison, paste0(paper, "_Table_comparison", ".csv"))
 #### Tuning plot
 ###############################################################################
 ###############################################################################
-plot_tune(org100, prb100, ps1100, ps4100, names = c("43", "73", "51", "54"), trialset = keep1, out = paste0(paper, "_Fig01_100"))
-plot_tune(org100, prb100, ps1100, ps4100, names = c("43", "73", "51", "54"), trialset = keep2, out = paste0(paper, "_Fig02_100"))
-plot_tune(org300, prb300, ps1300, ps4300, names = c("43", "73", "51", "54"), trialset = keep1, out = paste0(paper, "_Fig01_300"), year = 300)
-plot_tune(org300, prb300, ps1300, ps4300, names = c("43", "73", "51", "54"), trialset = keep2, out = paste0(paper, "_Fig02_300"), year = 300)
+plot_tune(org100, prb100, ps1100, ps4100, names = c("C", "CL", "NH", "N"), trialset = keep1, out = paste0(paper, "_Fig01_100"))
+plot_tune(org100, prb100, ps1100, ps4100, names = c("C", "CL", "NH", "N"), trialset = keep2, out = paste0(paper, "_Fig02_100"))
+plot_tune(org300, prb300, ps1300, ps4300, names = c("C", "CL", "NH", "N"), trialset = keep1, out = paste0(paper, "_Fig01_300"), year = 300)
+plot_tune(org300, prb300, ps1300, ps4300, names = c("C", "CL", "NH", "N"), trialset = keep2, out = paste0(paper, "_Fig02_300"), year = 300)
 
 ###############################################################################
 ###############################################################################
@@ -276,14 +276,14 @@ plot_tune(org300, prb300, ps1300, ps4300, names = c("43", "73", "51", "54"), tri
 ###############################################################################
 ###############################################################################
 data <- rbind(
-      data.frame("id" = "43", "year" = 100, org100),
-      data.frame("id" = "73", "year" = 100, prb100),
-      data.frame("id" = "51", "year" = 100, ps1100),
-      data.frame("id" = "54", "year" = 100, ps4100),
-      data.frame("id" = "43", "year" = 300, org300),
-      data.frame("id" = "73", "year" = 300, prb300),
-      data.frame("id" = "51", "year" = 300, ps1300),
-      data.frame("id" = "54", "year" = 300, ps4300))
+      data.frame("id" = "C", "year" = 100, org100),
+      data.frame("id" = "CL", "year" = 100, prb100),
+      data.frame("id" = "NH", "year" = 100, ps1100),
+      data.frame("id" = "N", "year" = 100, ps4100),
+      data.frame("id" = "C", "year" = 300, org300),
+      data.frame("id" = "CL", "year" = 300, prb300),
+      data.frame("id" = "NC", "year" = 300, ps1300),
+      data.frame("id" = "N", "year" = 300, ps4300))
 data <- data[data$trial %in% sheet$name, ]
 data$F <- sapply(strsplit(data$trial, "-"), "[", 1)
 
