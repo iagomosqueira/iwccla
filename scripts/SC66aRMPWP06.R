@@ -287,6 +287,7 @@ data <- rbind(
 data <- data[data$trial %in% sheet$name, ]
 data$F <- sapply(strsplit(data$trial, "-"), "[", 1)
 
+source("../R/plot_trial.R")
 for(use in unique(gsub("F[0-9]-", "", sheet$name))) {
   plot_trial(data, use, out = paper)
 }
